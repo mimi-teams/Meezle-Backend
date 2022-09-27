@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  mysql:
+    container_name: mimi-mysql8
+    image: mysql:8.0.18
+    environment:
+      MYSQL_DATABASE: mimi
+      MYSQL_ROOT_PASSWORD: 0374
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3374:3306"
