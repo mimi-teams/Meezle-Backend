@@ -1,6 +1,6 @@
 spring.config:
   activate:
-    on-profile: dev
+    on-profile: test
 
 server.port: 8080
 
@@ -17,7 +17,7 @@ spring:
         connection.provider_disables_autocommit: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3374/mimi?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3375/mimi?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 0374
     hikari:
