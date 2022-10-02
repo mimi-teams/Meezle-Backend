@@ -25,12 +25,6 @@ public class User extends BaseTimeEntity {
     @Comment("이메일")
     private String email;
 
-//    @OneToMany(targetEntity = Event.class, mappedBy = "user", fetch = FetchType.LAZY)
-//    private List<Event> eventList;
-//
-//    @OneToMany(targetEntity = ParticipableTime.class, mappedBy = "user", fetch = FetchType.LAZY)
-//    private List<ParticipableTime> participableTimeList;
-
     @Builder
     public User(String name, String email) {
         this.name = name;

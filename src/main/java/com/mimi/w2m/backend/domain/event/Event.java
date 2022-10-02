@@ -31,19 +31,12 @@ public class Event extends BaseTimeEntity {
 
     @Column(name = "d_day", nullable = false)
     private LocalDateTime dDay;
-
+    /**
+     * @JoinColumn(unique = boolean)은 현재 Entity에서 해당 FK가 중복 가능한지 표시한다.
+     */
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", unique = true, updatable = false)
+    @JoinColumn(name = "user_id", updatable = false)
     private User user;
-
-//    @OneToMany(targetEntity = AbleTime.class, mappedBy = "event", fetch = FetchType.LAZY)
-//    private List<AbleTime> ableTimeList;
-//
-//    @OneToMany(targetEntity = Participant.class, mappedBy = "event", fetch = FetchType.LAZY)
-//    private List<Participant> participantList;
-//
-//    @OneToMany(targetEntity = ParticipableTime.class, mappedBy = "event", fetch = FetchType.LAZY)
-//    private List<ParticipableTime> participableTimeList;
 
     @Builder
     public Event(String name, LocalDateTime deletedDate, LocalDateTime dDay, User user) {

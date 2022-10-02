@@ -8,7 +8,10 @@ import lombok.Getter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
+import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 /**
@@ -24,57 +27,55 @@ public class ParticipableTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "able_date", nullable = false)
+    @Column(name = "able_date")
     @Comment(value = "입력 날짜")
-    LocalDateTime ableTime;
+    LocalDate ableDate;
 
     @Column(name = "start_time")
     @Comment(value = "날짜별 가능한 시작 시간")
-    LocalDateTime startTime;
+    LocalTime startTime;
 
     @Column(name = "end_time")
     @Comment(value = "날짜별 가능한 종료 시간")
-    LocalDateTime endTime;
+    LocalTime endTime;
 
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "event_id", unique = true, updatable = false)
+    @JoinColumn(name = "event_id", updatable = false, nullable = false)
     Event event;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true, updatable = true)
-    Optional<User> user;
+    @JoinColumn(name = "user_id")
+    User user;
 
     @ManyToOne(targetEntity = Participant.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "participant_id", unique = true, updatable = true)
-    Optional<Participant> participant;
-
+    @JoinColumn(name = "participant_id")
+    Participant participant;
     @Builder
-    public ParticipableTime(LocalDateTime ableTime, LocalDateTime startTime, LocalDateTime endTime, Event event, User user, Participant participant) {
-        this.ableTime = ableTime;
+    public ParticipableTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime, Event event, User user, Participant participant) {
+        this.ableDate = ableDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.event = event;
-        this.user = Optional.ofNullable(user);
-        this.participant = Optional.ofNullable(participant);
+        this.user = user;
+        this.participant = participant;
     }
-
     protected ParticipableTime() {
     }
 
-    public ParticipableTime updateTime(LocalDateTime ableTime, LocalDateTime startTime, LocalDateTime endTime) {
-        this.ableTime = ableTime;
+    public ParticipableTime updateTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime) {
+        this.ableDate = ableDate;
         this.startTime = startTime;
         this.endTime = endTime;
         return this;
     }
 
     public ParticipableTime updateUser(User user) {
-        this.user = Optional.ofNullable(user);
+        this.user = user;
         return this;
     }
 
     public ParticipableTime updateParticipant(Participant participant) {
-        this.participant = Optional.ofNullable(participant);
+        this.participant = participant;
         return this;
     }
 }

@@ -30,9 +30,6 @@ public class Participant extends BaseTimeEntity {
     @JoinColumn(name = "event_id", updatable = false)
     private Event event;
 
-//    @OneToMany(targetEntity = ParticipableTime.class, mappedBy = "participant", fetch = FetchType.LAZY)
-//    private List<ParticipableTime> participableTimeList;
-
     @Builder
     public Participant(String name, String password, Event event) {
         this.name = name;
