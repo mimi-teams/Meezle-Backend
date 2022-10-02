@@ -4,6 +4,7 @@ plugins {
 	id "java"
 }
 
+
 group = "com.mimi.w2m.backend"
 sourceCompatibility = "11"
 
@@ -41,4 +42,9 @@ dependencies {
 
 tasks.named("test") {
 	useJUnitPlatform()
+}
+
+// Activate Test profile
+tasks.test {
+	systemProperty 'spring.profiles.active', 'test'
 }
