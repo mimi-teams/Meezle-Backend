@@ -39,4 +39,5 @@ public class User extends BaseTimeEntity {
         this.email = email;
         return this;
     }
+
 }

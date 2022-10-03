@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +30,6 @@ class ParticipableTimeRepositoryTest {
     private ParticipantRepository participantRepository;
     @Autowired
     private ParticipableTimeRepository participableTimeRepository;
-
     @BeforeEach
     void setup() {
         var user = User.builder()
@@ -50,7 +50,6 @@ class ParticipableTimeRepositoryTest {
                 .build();
         participantRepository.save(participant);
     }
-
     @Test
     void 참여가능시간_생성하기() {
         //given
@@ -67,33 +66,6 @@ class ParticipableTimeRepositoryTest {
         //then
         assertThat(participableTimeRepository.findAll().get(0)).isEqualTo(participableTime);
     }
-
-    /**
-     * 참여가능한시간은 이벤트, 유저, 참여자와 연관되어만 의미가 있다. 따라서 해당 도메인에서 찾는 것으로 바꿨다.
-     */
-//    @Test
-//    void 참여가능시간_가져오기() {
-//        //given
-//        var user = userRepository.findByName("teddy").get();
-//        var event = eventRepository.findByName("teddyEvent").get();
-//        var participant = participantRepository.findByName("bear").get();
-//        var participableTime = ParticipableTime.builder()
-//                .user(user)
-//                .participant(participant)
-//                .event(event)
-//                .build();
-//        participableTimeRepository.save(participableTime);
-//
-//        //when
-//        var expectedParticipableTime1 = participableTimeRepository.findByUser(user).get();
-//        var expectedParticipableTime2 = participableTimeRepository.findByParticipant(participant).get();
-//        var expectedParticipableTime3 = participableTimeRepository.findByEvent(event).get();
-//
-//        //then
-//        assertThat(participableTime).isEqualTo(expectedParticipableTime1).isEqualTo(expectedParticipableTime2).isEqualTo(expectedParticipableTime3);
-//
-//    }
-
     @Test
     void 참여가능시간_수정하기() {
         //given
@@ -120,7 +92,6 @@ class ParticipableTimeRepositoryTest {
         assertThat(expectedParticipableTime.getStartTime()).isEqualTo(expectedStartTime);
         assertThat(expectedParticipableTime.getEndTime()).isEqualTo(expectedEndTime);
     }
-
     @Test
     void 참여가능시간_제거하기() {
         //given
@@ -136,5 +107,86 @@ class ParticipableTimeRepositoryTest {
         assertThat(participableTimeRepository.findAll().isEmpty());
 
     }
+    @Test
+    void 참여가능시간_가져오기() {
+        //given
+        var event = eventRepository.findByName("teddyEvent").get();
+        var participant = Participant.builder()
+                .name("bear")
+                .event(event)
+                .build();
+        participantRepository.save(participant);
+        var participableTime1 = participableTimeRepository.save(ParticipableTime.builder()
+                .event(event)
+                .participant(participant)
+                .build());
+        var participableTime2 = participableTimeRepository.save(ParticipableTime.builder()
+                .event(event)
+                .participant(participant)
+                .build());
 
+        //when
+        var participableTimeList = participableTimeRepository.findAllByParticipant(participant);
+
+        //then
+        assertThat(participableTimeList.size()).isEqualTo(2);
+        assertThat(participableTimeList.containsAll(List.of(participableTime1, participableTime2)));
+
+    }
+    @Test
+    void 이벤트_참여가능한_시간_가져오기() {
+        //given
+        var user = User.builder()
+                .name("teddy")
+                .email("teddy@super.com")
+                .build();
+        userRepository.save(user);
+        var event = Event.builder()
+                .name("teddyEvent")
+                .user(user)
+                .dDay(LocalDateTime.now())
+                .build();
+        eventRepository.save(event);
+        var participableTime1 = participableTimeRepository.save(ParticipableTime.builder()
+                .event(event)
+                .build());
+        var participableTime2 = participableTimeRepository.save(ParticipableTime.builder()
+                .event(event)
+                .build());
+
+        //when
+        var participableTimeList = participableTimeRepository.findAllByEvent(event);
+
+        //then
+        assertThat(participableTimeList.size()).isEqualTo(2);
+        assertThat(participableTimeList.containsAll(List.of(participableTime1, participableTime2)));
+    }
+    @Test
+    void 사용자_이벤트_참여가능시간_가져오기() {
+        //given
+        var user = userRepository.save(User.builder()
+                .name("teddy")
+                .email("teddy@super.com")
+                .build());
+        var event = eventRepository.save(Event.builder()
+                .name("teddyEvent")
+                .user(user)
+                .dDay(LocalDateTime.now())
+                .build());
+        var participableTime1 = participableTimeRepository.save(ParticipableTime.builder()
+                .event(event)
+                .user(user)
+                .build());
+        var participableTime2 = participableTimeRepository.save(ParticipableTime.builder()
+                .event(event)
+                .user(user)
+                .build());
+
+        //when
+        var participableTimeList = participableTimeRepository.findAllByUser(user);
+
+        //then
+        assertThat(participableTimeList.size()).isEqualTo(2);
+        assertThat(participableTimeList.containsAll(List.of(participableTime1, participableTime2)));
+    }
 }
