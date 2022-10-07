@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.api.authentication;
+package com.mimi.w2m.backend.api.security;
 
 /**
  * @author : teddy
