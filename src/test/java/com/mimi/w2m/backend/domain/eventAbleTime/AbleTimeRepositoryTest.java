@@ -13,9 +13,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
+import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class AbleTimeRepositoryTest {
@@ -99,25 +100,34 @@ class AbleTimeRepositoryTest {
         //then
         assertThat(ableTimeRepository.findAll().isEmpty());
     }
-/**
- * 가능한 시간은 독립적으로 필요하지 않고 이벤트에서만 필요하다. 따라서 이벤트에서 연관된 가능한 시간들을 찾는 것으로 바꿨다.
- */
-//    @Test
-//    void 가능한시간_가져오기() {
-//        //given
-//        var event = eventRepository.findByName("teddyEvent").get();
-//        var ableTime = ableTimeRepository.save(AbleTime.builder()
-//                .event(event)
-//                .ableDate(LocalDate.now())
-//                .startTime(LocalTime.now())
-//                .endTime(LocalTime.now().plusHours(1))
-//                .build());
-//
-//        //when
-//        var expectedAbleTime = ableTimeRepository.findByEvent(event).get();
-//
-//        //then
-//        assertThat(expectedAbleTime).isEqualTo(ableTime);
-//    }
+
+    @Test
+    void 이벤트_가능한_시간_가져오기() {
+        //given
+        var user = User.builder()
+                .name("teddy")
+                .email("teddy@super.com")
+                .build();
+        userRepository.save(user);
+        var event = Event.builder()
+                .name("teddyEvent")
+                .user(user)
+                .dDay(LocalDateTime.now())
+                .build();
+        eventRepository.save(event);
+        var ableTime1 = ableTimeRepository.save(AbleTime.builder()
+                .event(event)
+                .build());
+        var ableTime2 = ableTimeRepository.save(AbleTime.builder()
+                .event(event)
+                .build());
+
+        //when
+        var ableTimeList = ableTimeRepository.findAllByEvent(event);
+
+        //then
+        assertThat(ableTimeList.size()).isEqualTo(2);
+        assertThat(ableTimeList.containsAll(List.of(ableTime1, ableTime2)));
+    }
 
 }

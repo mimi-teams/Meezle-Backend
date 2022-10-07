@@ -17,7 +17,6 @@ import java.util.Optional;
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
     Optional<Participant> findByName(String name);
-
-    @Query("SELECT t FROM ParticipableTime t WHERE t.participant = :participant")
-    List<ParticipableTime> findParticipableTimeList(@Param("participant") Participant participant);
+    @Query("SELECT p FROM Participant p WHERE p.event = :event")
+    List<Participant> findAllByEvent(@Param("event") Event event);
 }

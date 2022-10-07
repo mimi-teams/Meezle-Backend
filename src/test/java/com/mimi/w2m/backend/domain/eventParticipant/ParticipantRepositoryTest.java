@@ -2,8 +2,6 @@ package com.mimi.w2m.backend.domain.eventParticipant;
 
 import com.mimi.w2m.backend.domain.event.Event;
 import com.mimi.w2m.backend.domain.event.EventRepository;
-import com.mimi.w2m.backend.domain.eventParticipableTime.ParticipableTime;
-import com.mimi.w2m.backend.domain.eventParticipableTime.ParticipableTimeRepository;
 import com.mimi.w2m.backend.domain.user.User;
 import com.mimi.w2m.backend.domain.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +23,6 @@ class ParticipantRepositoryTest {
     private EventRepository eventRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private ParticipableTimeRepository participableTimeRepository;
 
     @BeforeEach
     void setup() {
@@ -70,8 +66,7 @@ class ParticipantRepositoryTest {
         participantRepository.save(participant);
         var expectedName = "rabbit";
         var expectedPassword = "0308";
-//
-//        //when
+
         participant.update(expectedName, expectedPassword);
         var expectedParticipant = participantRepository.findAll().get(0);
 
@@ -136,29 +131,33 @@ class ParticipantRepositoryTest {
     }
 
     @Test
-    void 참여가능한_시간_가져오기() {
+    void 이벤트_참여자_가져오기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
-        var participant = Participant.builder()
-                .name("bear")
-                .event(event)
+        var user = User.builder()
+                .name("teddy")
+                .email("teddy@super.com")
                 .build();
-        participantRepository.save(participant);
-        var participableTime1 = participableTimeRepository.save(ParticipableTime.builder()
+        userRepository.save(user);
+        var event = Event.builder()
+                .name("teddyEvent")
+                .user(user)
+                .dDay(LocalDateTime.now())
+                .build();
+        eventRepository.save(event);
+        var participant1 = participantRepository.save(Participant.builder()
+                .name("bear1")
                 .event(event)
-                .participant(participant)
                 .build());
-        var participableTime2 = participableTimeRepository.save(ParticipableTime.builder()
+        var participant2 = participantRepository.save(Participant.builder()
+                .name("bear2")
                 .event(event)
-                .participant(participant)
                 .build());
 
         //when
-        var participableTimeList = participantRepository.findParticipableTimeList(participant);
+        var participantList = participantRepository.findAllByEvent(event);
 
         //then
-        assertThat(participableTimeList.size()).isEqualTo(2);
-        assertThat(participableTimeList.containsAll(List.of(participableTime1, participableTime2)));
-
+        assertThat(participantList.size()).isEqualTo(2);
+        assertThat(participantList.containsAll(List.of(participant1, participant2)));
     }
 }

@@ -4,8 +4,9 @@ import com.mimi.w2m.backend.domain.event.Event;
 import com.mimi.w2m.backend.domain.eventParticipant.Participant;
 import com.mimi.w2m.backend.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.util.List;
 
 /**
  * @author : teddy
@@ -13,4 +14,10 @@ import java.util.Optional;
  */
 
 public interface ParticipableTimeRepository extends JpaRepository<ParticipableTime, Long> {
+    @Query("SELECT p FROM ParticipableTime p WHERE p.user = :user")
+    List<ParticipableTime> findAllByUser(@Param("user") User user);
+    @Query("SELECT t FROM ParticipableTime t WHERE t.event = :event")
+    List<ParticipableTime> findAllByEvent(@Param("event") Event event);
+    @Query("SELECT t FROM ParticipableTime t WHERE t.participant = :participant")
+    List<ParticipableTime> findAllByParticipant(@Param("participant") Participant participant);
 }
