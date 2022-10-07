@@ -23,6 +23,7 @@ class ParticipantRepositoryTest {
     private EventRepository eventRepository;
     @Autowired
     private UserRepository userRepository;
+
     @BeforeEach
     void setup() {
         var user = User.builder()

@@ -19,6 +19,7 @@ class EventRepositoryTest {
     private EventRepository eventRepository;
     @Autowired
     private UserRepository userRepository;
+
     @Test
     void 이벤트_생성하기() {
         //given
@@ -39,6 +40,7 @@ class EventRepositoryTest {
         //then
         assertThat(eventRepository.findAll().get(0)).isEqualTo(event);
     }
+
     @Test
     void 이벤트_제거하기() {
         //given
