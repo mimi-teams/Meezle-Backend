@@ -23,6 +23,7 @@ class ParticipantRepositoryTest {
     private EventRepository eventRepository;
     @Autowired
     private UserRepository userRepository;
+
     @BeforeEach
     void setup() {
         var user = User.builder()
@@ -37,6 +38,7 @@ class ParticipantRepositoryTest {
                 .build();
         eventRepository.save(event);
     }
+
     @Test
     void 참여자_생성하기(){
         //given
@@ -52,6 +54,7 @@ class ParticipantRepositoryTest {
         //then
         assertThat(participantRepository.findAll().get(0)).isEqualTo(participant);
     }
+
     @Test
     void 참여자_수정하기() {
         //given
@@ -64,7 +67,6 @@ class ParticipantRepositoryTest {
         var expectedName = "rabbit";
         var expectedPassword = "0308";
 
-        //when
         participant.update(expectedName, expectedPassword);
         var expectedParticipant = participantRepository.findAll().get(0);
 
@@ -72,6 +74,7 @@ class ParticipantRepositoryTest {
         assertThat(expectedParticipant.getName()).isEqualTo(expectedName);
         assertThat(expectedParticipant.getPassword()).isEqualTo(expectedPassword);
     }
+
     @Test
     void 참여자_제거하기() {
         //given
@@ -88,6 +91,7 @@ class ParticipantRepositoryTest {
         //then
         assertThat(participantRepository.findAll().isEmpty());
     }
+
     @Test
     void 참여자_가져오기() {
         //given
@@ -125,6 +129,7 @@ class ParticipantRepositoryTest {
         //then
         assertThat(expectedEvent).isEqualTo(event);
     }
+
     @Test
     void 이벤트_참여자_가져오기() {
         //given
