@@ -14,9 +14,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class AbleTimeRepositoryTest {
@@ -26,7 +26,6 @@ class AbleTimeRepositoryTest {
     private UserRepository userRepository;
     @Autowired
     private AbleTimeRepository ableTimeRepository;
-
     @BeforeEach
     void setup() {
         var user = User.builder()
@@ -41,7 +40,6 @@ class AbleTimeRepositoryTest {
                 .build();
         eventRepository.save(event);
     }
-
     @Test
     void 가능한시간_생성하기(){
         //given
@@ -58,7 +56,6 @@ class AbleTimeRepositoryTest {
         //then
         assertThat(ableTimeRepository.findAll().get(0)).isEqualTo(ableTime);
     }
-
     @Test
     void 가능한시간_수정하기() {
         //given
@@ -100,7 +97,6 @@ class AbleTimeRepositoryTest {
         //then
         assertThat(ableTimeRepository.findAll().isEmpty());
     }
-
     @Test
     void 이벤트_가능한_시간_가져오기() {
         //given

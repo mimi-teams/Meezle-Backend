@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
@@ -11,7 +12,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
-
     @Test
     void 사용자_생성하기(){
         //given
@@ -29,7 +29,6 @@ class UserRepositoryTest {
         assertThat(user.getName()).isEqualTo(expectedName);
         assertThat(user.getEmail()).isEqualTo(expectedEmail);
     }
-
     @Test
     void 사용자_수정하기() {
         //given
@@ -49,7 +48,6 @@ class UserRepositoryTest {
         assertThat(expectedUser.getName()).isEqualTo(expectedName);
         assertThat(expectedUser.getEmail()).isEqualTo(expectedEmail);
     }
-
     @Test
     void 사용자_제거하기() {
         //given
@@ -66,7 +64,6 @@ class UserRepositoryTest {
         //then
         assertThat(userList.isEmpty());
     }
-
     @Test
     void 사용자_가져오기() {
         //given

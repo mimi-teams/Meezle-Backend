@@ -16,9 +16,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ParticipableTimeRepositoryTest {
@@ -30,7 +30,6 @@ class ParticipableTimeRepositoryTest {
     private ParticipantRepository participantRepository;
     @Autowired
     private ParticipableTimeRepository participableTimeRepository;
-    
     @BeforeEach
     void setup() {
         var user = User.builder()
@@ -51,7 +50,6 @@ class ParticipableTimeRepositoryTest {
                 .build();
         participantRepository.save(participant);
     }
-
     @Test
     void 참여가능시간_생성하기() {
         //given
@@ -68,7 +66,6 @@ class ParticipableTimeRepositoryTest {
         //then
         assertThat(participableTimeRepository.findAll().get(0)).isEqualTo(participableTime);
     }
-
     @Test
     void 참여가능시간_수정하기() {
         //given
@@ -95,7 +92,6 @@ class ParticipableTimeRepositoryTest {
         assertThat(expectedParticipableTime.getStartTime()).isEqualTo(expectedStartTime);
         assertThat(expectedParticipableTime.getEndTime()).isEqualTo(expectedEndTime);
     }
-
     @Test
     void 참여가능시간_제거하기() {
         //given
@@ -111,7 +107,6 @@ class ParticipableTimeRepositoryTest {
         assertThat(participableTimeRepository.findAll().isEmpty());
 
     }
-
     @Test
     void 참여가능시간_가져오기() {
         //given
