@@ -19,10 +19,7 @@ public class AuthConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     /**
-     *
-     * @return
-     *
-     * webSecurityCustomizer를 이용해 ignoring을 하는 것은 비권장 사항이다.
+     * @return webSecurityCustomizer를 이용해 ignoring을 하는 것은 비권장 사항이다.
      * SecurityFilterChain과 WebSecurityCustomizer를 구분하여 작성하지 말고, SecurityFilterChain으로 통합해 작성하자!
      * 대응하는 chain의 구문: http.authorizeRequests().antMatcher(....).permitAll() : antMathcer에 해당하는 uri를 모두에게 개방한다
      */
@@ -34,14 +31,16 @@ public class AuthConfig {
 //            web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 //        };
 //    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf()
                 .and().authorizeRequests().antMatchers("/api/v1/**").hasRole(Role.USER.name())
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 .and().logout().logoutSuccessUrl("/")
-                .and().oauth2Login().defaultSuccessUrl("/").userInfoEndpoint().userService(customOAuth2UserService);
+                .and().oauth2Login()
+//                    .defaultSuccessUrl("/")
+                    .defaultSuccessUrl("/test/oauth2")
+                    .userInfoEndpoint().userService(customOAuth2UserService);
 
         return http.build();
     }

@@ -25,9 +25,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3374/mimi?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
-    password: 0374
+    password: 1123
     hikari:
       pool-name: HikariPool-Primary
       maximum-pool-size: 5
       connection-timeout: 5000
       connection-test-query: SELECT 1
+

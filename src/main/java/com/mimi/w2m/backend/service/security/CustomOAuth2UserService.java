@@ -2,9 +2,9 @@ package com.mimi.w2m.backend.service.security;
 
 import com.mimi.w2m.backend.domain.user.User;
 import com.mimi.w2m.backend.domain.user.UserRepository;
-import com.mimi.w2m.backend.dto.security.LoginSession;
 import com.mimi.w2m.backend.dto.security.OAuthAttributes;
 import com.mimi.w2m.backend.dto.security.Role;
+import com.mimi.w2m.backend.dto.security.UserSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -37,7 +37,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .getUserInfoEndpoint().getUserNameAttributeName();
         var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.getAttributes());
         var user = saveOrUpdate(attributes);
-        httpSession.setAttribute("user", new LoginSession(user));
+
+        httpSession.setAttribute("user", new UserSession(user));
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(Role.USER.name())),
                 attributes.getAttributes(),

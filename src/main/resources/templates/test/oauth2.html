@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Oauth2 Manual Testing</title>
+</head>
+<body>
+<div>
+    <a href="http://localhost:8080/oauth2/authorization/google" type="button">Goggle Login</a> <br />
+    <span th:text="${user}" />
+</div>
+<div>
+    <a href="http://localhost:8080/oauth2/authorization/google" type="button">Kakao Login</a> <br />
+    <span th:text="${user}" />
+</div>
+</body>
+</html>
