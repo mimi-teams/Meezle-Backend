@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.dto.security;
+package com.mimi.w2m.backend.domain.user;
 
 import lombok.RequiredArgsConstructor;
 
@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public enum Role {
-    USER("ROLE_USER", "사용자");
+    USER("ROLE_USER", "사용자"),
+    Tester("ROLE_TESTER", "테스터");
     private final String key;
     private final String name;
 }

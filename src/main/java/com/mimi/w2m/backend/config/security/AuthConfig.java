@@ -5,7 +5,7 @@ package com.mimi.w2m.backend.config.security;
  * @since : 2022/09/29
  */
 
-import com.mimi.w2m.backend.dto.security.Role;
+import com.mimi.w2m.backend.domain.user.Role;
 import com.mimi.w2m.backend.service.security.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,10 +13,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+import javax.servlet.http.HttpSession;
+
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AuthConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final HttpSession session;
 
     /**
      * @return webSecurityCustomizer를 이용해 ignoring을 하는 것은 비권장 사항이다.
@@ -33,14 +36,15 @@ public class AuthConfig {
 //    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-                .and().authorizeRequests().antMatchers("/api/v1/**").hasRole(Role.USER.name())
-                .anyRequest().permitAll()
-                .and().logout().logoutSuccessUrl("/")
-                .and().oauth2Login()
-//                    .defaultSuccessUrl("/")
-                    .defaultSuccessUrl("/test/oauth2")
-                    .userInfoEndpoint().userService(customOAuth2UserService);
+        http.csrf().and().
+                authorizeRequests()
+                .antMatchers("/api/v1/security/login/**").permitAll()
+                .antMatchers("/api/v1/test/**").hasAuthority(Role.Tester.name())
+                .antMatchers("/api/v1/**").hasAnyAuthority(Role.USER.name(), Role.Tester.name())
+                .anyRequest().permitAll().and()
+                .oauth2Login()
+                .defaultSuccessUrl("/")
+                .userInfoEndpoint().userService(customOAuth2UserService);
 
         return http.build();
     }

@@ -2,6 +2,7 @@ package com.mimi.w2m.backend.domain.eventParticipant;
 
 import com.mimi.w2m.backend.domain.event.Event;
 import com.mimi.w2m.backend.domain.event.EventRepository;
+import com.mimi.w2m.backend.domain.user.Role;
 import com.mimi.w2m.backend.domain.user.User;
 import com.mimi.w2m.backend.domain.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ class ParticipantRepositoryTest {
         var user = User.builder()
                 .name("teddy")
                 .email("teddy@super.com")
+                .role(Role.Tester)
                 .build();
         userRepository.save(user);
         var event = Event.builder()
@@ -128,11 +130,7 @@ class ParticipantRepositoryTest {
     @Test
     void 이벤트_참여자_가져오기() {
         //given
-        var user = User.builder()
-                .name("teddy")
-                .email("teddy@super.com")
-                .build();
-        userRepository.save(user);
+        var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
                 .name("teddyEvent")
                 .user(user)

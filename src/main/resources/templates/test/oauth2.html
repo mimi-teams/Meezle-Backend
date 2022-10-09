@@ -6,12 +6,15 @@
 </head>
 <body>
 <div>
-    <a href="http://localhost:8080/oauth2/authorization/google" type="button">Goggle Login</a> <br />
+    <a href="http://localhost:8080/api/v1/security/login/oauth2?registrationId=google" role="button">Goggle Login</a> <br />
     <span th:text="${user}" />
 </div>
 <div>
-    <a href="http://localhost:8080/oauth2/authorization/google" type="button">Kakao Login</a> <br />
+    <a href="http://localhost:8080/api/v1/security/login/oauth2?registrationId=kakao" role="button">Kakao Login</a> <br />
     <span th:text="${user}" />
+</div>
+<div>
+    <a href="http://localhost:8080/api/v1/test/logout" role="button">Logout</a>
 </div>
 </body>
 </html>

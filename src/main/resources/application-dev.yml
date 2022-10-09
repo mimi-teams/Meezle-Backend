@@ -17,9 +17,7 @@ spring:
         connection.provider_disables_autocommit: false
 #    open-in-view: true # JPA의 영속성을 Transaction이 끝나도 유지한다(lazy loading을 service가 끝난 후(transaction 종료) controller에서 사용 가능) default: true
   session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
+    store-type: none
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

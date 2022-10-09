@@ -25,10 +25,15 @@ public class User extends BaseTimeEntity {
     @Comment("이메일")
     private String email;
 
+    @Column(name = "role", length = 50, nullable = false)
+    @Comment("역할")
+    private Role role;
+
     @Builder
-    public User(String name, String email) {
+    public User(String name, String email, Role role) {
         this.name = name;
         this.email = email;
+        this.role = role;
     }
 
     protected User() {
@@ -39,5 +44,4 @@ public class User extends BaseTimeEntity {
         this.email = email;
         return this;
     }
-
 }

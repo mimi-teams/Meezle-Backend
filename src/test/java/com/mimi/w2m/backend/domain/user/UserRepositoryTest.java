@@ -22,6 +22,7 @@ class UserRepositoryTest {
         userRepository.save(User.builder()
                 .name(expectedName)
                 .email(expectedEmail)
+                .role(Role.Tester)
                 .build());
         var user = userRepository.findAll().get(0);
 
@@ -35,6 +36,7 @@ class UserRepositoryTest {
         var user = User.builder()
                 .name("teddy")
                 .email("teddy@super.com")
+                .role(Role.Tester)
                 .build();
         var expectedName = "bear";
         var expectedEmail = "bear@super.com";
@@ -54,6 +56,7 @@ class UserRepositoryTest {
         var user = User.builder()
                 .name("teddy")
                 .email("teddy@super.com")
+                .role(Role.Tester)
                 .build();
         userRepository.save(user);
 
@@ -70,10 +73,12 @@ class UserRepositoryTest {
         var user1 = User.builder()
                 .name("teddy")
                 .email("teddy@super.com")
+                .role(Role.Tester)
                 .build();
         var user2 = User.builder()
                 .name("bear")
                 .email("bear@super.com")
+                .role(Role.Tester)
                 .build();
 
         userRepository.save(user1);
