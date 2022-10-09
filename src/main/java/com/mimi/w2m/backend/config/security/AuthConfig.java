@@ -9,12 +9,17 @@ import com.mimi.w2m.backend.domain.user.Role;
 import com.mimi.w2m.backend.service.security.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Objects;
 
+@Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AuthConfig {
@@ -36,12 +41,23 @@ public class AuthConfig {
 //    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().and().
-                authorizeRequests()
+        http.authorizeRequests()
                 .antMatchers("/api/v1/security/login/**").permitAll()
-                .antMatchers("/api/v1/test/**").hasAuthority(Role.Tester.name())
-                .antMatchers("/api/v1/**").hasAnyAuthority(Role.USER.name(), Role.Tester.name())
+                .antMatchers("/api/v1/test/**").hasRole(Role.Tester.name())
+                .antMatchers("/api/v1/**").hasAnyRole(Role.USER.name(), Role.Tester.name())
                 .anyRequest().permitAll().and()
+                .csrf().disable()
+                .logout().logoutUrl("/api/v1/security/logout").addLogoutHandler(((request, response, authentication)-> {
+                    if(!Objects.isNull(authentication)) {
+                        new SecurityContextLogoutHandler().logout(request, response, authentication);
+                    }
+                    try {
+                        response.sendRedirect("/");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }))
+                .invalidateHttpSession(true).clearAuthentication(true).and()
                 .oauth2Login()
                 .defaultSuccessUrl("/")
                 .userInfoEndpoint().userService(customOAuth2UserService);

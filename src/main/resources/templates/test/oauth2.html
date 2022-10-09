@@ -14,7 +14,10 @@
     <span th:text="${user}" />
 </div>
 <div>
-    <a href="http://localhost:8080/api/v1/test/logout" role="button">Logout</a>
+    <form action="/api/v1/security/logout" method="post">
+        <button type="submit">Logout</button>
+    </form>
+<!--    <a href="/api/v1/test/logout">Logout</a>-->
 </div>
 </body>
 </html>

@@ -41,9 +41,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         var user = saveOrUpdate(attributes);
 
         httpSession.setAttribute("user", new UserSession(user));
-        logger.info(user.getName() + " : " + user.getRole());
+        logger.info(user.getName() + " : " + user.getRole().name());
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())),
+                Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())), // Authority를 설정할 때, ROLE_** 문자열이 넣어져야만 한다!!(우씨 몇 시간 잡아먹은거양..)
                 attributes.getAttributes(),
                 attributes.getNameAttributeKey()
         );
