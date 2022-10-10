@@ -1,7 +1,9 @@
 package com.mimi.w2m.backend.domain.event;
 
+import com.mimi.w2m.backend.domain.user.Role;
 import com.mimi.w2m.backend.domain.user.User;
 import com.mimi.w2m.backend.domain.user.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -19,13 +21,20 @@ class EventRepositoryTest {
     private EventRepository eventRepository;
     @Autowired
     private UserRepository userRepository;
-    @Test
-    void 이벤트_생성하기() {
-        //given
+
+    @BeforeEach
+    void setup() {
         var user = User.builder()
                 .name("teddy")
                 .email("teddy@super.com")
+                .role(Role.Tester)
                 .build();
+        userRepository.save(user);
+    }
+    @Test
+    void 이벤트_생성하기() {
+        //given
+        var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
                 .name("teddyEvent")
                 .user(user)
@@ -33,7 +42,6 @@ class EventRepositoryTest {
                 .build();
 
         //when
-        userRepository.save(user);
         eventRepository.save(event);
 
         //then
@@ -42,11 +50,7 @@ class EventRepositoryTest {
     @Test
     void 이벤트_제거하기() {
         //given
-        var user = User.builder()
-                .name("teddy")
-                .email("teddy@super.com")
-                .build();
-        userRepository.save(user);
+        var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
                 .name("teddyEvent")
                 .user(user)
@@ -63,11 +67,7 @@ class EventRepositoryTest {
     @Test
     void 이벤트_수정하기() {
         //given
-        var user = User.builder()
-                .name("teddy")
-                .email("teddy@super.com")
-                .build();
-        userRepository.save(user);
+        var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
                 .name("teddyEvent")
                 .user(user)
@@ -91,11 +91,7 @@ class EventRepositoryTest {
     @Test
     void 이벤트_가져오기() {
         //given
-        var user1 = User.builder()
-                .name("teddy")
-                .email("teddy@super.com")
-                .build();
-        userRepository.save(user1);
+        var user1 = userRepository.findByName("teddy").get();
         var event1 = Event.builder()
                 .name("teddyEvent")
                 .user(user1)
@@ -106,6 +102,7 @@ class EventRepositoryTest {
         var user2 = User.builder()
                 .name("bear")
                 .email("bear@super.com")
+                .role(Role.Tester)
                 .build();
         userRepository.save(user2);
         var event2 = Event.builder()
@@ -124,10 +121,7 @@ class EventRepositoryTest {
     @Test
     void 사용자_이벤트_가져오기() {
         //given
-        var user = userRepository.save(User.builder()
-                .name("teddy")
-                .email("teddy@super.com")
-                .build());
+        var user = userRepository.findByName("teddy").get();
         var event1 = eventRepository.save(Event.builder()
                 .name("teddyEvent1")
                 .user(user)

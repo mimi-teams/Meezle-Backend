@@ -2,6 +2,7 @@ package com.mimi.w2m.backend.domain.eventAbleTime;
 
 import com.mimi.w2m.backend.domain.event.Event;
 import com.mimi.w2m.backend.domain.event.EventRepository;
+import com.mimi.w2m.backend.domain.user.Role;
 import com.mimi.w2m.backend.domain.user.User;
 import com.mimi.w2m.backend.domain.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class AbleTimeRepositoryTest {
@@ -31,6 +31,7 @@ class AbleTimeRepositoryTest {
         var user = User.builder()
                 .name("teddy")
                 .email("teddy@super.com")
+                .role(Role.Tester)
                 .build();
         userRepository.save(user);
         var event = Event.builder()
@@ -100,11 +101,7 @@ class AbleTimeRepositoryTest {
     @Test
     void 이벤트_가능한_시간_가져오기() {
         //given
-        var user = User.builder()
-                .name("teddy")
-                .email("teddy@super.com")
-                .build();
-        userRepository.save(user);
+        var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
                 .name("teddyEvent")
                 .user(user)

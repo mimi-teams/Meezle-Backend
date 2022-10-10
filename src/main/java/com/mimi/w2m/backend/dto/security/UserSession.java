@@ -10,10 +10,10 @@ import java.io.Serializable;
  * @since : 2022/09/30
  */
 @Getter
-public class LoginSession implements Serializable {
+public class UserSession implements Serializable{
     private Long userId;
 
-    public LoginSession(User user) {
+    public UserSession(User user) {
         this.userId = user.getId();
     }
 }
