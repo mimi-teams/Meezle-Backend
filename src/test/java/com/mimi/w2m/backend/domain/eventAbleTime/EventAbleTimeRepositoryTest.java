@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.domain.eventAbleTime;
 
-import com.mimi.w2m.backend.domain.AbleTime;
+import com.mimi.w2m.backend.domain.EventAbleTime;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.repository.AbleTimeRepository;
+import com.mimi.w2m.backend.repository.EventAbleTimeRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,13 +21,13 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class AbleTimeRepositoryTest {
+class EventAbleTimeRepositoryTest {
     @Autowired
     private EventRepository eventRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private AbleTimeRepository ableTimeRepository;
+    private EventAbleTimeRepository ableTimeRepository;
     @BeforeEach
     void setup() {
         var user = User.builder()
@@ -47,7 +47,7 @@ class AbleTimeRepositoryTest {
     void 가능한시간_생성하기(){
         //given
         var event = eventRepository.findByName("teddyEvent").get();
-        var ableTime = AbleTime.builder()
+        var ableTime = EventAbleTime.builder()
                 .event(event)
                 .ableDate(LocalDate.of(1999, 3, 8))
                 .startTime(LocalTime.of(12, 12))
@@ -63,7 +63,7 @@ class AbleTimeRepositoryTest {
     void 가능한시간_수정하기() {
         //given
         var event = eventRepository.findByName("teddyEvent").get();
-        var ableTime = AbleTime.builder()
+        var ableTime = EventAbleTime.builder()
                 .event(event)
                 .ableDate(LocalDate.of(1999, 3, 8))
                 .startTime(LocalTime.of(12, 12))
@@ -87,7 +87,7 @@ class AbleTimeRepositoryTest {
     void 가능한시간_제거하기() {
         //given
         var event = eventRepository.findByName("teddyEvent").get();
-        var ableTime = ableTimeRepository.save(AbleTime.builder()
+        var ableTime = ableTimeRepository.save(EventAbleTime.builder()
                 .event(event)
                 .ableDate(LocalDate.now())
                 .startTime(LocalTime.now())
@@ -110,10 +110,10 @@ class AbleTimeRepositoryTest {
                 .dDay(LocalDateTime.now())
                 .build();
         eventRepository.save(event);
-        var ableTime1 = ableTimeRepository.save(AbleTime.builder()
+        var ableTime1 = ableTimeRepository.save(EventAbleTime.builder()
                 .event(event)
                 .build());
-        var ableTime2 = ableTimeRepository.save(AbleTime.builder()
+        var ableTime2 = ableTimeRepository.save(EventAbleTime.builder()
                 .event(event)
                 .build());
 

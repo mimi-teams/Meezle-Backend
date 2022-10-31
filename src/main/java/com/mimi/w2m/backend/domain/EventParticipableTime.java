@@ -14,10 +14,10 @@ import java.time.LocalTime;
  */
 @Entity
 @Getter
-@Table(name = "w2m_event_participable_time")
-public class ParticipableTime {
+@Table(name = "mimi_event_participable_time")
+public class EventParticipableTime {
     @Id
-    @Column(name = "participable_time_id")
+    @Column(name = "event_participable_time_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
@@ -44,8 +44,9 @@ public class ParticipableTime {
     @ManyToOne(targetEntity = Participant.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id")
     Participant participant;
+
     @Builder
-    public ParticipableTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime, Event event, User user, Participant participant) {
+    public EventParticipableTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime, Event event, User user, Participant participant) {
         this.ableDate = ableDate;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -53,22 +54,22 @@ public class ParticipableTime {
         this.user = user;
         this.participant = participant;
     }
-    protected ParticipableTime() {
+    protected EventParticipableTime() {
     }
 
-    public ParticipableTime updateTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime) {
+    public EventParticipableTime updateTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime) {
         this.ableDate = ableDate;
         this.startTime = startTime;
         this.endTime = endTime;
         return this;
     }
 
-    public ParticipableTime updateUser(User user) {
+    public EventParticipableTime updateUser(User user) {
         this.user = user;
         return this;
     }
 
-    public ParticipableTime updateParticipant(Participant participant) {
+    public EventParticipableTime updateParticipant(Participant participant) {
         this.participant = participant;
         return this;
     }
