@@ -9,9 +9,9 @@ import javax.persistence.*;
  * @author : teddy
  * @since : 2022/09/30
  */
-@Entity
 @Getter
-@Table(name = "w2m_participant")
+@Entity
+@Table(name = "mimi_participant")
 public class Participant extends BaseTimeEntity {
     @Id
     @Column(name = "participant_id")

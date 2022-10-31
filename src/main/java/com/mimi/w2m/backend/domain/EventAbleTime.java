@@ -11,10 +11,10 @@ import java.time.LocalTime;
  * @author : teddy
  * @since : 2022/09/30
  */
-@Entity
 @Getter
-@Table(name = "w2m_event_able_time")
-public class AbleTime {
+@Entity
+@Table(name = "mimi_event_able_time")
+public class EventAbleTime {
     @Id
     @Column(name = "event_able_time_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,17 +34,17 @@ public class AbleTime {
     private Event event;
 
     @Builder
-    public AbleTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime, Event event) {
+    public EventAbleTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime, Event event) {
         this.ableDate = ableDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.event = event;
     }
 
-    protected AbleTime() {
+    protected EventAbleTime() {
     }
 
-    public AbleTime update(LocalDate ableDate, LocalTime startTime, LocalTime endTime) {
+    public EventAbleTime update(LocalDate ableDate, LocalTime startTime, LocalTime endTime) {
         this.ableDate = ableDate;
         this.startTime = startTime;
         this.endTime = endTime;

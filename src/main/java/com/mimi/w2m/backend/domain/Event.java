@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
  * @since : 2022/09/29
  */
 
-@Entity
 @Getter
-@Table(name = "event")
+@Entity
+@Table(name = "mimi_event")
 public class Event extends BaseTimeEntity {
 
     @Id

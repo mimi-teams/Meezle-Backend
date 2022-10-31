@@ -8,9 +8,9 @@ import org.hibernate.annotations.Comment;
 import javax.persistence.*;
 
 
-@Entity
 @Getter
-@Table(name = "w2m_user")
+@Entity
+@Table(name = "mimi_user")
 public class User extends BaseTimeEntity {
     @Id
     @Column(name = "user_id")

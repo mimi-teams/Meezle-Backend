@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.domain.eventParticipableTime;
 
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.ParticipableTime;
+import com.mimi.w2m.backend.domain.EventParticipableTime;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.domain.Participant;
 import com.mimi.w2m.backend.repository.ParticipableTimeRepository;
@@ -58,7 +58,7 @@ class ParticipableTimeRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = eventRepository.findByName("teddyEvent").get();
-        var participableTime = ParticipableTime.builder()
+        var participableTime = EventParticipableTime.builder()
                 .user(user)
                 .event(event)
                 .build();
@@ -73,7 +73,7 @@ class ParticipableTimeRepositoryTest {
     void 참여가능시간_수정하기() {
         //given
         var event = eventRepository.findByName("teddyEvent").get();
-        var participableTime = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .build());
         var expectedUser = userRepository.findByName("teddy").get();
@@ -99,7 +99,7 @@ class ParticipableTimeRepositoryTest {
     void 참여가능시간_제거하기() {
         //given
         var event = eventRepository.findByName("teddyEvent").get();
-        var participableTime = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .build());
 
@@ -119,11 +119,11 @@ class ParticipableTimeRepositoryTest {
                 .event(event)
                 .build();
         participantRepository.save(participant);
-        var participableTime1 = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime1 = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .participant(participant)
                 .build());
-        var participableTime2 = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime2 = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .participant(participant)
                 .build());
@@ -146,10 +146,10 @@ class ParticipableTimeRepositoryTest {
                 .dDay(LocalDateTime.now())
                 .build();
         eventRepository.save(event);
-        var participableTime1 = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime1 = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .build());
-        var participableTime2 = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime2 = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .build());
 
@@ -169,11 +169,11 @@ class ParticipableTimeRepositoryTest {
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build());
-        var participableTime1 = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime1 = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .user(user)
                 .build());
-        var participableTime2 = participableTimeRepository.save(ParticipableTime.builder()
+        var participableTime2 = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .user(user)
                 .build());
