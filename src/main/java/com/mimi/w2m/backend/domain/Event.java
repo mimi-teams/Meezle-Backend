@@ -2,6 +2,7 @@ package com.mimi.w2m.backend.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,11 +22,13 @@ public class Event extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name", length = 200, nullable = false)
-    private String name;
+    @Comment("")
+    @Column(name="title", length = 200, nullable = false)
+    private String title;
 
+    @Comment("")
     @Column(name = "deleted_date")
-    private LocalDateTime deletedDate;
+    private LocalDateTime deletedDate = null;
 
     @Column(name = "d_day", nullable = false)
     private LocalDateTime dDay;
