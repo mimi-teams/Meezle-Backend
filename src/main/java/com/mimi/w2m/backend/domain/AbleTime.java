@@ -1,12 +1,10 @@
-package com.mimi.w2m.backend.domain.eventAbleTime;
+package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.domain.event.Event;
 import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**

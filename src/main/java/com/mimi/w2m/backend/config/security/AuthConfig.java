@@ -5,7 +5,7 @@ package com.mimi.w2m.backend.config.security;
  * @since : 2022/09/29
  */
 
-import com.mimi.w2m.backend.domain.user.Role;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.service.security.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

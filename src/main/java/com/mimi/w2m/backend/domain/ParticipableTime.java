@@ -1,18 +1,12 @@
-package com.mimi.w2m.backend.domain.eventParticipableTime;
+package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.domain.event.Event;
-import com.mimi.w2m.backend.domain.eventParticipant.Participant;
-import com.mimi.w2m.backend.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 /**
  * @author : teddy

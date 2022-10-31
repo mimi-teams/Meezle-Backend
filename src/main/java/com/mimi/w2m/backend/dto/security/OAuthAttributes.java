@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.dto.security;
 
-import com.mimi.w2m.backend.domain.user.Role;
-import com.mimi.w2m.backend.domain.user.User;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 

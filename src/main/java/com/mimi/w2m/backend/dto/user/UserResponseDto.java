@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.dto.user;
 
-import com.mimi.w2m.backend.domain.user.User;
+import com.mimi.w2m.backend.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

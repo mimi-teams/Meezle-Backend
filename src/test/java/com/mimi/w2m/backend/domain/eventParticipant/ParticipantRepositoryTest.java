@@ -1,10 +1,12 @@
 package com.mimi.w2m.backend.domain.eventParticipant;
 
-import com.mimi.w2m.backend.domain.event.Event;
-import com.mimi.w2m.backend.domain.event.EventRepository;
-import com.mimi.w2m.backend.domain.user.Role;
-import com.mimi.w2m.backend.domain.user.User;
-import com.mimi.w2m.backend.domain.user.UserRepository;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.repository.EventRepository;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.repository.ParticipantRepository;
+import com.mimi.w2m.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

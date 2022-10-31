@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.domain.core;
+package com.mimi.w2m.backend.domain;
 
 import lombok.Getter;
 import lombok.ToString;
