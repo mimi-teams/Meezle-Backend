@@ -1,6 +1,5 @@
-package com.mimi.w2m.backend.api.v1.test;
+package com.mimi.w2m.backend.api.test;
 
-import com.mimi.w2m.backend.api.v1.BaseApiEntry;
 import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.dto.security.UserSession;
 import com.mimi.w2m.backend.dto.user.UserResponseDto;
@@ -10,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
 import java.util.Objects;
@@ -19,13 +19,14 @@ import java.util.Objects;
  * @since : 2022/10/09
  */
 @Controller
+@RequestMapping("/test")
 @RequiredArgsConstructor
-public class Oauth2TestController extends BaseApiEntry {
+public class Oauth2TestController {
     private final UserRepository userRepository;
     private final HttpSession session;
-    private Log logger = LogFactory.getLog(this.getClass());
+    private final Log logger = LogFactory.getLog(this.getClass());
 
-    @GetMapping("/test/login/oauth2")
+    @GetMapping("/login/oauth2")
     public String login(Model model) {
         var userSession = (UserSession)session.getAttribute("user");
         logger.info(Objects.isNull(userSession) ? "empty" : userSession.getUserId());
@@ -34,6 +35,7 @@ public class Oauth2TestController extends BaseApiEntry {
         model.addAttribute("user", user);
         return "/test/oauth2";
     }
+
 //    @GetMapping("/test/logout")
 //    public String logout(HttpServletRequest request, HttpServletResponse response) {
 //        var auth = SecurityContextHolder.getContext().getAuthentication();

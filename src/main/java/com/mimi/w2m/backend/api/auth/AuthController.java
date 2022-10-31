@@ -1,7 +1,7 @@
-package com.mimi.w2m.backend.api.v1.security;
+package com.mimi.w2m.backend.api.auth;
 
-import com.mimi.w2m.backend.api.v1.BaseApiEntry;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,8 +12,9 @@ import java.io.IOException;
  * @author : teddy
  * @since : 2022/10/09
  */
+@RequestMapping("/auth/v1")
 @RestController
-public class AuthController extends BaseApiEntry {
+public class AuthController {
 
     @GetMapping("/security/login/oauth2")
     public void loginWithOauth2(@RequestParam String registrationId, HttpServletResponse response) throws IOException {
