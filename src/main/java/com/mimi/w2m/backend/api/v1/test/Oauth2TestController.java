@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.api.v1.test;
 
 import com.mimi.w2m.backend.api.v1.BaseApiEntry;
-import com.mimi.w2m.backend.domain.user.UserRepository;
+import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.dto.security.UserSession;
 import com.mimi.w2m.backend.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;

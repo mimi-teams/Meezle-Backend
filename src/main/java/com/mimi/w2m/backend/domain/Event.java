@@ -1,7 +1,5 @@
-package com.mimi.w2m.backend.domain.event;
+package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.domain.core.BaseTimeEntity;
-import com.mimi.w2m.backend.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.domain.user;
+package com.mimi.w2m.backend.domain.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

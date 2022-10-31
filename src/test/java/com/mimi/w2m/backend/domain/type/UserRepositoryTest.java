@@ -1,5 +1,7 @@
-package com.mimi.w2m.backend.domain.user;
+package com.mimi.w2m.backend.domain.type;
 
+import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

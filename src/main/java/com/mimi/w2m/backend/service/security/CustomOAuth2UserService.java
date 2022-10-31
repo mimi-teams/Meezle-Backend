@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.service.security;
 
-import com.mimi.w2m.backend.domain.user.User;
-import com.mimi.w2m.backend.domain.user.UserRepository;
+import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.dto.security.OAuthAttributes;
 import com.mimi.w2m.backend.dto.security.UserSession;
 import lombok.RequiredArgsConstructor;

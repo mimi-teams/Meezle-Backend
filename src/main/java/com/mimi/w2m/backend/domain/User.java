@@ -1,6 +1,6 @@
-package com.mimi.w2m.backend.domain.user;
+package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.domain.core.BaseTimeEntity;
+import com.mimi.w2m.backend.domain.type.Role;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;

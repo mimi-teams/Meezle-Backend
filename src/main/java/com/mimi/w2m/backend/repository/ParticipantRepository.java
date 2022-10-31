@@ -1,8 +1,7 @@
-package com.mimi.w2m.backend.domain.eventParticipant;
+package com.mimi.w2m.backend.repository;
 
-import com.mimi.w2m.backend.domain.event.Event;
-import com.mimi.w2m.backend.domain.eventParticipableTime.ParticipableTime;
-import com.mimi.w2m.backend.domain.user.User;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.Participant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
