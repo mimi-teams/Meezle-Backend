@@ -18,16 +18,16 @@ public class EventAbleTime {
     @Id
     @Column(name = "event_able_time_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "able_date")
-    LocalDate ableDate;
+    private LocalDate ableDate;
 
     @Column(name = "start_time")
-    LocalTime startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time")
-    LocalTime endTime;
+    private LocalTime endTime;
 
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", updatable = false)

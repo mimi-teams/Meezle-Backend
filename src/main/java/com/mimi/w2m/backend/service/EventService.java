@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 이벤트 처리를 책임지는 서비스
  *
  * @since 2022-10-31
- * @author paul
+ * @author yeh35
  */
 
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class EventService {
      * 이벤트 생성
      *
      * @since 2022-10-31
-     * @author paul
+     * @author yeh35
      */
     @Transactional
     public void createEvent() {
@@ -35,7 +35,7 @@ public class EventService {
      * 이벤트 수정
      *
      * @since 2022-10-31
-     * @author paul
+     * @author yeh35
      */
     @Transactional
     public void modifyEvent() {
@@ -43,20 +43,20 @@ public class EventService {
     }
         
     /**
-     * 이벤트 조회
+     * 이벤트 조회,
      *
      * @since 2022-10-31
-     * @author paul
+     * @author yeh35
      */
     public void getEvents() {
-        
+
     }
 
     /**
      * Event를 수정할 권리가 있는지 확인한다.
      *
      * @since 2022-10-31
-     * @author paul
+     * @author yeh35
      */
     public void checkEventModifiable() {
 

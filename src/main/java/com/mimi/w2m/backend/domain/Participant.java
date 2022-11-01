@@ -16,13 +16,13 @@ public class Participant extends BaseTimeEntity {
     @Id
     @Column(name = "participant_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "name", length = 200, nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "password", length = 200)
-    String password;
+    private String password;
 
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", updatable = false)
