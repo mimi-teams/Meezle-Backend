@@ -38,7 +38,7 @@ class EventRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -54,7 +54,7 @@ class EventRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -71,7 +71,7 @@ class EventRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -85,7 +85,7 @@ class EventRepositoryTest {
         var expectedEvent = eventRepository.findAll().get(0);
 
         //then
-        assertThat(expectedEvent.getName()).isEqualTo(expectedName);
+        assertThat(expectedEvent.getTitle()).isEqualTo(expectedName);
         assertThat(expectedEvent.getDeletedDate()).isEqualTo(expectedDeletedDate);
         assertThat(expectedEvent.getDDay()).isEqualTo(expectedDday);
 
@@ -95,7 +95,7 @@ class EventRepositoryTest {
         //given
         var user1 = userRepository.findByName("teddy").get();
         var event1 = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user1)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -108,7 +108,7 @@ class EventRepositoryTest {
                 .build();
         userRepository.save(user2);
         var event2 = Event.builder()
-                .name("bearEvent")
+                .title("bearEvent")
                 .user(user2)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -125,12 +125,12 @@ class EventRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event1 = eventRepository.save(Event.builder()
-                .name("teddyEvent1")
+                .title("teddyEvent1")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build());
         var event2 = eventRepository.save(Event.builder()
-                .name("teddyEvent2")
+                .title("teddyEvent2")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build());

@@ -40,8 +40,8 @@ public class Event extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public Event(String name, LocalDateTime deletedDate, LocalDateTime dDay, User user) {
-        this.name = name;
+    public Event(String title, LocalDateTime deletedDate, LocalDateTime dDay, User user) {
+        this.title = title;
         this.deletedDate = deletedDate;
         this.dDay = dDay;
         this.user = user;
@@ -50,8 +50,8 @@ public class Event extends BaseTimeEntity {
     protected Event() {
     }
 
-    public Event update(String name, LocalDateTime deletedDate, LocalDateTime dDay) {
-        this.name = name;
+    public Event update(String title, LocalDateTime deletedDate, LocalDateTime dDay) {
+        this.title = title;
         this.deletedDate = deletedDate;
         this.dDay = dDay;
         return this;
