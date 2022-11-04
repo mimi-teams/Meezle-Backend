@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Role {
     USER("ROLE_USER", "사용자"),
+    PARTICIPANT("ROLE_PARTICIPANT", "참여자"),
     Tester("ROLE_TESTER", "테스터");
     private final String key;
     private final String name;

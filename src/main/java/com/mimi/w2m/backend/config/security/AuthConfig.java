@@ -6,7 +6,7 @@ package com.mimi.w2m.backend.config.security;
  */
 
 import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.service.security.CustomOAuth2UserService;
+import com.mimi.w2m.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AuthConfig {
-    private final CustomOAuth2UserService customOAuth2UserService;
+    private final UserService customOAuth2UserService;
     private final HttpSession session;
 
     /**

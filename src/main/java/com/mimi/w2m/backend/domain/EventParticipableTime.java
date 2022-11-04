@@ -2,6 +2,7 @@ package com.mimi.w2m.backend.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
  */
 @Entity
 @Getter
+@Setter
 @Table(name = "mimi_event_participable_time")
 public class EventParticipableTime {
     @Id
@@ -55,22 +57,5 @@ public class EventParticipableTime {
         this.participant = participant;
     }
     protected EventParticipableTime() {
-    }
-
-    public EventParticipableTime updateTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime) {
-        this.ableDate = ableDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        return this;
-    }
-
-    public EventParticipableTime updateUser(User user) {
-        this.user = user;
-        return this;
-    }
-
-    public EventParticipableTime updateParticipant(Participant participant) {
-        this.participant = participant;
-        return this;
     }
 }

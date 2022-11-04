@@ -2,6 +2,7 @@ package com.mimi.w2m.backend.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -11,8 +12,9 @@ import java.time.LocalTime;
  * @author : teddy
  * @since : 2022/09/30
  */
-@Getter
 @Entity
+@Getter
+@Setter
 @Table(name = "mimi_event_able_time")
 public class EventAbleTime {
     @Id
