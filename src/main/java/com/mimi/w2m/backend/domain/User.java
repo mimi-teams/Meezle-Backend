@@ -3,13 +3,15 @@ package com.mimi.w2m.backend.domain;
 import com.mimi.w2m.backend.domain.type.Role;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 
 
-@Getter
 @Entity
+@Getter
+@Setter
 @Table(name = "mimi_user")
 public class User extends BaseTimeEntity {
     @Id

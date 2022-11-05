@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.api.test;
+package com.mimi.w2m.backend.controller.test;
 
 import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.dto.security.UserSession;
@@ -6,6 +6,7 @@ import com.mimi.w2m.backend.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

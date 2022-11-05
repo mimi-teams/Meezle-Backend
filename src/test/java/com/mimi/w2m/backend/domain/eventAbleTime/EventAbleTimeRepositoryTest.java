@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.domain.eventAbleTime;
 
-import com.mimi.w2m.backend.domain.EventAbleTime;
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.repository.EventRepository;
-import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.domain.EventAbleTime;
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.repository.EventAbleTimeRepository;
+import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class EventAbleTimeRepositoryTest {
                 .build();
         userRepository.save(user);
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -46,7 +46,7 @@ class EventAbleTimeRepositoryTest {
     @Test
     void 가능한시간_생성하기(){
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var ableTime = EventAbleTime.builder()
                 .event(event)
                 .ableDate(LocalDate.of(1999, 3, 8))
@@ -62,7 +62,7 @@ class EventAbleTimeRepositoryTest {
     @Test
     void 가능한시간_수정하기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var ableTime = EventAbleTime.builder()
                 .event(event)
                 .ableDate(LocalDate.of(1999, 3, 8))
@@ -86,7 +86,7 @@ class EventAbleTimeRepositoryTest {
     @Test
     void 가능한시간_제거하기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var ableTime = ableTimeRepository.save(EventAbleTime.builder()
                 .event(event)
                 .ableDate(LocalDate.now())
@@ -105,7 +105,7 @@ class EventAbleTimeRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();

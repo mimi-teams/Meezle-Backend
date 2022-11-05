@@ -2,6 +2,7 @@ package com.mimi.w2m.backend.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
@@ -12,8 +13,9 @@ import java.time.LocalDateTime;
  * @since : 2022/09/29
  */
 
-@Getter
 @Entity
+@Getter
+@Setter
 @Table(name = "mimi_event")
 public class Event extends BaseTimeEntity {
 

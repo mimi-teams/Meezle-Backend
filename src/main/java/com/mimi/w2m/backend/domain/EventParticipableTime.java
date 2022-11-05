@@ -2,6 +2,7 @@ package com.mimi.w2m.backend.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
@@ -14,36 +15,37 @@ import java.time.LocalTime;
  */
 @Entity
 @Getter
+@Setter
 @Table(name = "mimi_event_participable_time")
 public class EventParticipableTime {
     @Id
     @Column(name = "event_participable_time_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "able_date")
     @Comment(value = "입력 날짜")
-    LocalDate ableDate;
+    private LocalDate ableDate;
 
     @Column(name = "start_time")
     @Comment(value = "날짜별 가능한 시작 시간")
-    LocalTime startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time")
     @Comment(value = "날짜별 가능한 종료 시간")
-    LocalTime endTime;
+    private LocalTime endTime;
 
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", updatable = false, nullable = false)
-    Event event;
+    private Event event;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @ManyToOne(targetEntity = Participant.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id")
-    Participant participant;
+    private Participant participant;
 
     @Builder
     public EventParticipableTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime, Event event, User user, Participant participant) {
@@ -55,22 +57,5 @@ public class EventParticipableTime {
         this.participant = participant;
     }
     protected EventParticipableTime() {
-    }
-
-    public EventParticipableTime updateTime(LocalDate ableDate, LocalTime startTime, LocalTime endTime) {
-        this.ableDate = ableDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        return this;
-    }
-
-    public EventParticipableTime updateUser(User user) {
-        this.user = user;
-        return this;
-    }
-
-    public EventParticipableTime updateParticipant(Participant participant) {
-        this.participant = participant;
-        return this;
     }
 }

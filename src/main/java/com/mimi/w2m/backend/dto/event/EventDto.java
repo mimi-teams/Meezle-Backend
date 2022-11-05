@@ -1,7 +1,8 @@
 package com.mimi.w2m.backend.dto.event;
 
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class EventDto {
 
     private final Long id;

@@ -2,9 +2,9 @@ package com.mimi.w2m.backend.domain.eventParticipant;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.Participant;
-import com.mimi.w2m.backend.repository.EventRepository;
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.ParticipantRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ class ParticipantRepositoryTest {
                 .build();
         userRepository.save(user);
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -44,7 +44,7 @@ class ParticipantRepositoryTest {
     @Test
     void 참여자_생성하기(){
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
@@ -59,7 +59,7 @@ class ParticipantRepositoryTest {
     @Test
     void 참여자_수정하기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
@@ -79,7 +79,7 @@ class ParticipantRepositoryTest {
     @Test
     void 참여자_제거하기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
@@ -95,7 +95,7 @@ class ParticipantRepositoryTest {
     @Test
     void 참여자_가져오기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participant1 = Participant.builder()
                 .name("bear")
                 .event(event)
@@ -116,7 +116,7 @@ class ParticipantRepositoryTest {
     @Test
     void 참여한_이벤트_가져오기(){
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
@@ -134,7 +134,7 @@ class ParticipantRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();

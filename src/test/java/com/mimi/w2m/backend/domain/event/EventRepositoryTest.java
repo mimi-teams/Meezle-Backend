@@ -1,8 +1,8 @@
 package com.mimi.w2m.backend.domain.event;
 
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -115,7 +115,7 @@ class EventRepositoryTest {
         eventRepository.save(event2);
 
         //when
-        var expectedEvent1 = eventRepository.findByName("teddyEvent");
+        var expectedEvent1 = eventRepository.findByTitle("teddyEvent");
 
         //then
         assertThat(expectedEvent1.get()).isEqualTo(event1);

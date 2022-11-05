@@ -2,12 +2,12 @@ package com.mimi.w2m.backend.domain.eventParticipableTime;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipableTime;
-import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.domain.Participant;
-import com.mimi.w2m.backend.repository.ParticipableTimeRepository;
-import com.mimi.w2m.backend.repository.ParticipantRepository;
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.repository.EventParticipableTimeRepository;
+import com.mimi.w2m.backend.repository.EventRepository;
+import com.mimi.w2m.backend.repository.ParticipantRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class ParticipableTimeRepositoryTest {
     @Autowired
     private ParticipantRepository participantRepository;
     @Autowired
-    private ParticipableTimeRepository participableTimeRepository;
+    private EventParticipableTimeRepository participableTimeRepository;
     @BeforeEach
     void setup() {
         var user = User.builder()
@@ -41,7 +41,7 @@ class ParticipableTimeRepositoryTest {
                 .build();
         userRepository.save(user);
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -57,7 +57,7 @@ class ParticipableTimeRepositoryTest {
     void 참여가능시간_생성하기() {
         //given
         var user = userRepository.findByName("teddy").get();
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participableTime = EventParticipableTime.builder()
                 .user(user)
                 .event(event)
@@ -72,7 +72,7 @@ class ParticipableTimeRepositoryTest {
     @Test
     void 참여가능시간_수정하기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participableTime = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .build());
@@ -83,9 +83,12 @@ class ParticipableTimeRepositoryTest {
         var expectedEndTime = LocalTime.of(13, 13);
 
         //when
-        participableTime.updateUser(expectedUser);
-        participableTime.updateParticipant(expectedParticipant);
-        participableTime.updateTime(expectedAbleDate, expectedStartTime, expectedEndTime);
+        participableTime.setUser(expectedUser);
+        participableTime.setParticipant(expectedParticipant);
+        participableTime.setAbleDate(expectedAbleDate);
+        participableTime.setStartTime(expectedStartTime);
+        participableTime.setEndTime(expectedEndTime);
+
         var expectedParticipableTime = participableTimeRepository.findAll().get(0);
 
         //then
@@ -98,7 +101,7 @@ class ParticipableTimeRepositoryTest {
     @Test
     void 참여가능시간_제거하기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participableTime = participableTimeRepository.save(EventParticipableTime.builder()
                 .event(event)
                 .build());
@@ -113,7 +116,7 @@ class ParticipableTimeRepositoryTest {
     @Test
     void 참여가능시간_가져오기() {
         //given
-        var event = eventRepository.findByName("teddyEvent").get();
+        var event = eventRepository.findByTitle("teddyEvent").get();
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
@@ -141,7 +144,7 @@ class ParticipableTimeRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build();
@@ -165,7 +168,7 @@ class ParticipableTimeRepositoryTest {
         //given
         var user = userRepository.findByName("teddy").get();
         var event = eventRepository.save(Event.builder()
-                .name("teddyEvent")
+                .title("teddyEvent")
                 .user(user)
                 .dDay(LocalDateTime.now())
                 .build());

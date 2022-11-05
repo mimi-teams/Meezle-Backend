@@ -15,11 +15,13 @@ import java.util.List;
  * @since : 2022/09/30
  */
 
-public interface ParticipableTimeRepository extends JpaRepository<EventParticipableTime, Long> {
+public interface EventParticipableTimeRepository extends JpaRepository<EventParticipableTime, Long> {
     @Query("SELECT p FROM EventParticipableTime p WHERE p.user = :user")
     List<EventParticipableTime> findAllByUser(@Param("user") User user);
+
     @Query("SELECT t FROM EventParticipableTime t WHERE t.event = :event")
     List<EventParticipableTime> findAllByEvent(@Param("event") Event event);
+
     @Query("SELECT t FROM EventParticipableTime t WHERE t.participant = :participant")
     List<EventParticipableTime> findAllByParticipant(@Param("participant") Participant participant);
 }

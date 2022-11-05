@@ -15,7 +15,8 @@ import java.util.Optional;
  */
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-    Optional<Event> findByName(String name);
+    Optional<Event> findByTitle(String title);
+
     @Query("SELECT e FROM Event e WHERE e.user = :user")
     List<Event> findAllByUser(@Param("user") User user);
 }
