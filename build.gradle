@@ -38,6 +38,9 @@ dependencies {
 
 	// Session
 	implementation 'org.springframework.session:spring-session-jdbc:2.7.0'
+
+	//Open-API (Swagger)
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 }
 
 tasks.named("test") {
