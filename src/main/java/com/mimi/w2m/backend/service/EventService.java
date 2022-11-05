@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.dto.event.EventDto;
 import com.mimi.w2m.backend.repository.EventParticipableTimeRepository;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 public class EventService {
 
+    private final UserService userService;
+
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventParticipableTimeRepository eventParticipableTimeRepository;
@@ -37,18 +39,9 @@ public class EventService {
      * @since 2022-10-31
      */
     @Transactional
-    public Event createEvent(Long userId, String title, LocalDateTime dDay) throws DuplicateKeyException, NoSuchElementException {
-        eventRepository.findByTitle(title).ifPresent(entity -> {
-            throw new DuplicateKeyException(title);
-        });
-        var user = userRepository.findById(userId).orElseThrow();
-        var event = Event.builder()
-                .user(user)
-                .title(title)
-                .dDay(dDay)
-                .deletedDate(LocalDateTime.MAX)
-                .build();
-
+    public Event createEvent(Long userId, EventDto eventDto) {
+        final var user = userService.getUser(userId);
+        final var event = eventDto.createEntity(user);
         return eventRepository.save(event);
     }
 
@@ -106,7 +99,8 @@ public class EventService {
     }
 
     public List<Event> getEventsCreatedByUser(Long userId) {
-        var user = userRepository.findById(userId).orElseThrow();
+        final var user = userService.getUser(userId);
+
         return eventRepository.findAllByUser(user).stream().filter(entity -> {
             return LocalDateTime.now().compareTo(entity.getDeletedDate()) < 0;
         }).collect(Collectors.toList());
@@ -125,6 +119,7 @@ public class EventService {
      */
     public Boolean checkEventModifiable(Long eventId, Long userId) throws NoSuchElementException {
         var user = userRepository.findById(userId).orElseThrow();
+
         var event = eventRepository.findById(eventId).orElseThrow();
         return event.getUser().equals(user);
     }

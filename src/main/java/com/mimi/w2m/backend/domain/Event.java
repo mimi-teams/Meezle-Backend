@@ -1,12 +1,17 @@
 package com.mimi.w2m.backend.domain;
 
+import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
+import java.awt.*;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Set;
 
 /**
  * @author : teddy
@@ -15,7 +20,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
+@Setter //TODO 빼줘
 @Table(name = "mimi_event")
 public class Event extends BaseTimeEntity {
 
@@ -24,29 +29,53 @@ public class Event extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Comment("")
+    @Comment("이벤트 제목")
     @Column(name="title", length = 200, nullable = false)
     private String title;
 
-    @Comment("")
+    @Comment("삭제 일자, 삭제가 안되었으면 null")
     @Column(name = "deleted_date")
-    private LocalDateTime deletedDate = null;
+    private LocalDateTime deletedDate;
 
-    @Column(name = "d_day", nullable = false)
+    @Comment("만료 일자, 만료 일자가 없으면 null")
+    @Column(name = "d_day")
     private LocalDateTime dDay;
-    /**
-     * @JoinColumn(unique = boolean)은 현재 Entity에서 해당 FK가 중복 가능한지 표시한다.
-     */
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY, optional = false)
+
+    @Comment("만료 일자, 만료 일자가 없으면 null")
+    @Convert(converter = SetDayOfWeekConverter.class)
+    @Column(name = "dayOfWeeks", nullable = false, columnDefinition = "VARCHAR(100)")
+    private Set<DayOfWeek> dayOfWeeks;
+
+    @Comment("이벤트 입력 시작 시간")
+    @Column(name = "begin_time", nullable = false)
+    private LocalTime beginTime;
+
+    @Comment("이벤트 입력 종료 시간")
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
+
+    @Comment("이벤트 입력 종료 시간")
+    @Column(name = "end_time", nullable = false)
+    private Color color;
+
+    @Comment("이벤트 입력 종료 시간")
+    @Column(name = "description", nullable = false, columnDefinition = "VARCHAR(1000)")
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
+
     @Builder
-    public Event(String title, LocalDateTime deletedDate, LocalDateTime dDay, User user) {
+    public Event(String title, LocalDateTime dDay, Set<DayOfWeek> dayOfWeeks, LocalTime beginTime, LocalTime endTime, User user, Color color, String description) {
         this.title = title;
-        this.deletedDate = deletedDate;
         this.dDay = dDay;
+        this.dayOfWeeks = dayOfWeeks;
+        this.beginTime = beginTime;
+        this.endTime = endTime;
         this.user = user;
+        this.deletedDate = null;
     }
 
     protected Event() {

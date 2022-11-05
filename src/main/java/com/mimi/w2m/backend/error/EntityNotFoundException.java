@@ -15,6 +15,10 @@ public class EntityNotFoundException extends BusinessException {
         super(ApiResultCode.ENTITY_NOT_FOUND, message);
     }
 
+    public EntityNotFoundException(String message, String messageToClient) {
+        super(ApiResultCode.ENTITY_NOT_FOUND, message, messageToClient);
+    }
+
     public EntityNotFoundException(ApiResultCode apiResultCode, String message) {
         super(apiResultCode, message);
     }

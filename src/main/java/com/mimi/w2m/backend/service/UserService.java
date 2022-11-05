@@ -3,6 +3,7 @@ package com.mimi.w2m.backend.service;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.security.OAuthAttributes;
 import com.mimi.w2m.backend.dto.security.UserSession;
+import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
-import java.util.NoSuchElementException;
 
 /**
  * @author : teddy
@@ -76,8 +76,9 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
      * @author paul
      * @since 2022-11-01
      */
-    public User getUser(Long userId) throws NoSuchElementException {
-        var user = userRepository.findById(userId).orElseThrow();
-        return user;
+    public User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> {
+            throw new EntityNotFoundException("존재하지 않는 유저 : " + userId, "존재하지 않는 유저");
+        });
     }
 }

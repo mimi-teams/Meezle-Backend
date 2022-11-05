@@ -6,7 +6,7 @@ plugins {
 
 
 group = "com.mimi.w2m.backend"
-sourceCompatibility = "11"
+sourceCompatibility = "18"
 
 repositories {
 	mavenCentral()
