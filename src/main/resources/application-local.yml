@@ -7,7 +7,7 @@ server.port: 8080
 spring:
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
