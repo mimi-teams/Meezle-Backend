@@ -48,6 +48,7 @@ class ParticipantRepositoryTest {
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
 
         //when
@@ -63,6 +64,7 @@ class ParticipantRepositoryTest {
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
         participantRepository.save(participant);
         var expectedName = "rabbit";
@@ -83,6 +85,7 @@ class ParticipantRepositoryTest {
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
         participantRepository.save(participant);
 
@@ -99,11 +102,13 @@ class ParticipantRepositoryTest {
         var participant1 = Participant.builder()
                 .name("bear")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
         participantRepository.save(participant1);
         var participant2 = Participant.builder()
                 .name("rabbit")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
         participantRepository.save(participant2);
 
@@ -120,6 +125,7 @@ class ParticipantRepositoryTest {
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
         participantRepository.save(participant);
 
@@ -142,10 +148,12 @@ class ParticipantRepositoryTest {
         var participant1 = participantRepository.save(Participant.builder()
                 .name("bear1")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build());
         var participant2 = participantRepository.save(Participant.builder()
                 .name("bear2")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build());
 
         //when

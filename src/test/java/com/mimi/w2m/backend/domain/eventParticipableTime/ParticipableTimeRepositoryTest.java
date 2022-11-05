@@ -50,6 +50,7 @@ class ParticipableTimeRepositoryTest {
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
         participantRepository.save(participant);
     }
@@ -120,6 +121,7 @@ class ParticipableTimeRepositoryTest {
         var participant = Participant.builder()
                 .name("bear")
                 .event(event)
+                .role(Role.PARTICIPANT)
                 .build();
         participantRepository.save(participant);
         var participableTime1 = participableTimeRepository.save(EventParticipableTime.builder()
