@@ -4,6 +4,7 @@ import com.mimi.w2m.backend.dto.event.EventDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 public class EventCreateDto {
 
@@ -14,7 +15,7 @@ public class EventCreateDto {
     }
 
     @Getter
-    @Builder
+    @RequiredArgsConstructor
     public static class Response {
         private final EventDto event;
     }

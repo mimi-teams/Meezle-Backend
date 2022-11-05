@@ -19,7 +19,9 @@ public enum ApiResultCode {
     ENTITY_NOT_FOUND(3, NOT_FOUND, "해당 Entity 를 찾을 수 없음"),
     INVALID_VALUE(4, BAD_REQUEST, "잘못된 값으로 요청"),
 
-    EVENT_NOT_FOUND(5, NOT_FOUND, "이벤트가 존재하지 않습니다."),
+    NOT_LOGIN(5, UNAUTHORIZED, "로그인 안된 유저입니다."),
+
+    EVENT_NOT_FOUND(6, NOT_FOUND, "이벤트가 존재하지 않습니다."),
     ;
 
     /**
