@@ -50,9 +50,12 @@ public class EventApi {
 
     @Operation(description = "[인증] 이벤트 삭제")
     @DeleteMapping("/{eventId}")
-    public ApiResponse<EventCreateDto.Response> deleteEvent(
-            @RequestBody EventCreateDto.Request request
+    public ApiResponse<?> deleteEvent(
+            @PathVariable Long eventId
     ) {
+        final var currentUser = userService.getCurrentUser();
+
+        eventService.deleteEvent(eventId, currentUser.getId());
 
         return ApiResponse.ofSuccess(null);
     }
@@ -68,7 +71,9 @@ public class EventApi {
 
     @Operation(description = "[인증] 이벤트 상세 조회")
     @GetMapping("/{eventId}")
-    public ApiResponse<EventCreateDto.Response> getEvent() {
+    public ApiResponse<EventCreateDto.Response> getEvent(
+            @PathVariable Long eventId
+    ) {
 
         return ApiResponse.ofSuccess(null);
     }
