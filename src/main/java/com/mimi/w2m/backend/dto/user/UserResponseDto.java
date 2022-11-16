@@ -16,10 +16,11 @@ import java.io.Serializable;
 @ToString
 @NoArgsConstructor
 public class UserResponseDto implements Serializable {
-    private String name;
-    private String email;
-    public UserResponseDto(User user) {
-        this.name = user.getName();
-        this.email = user.getEmail();
-    }
+private String name;
+private String email;
+
+public UserResponseDto(User user) {
+    this.name  = user.getName();
+    this.email = user.getEmail();
+}
 }

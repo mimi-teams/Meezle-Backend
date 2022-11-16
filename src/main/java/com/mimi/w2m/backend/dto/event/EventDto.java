@@ -4,9 +4,8 @@ import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,36 +15,36 @@ import java.util.Set;
 @Schema
 public class EventDto {
 
-    @Schema(description = "신규 생성시에는 null을 넘겨주시면 됩니다.")
-    private final Long id;
+@Schema(description = "신규 생성시에는 null을 넘겨주시면 됩니다.")
+private final Long id;
 
-    private final String title;
-    private final Set<DayOfWeek> dayOfWeeks;
-    private final LocalTime beginTime;
-    private final LocalTime endTime;
+private final String         title;
+private final Set<DayOfWeek> dayOfWeeks;
+private final LocalTime      beginTime;
+private final LocalTime      endTime;
 
-    @Schema(description = "선택 안함은 null")
-    private final LocalDateTime dDay;
+@Schema(description = "선택 안함은 null")
+private final LocalDateTime dDay;
 
-    private final Color color;
+private final Color color;
 
-    @Schema(description = "1000자까지 됩니다.")
-    private final String description;
+@Schema(description = "1000자까지 됩니다.")
+private final String description;
 
-    public static EventDto of(Event entity) {
-        return EventDto.builder()
-                .title(entity.getTitle())
-                .beginTime(entity.getBeginTime())
-                .endTime(entity.getEndTime())
-                .dayOfWeeks(entity.getDayOfWeeks())
-                .dDay(entity.getDDay())
-                .color(entity.getColor())
-                .description(entity.getDescription())
-                .build();
-    }
+public static EventDto of(Event entity) {
+    return EventDto.builder()
+                   .title(entity.getTitle())
+                   .beginTime(entity.getBeginTime())
+                   .endTime(entity.getEndTime())
+                   .dayOfWeeks(entity.getDayOfWeeks())
+                   .dDay(entity.getDDay())
+                   .color(entity.getColor())
+                   .description(entity.getDescription())
+                   .build();
+}
 
-    public Event createEntity(User user) {
-        return Event.builder()
+public Event createEntity(User user) {
+    return Event.builder()
                 .user(user)
                 .title(title)
                 .beginTime(beginTime)
@@ -55,5 +54,5 @@ public class EventDto {
                 .color(color)
                 .description(description)
                 .build();
-    }
+}
 }

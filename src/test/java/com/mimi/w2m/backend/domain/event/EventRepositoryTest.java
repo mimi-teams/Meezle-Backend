@@ -29,7 +29,6 @@ class EventRepositoryTest {
         var user = User.builder()
                 .name("teddy")
                 .email("teddy@super.com")
-                .role(Role.Tester)
                 .build();
         userRepository.save(user);
     }
