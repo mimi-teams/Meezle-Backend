@@ -10,12 +10,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author : teddy
- * @since : 2022/09/30
- */
+ * ParticipantRepository
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/17
+ **/
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
-    Optional<Participant> findByName(String name);
-    @Query("SELECT p FROM Participant p WHERE p.event = :event")
-    List<Participant> findAllByEvent(@Param("event") Event event);
+Optional<Participant> findByName(String name);
+
+@Query("SELECT p FROM Participant p WHERE p.event = :event")
+List<Participant> findAllByEvent(
+        @Param("event") Event event);
 }

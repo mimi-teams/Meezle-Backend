@@ -20,7 +20,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Table(name = "meezle_event_participable_time")
-public class EventParticipableTime {
+public class EventParticipleTime {
 @Id
 @Column(name = "event_participable_time_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,12 +54,12 @@ private User user;
 @JoinColumn(name = "participant_id")
 private Participant participant;
 
-protected EventParticipableTime() {
+protected EventParticipleTime() {
 }
 
 @Builder
-public EventParticipableTime(Set<DayOfWeek> ableDayOfWeeks, LocalTime startTime, LocalTime endTime, Event event,
-                             User user, Participant participant) {
+public EventParticipleTime(Set<DayOfWeek> ableDayOfWeeks, LocalTime startTime, LocalTime endTime, Event event,
+                           User user, Participant participant) {
     this.ableDayOfWeeks = ableDayOfWeeks;
     this.startTime      = startTime;
     this.endTime        = endTime;
@@ -68,7 +68,7 @@ public EventParticipableTime(Set<DayOfWeek> ableDayOfWeeks, LocalTime startTime,
     this.participant    = participant;
 }
 
-EventParticipableTime update(Set<DayOfWeek> ableDayOfWeeks, LocalTime startTime, LocalTime endTime) {
+EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, LocalTime startTime, LocalTime endTime) {
     this.ableDayOfWeeks = ableDayOfWeeks;
     this.startTime      = startTime;
     this.endTime        = endTime;
