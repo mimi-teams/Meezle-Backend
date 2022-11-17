@@ -2,7 +2,10 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.EventParticipableTime;
 import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.repository.*;
+import com.mimi.w2m.backend.repository.EventParticipableTimeRepository;
+import com.mimi.w2m.backend.repository.EventRepository;
+import com.mimi.w2m.backend.repository.ParticipantRepository;
+import com.mimi.w2m.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +31,6 @@ public class EventParticipateService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final ParticipantRepository participantRepository;
-    private final EventAbleTimeRepository eventAbleTimeRepository;
     private final EventParticipableTimeRepository eventParticipableTimeRepository;
 
     /**
