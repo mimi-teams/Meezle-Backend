@@ -24,10 +24,10 @@ public abstract class BaseTimeEntity {
 
 @CreatedDate
 @Column(updatable = false, nullable = false)
-private LocalDateTime createdDate = LocalDateTime.MIN;
+private LocalDateTime createdDate = LocalDateTime.of(1000, 1, 1, 0, 0, 0);
 
 @LastModifiedDate
 @Column(nullable = false)
-private LocalDateTime lastModifiedDate = LocalDateTime.MIN;
+private LocalDateTime lastModifiedDate = LocalDateTime.of(1000, 1, 1, 0, 0, 0);
 
 }
