@@ -1,49 +1,51 @@
 package com.mimi.w2m.backend.domain;
 
+import com.mimi.w2m.backend.domain.converter.RoleConverter;
 import com.mimi.w2m.backend.domain.type.Role;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 
-
+/**
+ * User
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/16
+ **/
 @Entity
 @Getter
-@Setter
 @Table(name = "mimi_user")
 public class User extends BaseTimeEntity {
-    @Id
-    @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Comment("Aothorization에서의 역할")
+@Convert(converter = RoleConverter.class)
+@Column(name = "role", length = 50, nullable = false, columnDefinition = "VARCHAR(20)")
+private final Role   role = Role.USER;
+@Id
+@Column(name = "user_id")
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private       Long   id;
+@Comment("가입한 사용자 이름")
+@Column(name = "name", length = 200, nullable = false)
+private       String name;
+@Comment("가입한 사용자 이메일(oauth login 등에 사용된다)")
+@Column(name = "email", length = 200, nullable = false)
+private       String email;
 
-    @Column(name = "name", length = 200, nullable = false)
-    @Comment("이름")
-    private String name;
+@Builder
+public User(String name, String email) {
+    this.name  = name;
+    this.email = email;
+}
 
-    @Column(name = "email", length = 200, nullable = false)
-    @Comment("이메일")
-    private String email;
+protected User() {
+}
 
-    @Column(name = "role", length = 50, nullable = false)
-    @Comment("역할")
-    private Role role;
-
-    @Builder
-    public User(String name, String email, Role role) {
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
-
-    protected User() {
-    }
-
-    public User update(String name, String email) {
-        this.name = name;
-        this.email = email;
-        return this;
-    }
+public User update(String name, String email) {
+    this.name  = name;
+    this.email = email;
+    return this;
+}
 }
