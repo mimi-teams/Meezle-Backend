@@ -1,26 +1,40 @@
 package com.mimi.w2m.backend.dto.user;
 
 import com.mimi.w2m.backend.domain.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * @author : teddy
- * @since : 2022/10/09
- */
-
-@Getter
-@ToString
-@NoArgsConstructor
+ * UserResponseDto
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/17
+ **/
+@Data
+@Builder
+@Schema
 public class UserResponseDto implements Serializable {
-private String name;
-private String email;
 
-public UserResponseDto(User user) {
-    this.name  = user.getName();
-    this.email = user.getEmail();
+private final Long userId;
+
+private final String name;
+private final String email;
+
+private UserResponseDto(Long userId, String name, String email) {
+    this.userId = userId;
+    this.name   = name;
+    this.email  = email;
+}
+
+public static UserResponseDto of(User entity) {
+    return UserResponseDto.builder()
+                          .userId(entity.getId())
+                          .name(entity.getName())
+                          .email(entity.getEmail())
+                          .build();
 }
 }

@@ -8,7 +8,9 @@ import javax.persistence.Converter;
 /**
  * RoleConverter
  *
+ * @author teddy
  * @version 1.0.0
+ * @since 2022/11/17
  **/
 @Converter
 public class RoleConverter implements AttributeConverter<Role, String> {
