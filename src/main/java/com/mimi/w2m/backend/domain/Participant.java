@@ -28,8 +28,11 @@ private final Role   role = Role.PARTICIPANT;
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private       Long   id;
 @Comment("참여자의 이름")
-@Column(name = "name", length = 200, nullable = false)
+@Column(name = "name", length = 200, nullable = false, unique = true)
 private       String name;
+@Comment("Salt")
+@Column(name = "salt", length = 200)
+private       String salt;
 @Comment("참여자 비밀번호(없어도 가능!)")
 @Column(name = "password", length = 200)
 private       String password;
@@ -39,18 +42,28 @@ private       String password;
 private       Event  event;
 
 @Builder
-public Participant(String name, String password, Event event) {
+public Participant(String name, String password, String salt, Event event) {
     this.name     = name;
     this.password = password;
+    this.salt = salt;
     this.event    = event;
 }
 
 protected Participant() {
 }
 
-public Participant update(String name, String password) {
-    this.name     = name;
+public static Integer getSaltLength() {
+    return 200;
+}
+
+public Participant updateName(String name) {
+    this.name = name;
+    return this;
+}
+
+public Participant updatePassword(String password, String salt) {
     this.password = password;
+    this.salt     = salt;
     return this;
 }
 }

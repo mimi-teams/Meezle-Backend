@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -40,22 +41,22 @@ private final HttpSession    httpSession;
 private final UserRepository userRepository;
 private final Log            logger = LogFactory.getLog(this.getClass());
 
-@Comment("OAuth2를 사용해 login을 처리하고, 이용자 정보를 저장 및 갱신하기 위해 이용한다")
+@Comment("OAuth2를 사용해 login 을 처리하고, 이용자 정보를 저장 및 갱신하기 위해 이용한다")
 @Override
 public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     var delegate   = new DefaultOAuth2UserService();
     var oauth2User = delegate.loadUser(userRequest);
-    // kakao or google
+    // Kakao or google
     var registrationId = userRequest.getClientRegistration().getRegistrationId();
-    // kakao : id, google : email. CK or PK를 의미한다(application-oauth.yaml에 정의됨)
+    // kakao : id, google : email. CK or PK를 의미한다(application-oauth.yaml 에 정의됨)
     var userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                                            .getUserInfoEndpoint().getUserNameAttributeName();
     var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.getAttributes());
-    var user       = signUpOrLoad(attributes);
+    var user       = signUpOrLoad(Objects.requireNonNull(attributes));
 
     httpSession.setAttribute("user", new UserSession(user));
     return new DefaultOAuth2User(
-            Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())), // Authority를 설정할 때, ROLE_**
+            Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())), // Authority 를 설정할 때, ROLE_**
             // 문자열이 넣어져야만 한다!!(우씨 몇 시간 잡아먹은거양..)
             attributes.getAttributes(),
             attributes.getNameAttributeKey()
@@ -106,9 +107,8 @@ public User getCurrentUser() throws UnauthorizedException {
  * @since 2022-11-01
  */
 public User getUser(Long userId) throws EntityNotFoundException {
-    return userRepository.findById(userId).orElseThrow(() -> {
-        throw new EntityNotFoundException("존재하지 않는 유저 : " + userId, "존재하지 않는 유저");
-    });
+    return userRepository.findById(userId)
+                         .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 : " + userId, "존재하지 않는 유저"));
 }
 
 /**
@@ -125,7 +125,7 @@ public void removeUser(Long userId) throws EntityNotFoundException {
 }
 
 /**
- * 이용자 정보 변경하기(name, email) Email의 경우, Google이나 Kakao의 중복되지 않은 이메일이어야 한다
+ * 이용자 정보 변경하기(name, email) Email 의 경우, Google 이나 Kakao의 중복되지 않은 이메일이어야 한다
  *
  * @author teddy
  * @since 2022/11/19
