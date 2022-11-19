@@ -27,11 +27,11 @@ private final Role   role = Role.USER;
 @Column(name = "user_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private       Long   id;
-@Comment("가입한 사용자 이름")
+@Comment("가입한 사용자 이름(중복되어도 상관없다)")
 @Column(name = "name", length = 200, nullable = false)
 private       String name;
-@Comment("가입한 사용자 이메일(oauth login 등에 사용된다)")
-@Column(name = "email", length = 200, nullable = false)
+@Comment("가입한 사용자 이메일(oauth login 등에 사용된다). CK로 동작한다(Unique!)")
+@Column(name = "email", length = 200, nullable = false, unique = true)
 private       String email;
 
 @Builder
