@@ -13,18 +13,13 @@ import lombok.Data;
  * @since 2022/11/17
  **/
 @Data
-@Schema(description = "Participant를 생성할 때, 전달하는 정보")
+@Schema(description = "Participant 를 생성할 때, 전달하는 정보")
 public class ParticipantRequestDto {
-private final String name;
-@Schema(description = "password는 없어도 상관없다")
-private final String password;
-private final Long   eventId;
+private final                                              String name;
+@Schema(description = "password 는 없어도 상관없다") private final String password;
+private final                                              Long   eventId;
 
-public Participant to(Event event) {
-    return Participant.builder()
-                      .name(name)
-                      .password(password)
-                      .event(event)
-                      .build();
+public Participant to(Event event, String salt, String hashedPw) {
+    return Participant.builder().name(name).salt(salt).password(hashedPw).event(event).build();
 }
 }

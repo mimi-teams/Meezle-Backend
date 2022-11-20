@@ -85,12 +85,23 @@ public Event(String title, LocalDateTime dDay, Set<DayOfWeek> dayOfWeeks, LocalT
 protected Event() {
 }
 
-public Event update(String title, String description, Color color, LocalDateTime dDay, LocalDateTime deletedDate) {
+public Event update(String title, String description, Color color, LocalDateTime dDay) {
     this.title       = title;
     this.dDay        = dDay;
     this.color       = color;
-    this.deletedDate = deletedDate;
     this.description = description;
+    return this;
+}
+
+public Event update(Set<DayOfWeek> dayOfWeeks, LocalTime beginTime, LocalTime endTime) {
+    this.dayOfWeeks = dayOfWeeks;
+    this.beginTime  = beginTime;
+    this.endTime    = endTime;
+    return this;
+}
+
+public Event delete() {
+    this.deletedDate = LocalDateTime.now();
     return this;
 }
 }

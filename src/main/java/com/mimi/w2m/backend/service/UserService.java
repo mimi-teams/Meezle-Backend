@@ -118,9 +118,7 @@ public User getUser(Long userId) throws EntityNotFoundException {
  * @since 2022/11/19
  **/
 public void removeUser(Long userId) throws EntityNotFoundException {
-    var user = userRepository.findById(userId)
-                             .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 : " + userId
-                                     , "존재하지 않는 유저"));
+    var user = getUser(userId);
     userRepository.delete(user);
 }
 
@@ -132,9 +130,7 @@ public void removeUser(Long userId) throws EntityNotFoundException {
  **/
 public User updateUser(Long userId, String name, String email) throws EntityNotFoundException,
                                                                       EntityDuplicatedException {
-    var user = userRepository.findById(userId)
-                             .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 : " + userId
-                                     , "존재하지 않는 유저"));
+    var user = getUser(userId);
     userRepository.findByEmail(email)
                   .ifPresent((User entity) -> {
                       throw new EntityDuplicatedException("이미 존재하는 유저 : " + email, "이미 존재하는 유저");

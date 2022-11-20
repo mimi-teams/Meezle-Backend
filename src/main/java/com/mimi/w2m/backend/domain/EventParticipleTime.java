@@ -1,13 +1,14 @@
 package com.mimi.w2m.backend.domain;
 
 import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
+import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.Set;
 
 /**
@@ -31,13 +32,11 @@ private Long id;
 @Column(name = "able_date", columnDefinition = "VARCHAR(100)")
 private Set<DayOfWeek> ableDayOfWeeks;
 
-@Comment(value = "각 참여자가 입력한 날짜별 가능한 시작 시간")
-@Column(name = "start_time")
-private LocalTime startTime;
+@Comment(value = "각 참여자가 입력한 날짜별 가능한 시간의 집합")
+@Convert(converter = SetParticipleTimeConverter.class)
+@Column(name = "participle_times")
+private Set<ParticipleTime> participleTimes;
 
-@Comment(value = "각 참여자가 입력한 날짜별 가능한 종료 시간")
-@Column(name = "end_time")
-private LocalTime endTime;
 
 @Comment("연관된 event")
 @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
@@ -58,20 +57,18 @@ protected EventParticipleTime() {
 }
 
 @Builder
-public EventParticipleTime(Set<DayOfWeek> ableDayOfWeeks, LocalTime startTime, LocalTime endTime, Event event,
+public EventParticipleTime(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleTime> participleTimes, Event event,
                            User user, Participant participant) {
     this.ableDayOfWeeks = ableDayOfWeeks;
-    this.startTime      = startTime;
-    this.endTime        = endTime;
+    this.participleTimes = participleTimes;
     this.event          = event;
     this.user           = user;
     this.participant    = participant;
 }
 
-EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, LocalTime startTime, LocalTime endTime) {
+EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleTime> participleTimes) {
     this.ableDayOfWeeks = ableDayOfWeeks;
-    this.startTime      = startTime;
-    this.endTime        = endTime;
+    this.participleTimes = participleTimes;
     return this;
 }
 }

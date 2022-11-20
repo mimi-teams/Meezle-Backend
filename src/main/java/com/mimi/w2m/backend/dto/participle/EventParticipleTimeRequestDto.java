@@ -5,11 +5,9 @@ import com.mimi.w2m.backend.domain.EventParticipleTime;
 import com.mimi.w2m.backend.domain.Participant;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
+import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalTime;
 
 /**
  * EventParticipleTimeRequestDto
@@ -22,23 +20,20 @@ import java.time.LocalTime;
 @Schema
 public class EventParticipleTimeRequestDto {
 @Schema(description = "MONDAY,... 의 형식")
-private final String    ableDayOfWeeks;
-@DateTimeFormat(pattern = "HH:mm:ss")
-private final LocalTime startTime;
-@DateTimeFormat(pattern = "HH:mm:ss")
-private final LocalTime endTime;
+private final String ableDayOfWeeks;
+@Schema(description = "beginTime-endTime, ... 의 형식")
+private final String participleTimes;
 @Schema(description = "연관된 event")
-private final Long      eventId;
+private final Long eventId;
 @Schema(description = "User or Participant의 id")
-private final Long      ownerId;
+private final Long ownerId;
 
 public EventParticipleTime to(Event event, User user) {
     return EventParticipleTime.builder()
                               .event(event)
                               .user(user)
                               .ableDayOfWeeks(new SetDayOfWeekConverter().convertToEntityAttribute(ableDayOfWeeks))
-                              .startTime(startTime)
-                              .endTime(endTime)
+                              .participleTimes(new SetParticipleTimeConverter().convertToEntityAttribute(participleTimes))
                               .build();
 }
 
@@ -47,8 +42,7 @@ public EventParticipleTime to(Event event, Participant participant) {
                               .event(event)
                               .participant(participant)
                               .ableDayOfWeeks(new SetDayOfWeekConverter().convertToEntityAttribute(ableDayOfWeeks))
-                              .startTime(startTime)
-                              .endTime(endTime)
+                              .participleTimes(new SetParticipleTimeConverter().convertToEntityAttribute(participleTimes))
                               .build();
 }
 
