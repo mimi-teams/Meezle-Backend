@@ -20,7 +20,7 @@ import java.util.List;
 
 public interface EventParticipleTimeRepository extends JpaRepository<EventParticipleTime, Long> {
 @Query("SELECT t FROM EventParticipleTime t WHERE t.user = :user and t.event = :event")
-List<EventParticipleTime> findAllByUserAtEvent(
+List<EventParticipleTime> findAllByEntityAtEvent(
         @Param("user") User user,
         @Param("event") Event event);
 
@@ -29,7 +29,7 @@ List<EventParticipleTime> findAllByEvent(
         @Param("event") Event event);
 
 @Query("SELECT t FROM EventParticipleTime t WHERE t.participant = :participant and t.event = :event")
-List<EventParticipleTime> findAllByParticipantAtEvent(
+List<EventParticipleTime> findAllByEntityAtEvent(
         @Param("participant") Participant participant,
         @Param("event") Event event);
 }

@@ -18,7 +18,6 @@ public class RoleConverter implements AttributeConverter<Role, String> {
 @Override
 public String convertToDatabaseColumn(Role attribute) {
     return attribute.getKey();
-
 }
 
 @Override

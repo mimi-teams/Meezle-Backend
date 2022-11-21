@@ -31,8 +31,10 @@ private final LocalDateTime deletedDate;
 private final LocalDateTime dDay;
 @Schema(description = "MONDAY,... 의 형식")
 private final String        dayOfWeeks;
+@Schema(description = "ParticipleTime의 공통 부분 or 확정된 시간")
 @DateTimeFormat(pattern = "hh:mm:ss")
 private final LocalTime     beginTime;
+@Schema(description = "ParticipleTime의 공통 부분 or 확정된 시간")
 @DateTimeFormat(pattern = "hh:mm:ss")
 private final LocalTime     endTime;
 private final ColorDto      color;

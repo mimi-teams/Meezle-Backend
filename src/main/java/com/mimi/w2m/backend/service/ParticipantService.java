@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.dto.participant.ParticipantRequestDto;
 import com.mimi.w2m.backend.dto.security.ParticipantSession;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
@@ -39,25 +40,17 @@ private final HttpSession           httpSession;
  * @since 2022-11-01
  */
 @Transactional
-public Participant createParticipant(Long eventId, String name, String password) throws EntityDuplicatedException,
-                                                                                        EntityNotFoundException {
-    participantRepository.findByName(name).ifPresent(entity -> {
-        throw new EntityDuplicatedException("이미 존재하는 참여자 : " + name, "이미 존재하는 참여자");
+public Participant createParticipant(ParticipantRequestDto requestDto) throws EntityDuplicatedException,
+                                                                              EntityNotFoundException {
+    participantRepository.findByName(requestDto.getName()).ifPresent(entity -> {
+        throw new EntityDuplicatedException("이미 존재하는 참여자 : " + requestDto.getName(), "이미 존재하는 참여자");
     });
-    var event = eventRepository.findById(eventId)
-                               .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + eventId, "존재하지 않는 " +
-                                                                                                          "이벤트"));
-
+    var event = eventRepository.findById(requestDto.getEventId())
+                               .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + requestDto.getEventId(), "존재하지 않는 " +
+                                                                                                                          "이벤트"));
     var salt     = generateSalt(Participant.getSaltLength());
-    var hashedPw = generateHashedPw(salt, password);
-
-    var participant = Participant.builder()
-                                 .name(name)
-                                 .event(event)
-                                 .password(hashedPw)
-                                 .salt(salt)
-                                 .build();
-    return participantRepository.save(participant);
+    var hashedPw = generateHashedPw(salt, requestDto.getPassword());
+    return participantRepository.save(requestDto.to(event, salt, hashedPw));
 }
 
 private String generateSalt(Integer length) {
@@ -91,13 +84,23 @@ public List<Participant> getAllParticipantInEvent(Long eventId) throws EntityNot
  **/
 public Participant updateParticipantName(Long participantId, String name) throws EntityNotFoundException,
                                                                                  EntityDuplicatedException {
-    var participant = participantRepository.findById(participantId)
-                                           .orElseThrow(() -> new EntityNotFoundException(
-                                                   "존재하지 않는 참여자 : " + participantId, "존재하지 않는 참여자"));
+    var participant = getParticipant(participantId);
     participantRepository.findByName(name).ifPresent((entity) -> {
         throw new EntityDuplicatedException("이미 존재하는 참여자 : " + name, "이미 존재하는 참여자");
     });
     return participant.updateName(name);
+}
+
+/**
+ * 참여자 가져오기
+ *
+ * @author yeh35
+ * @since 2022-11-01
+ */
+public Participant getParticipant(Long participantId) throws EntityNotFoundException {
+    return participantRepository.findById(participantId)
+                                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 참여자 : " + participantId,
+                                                                               "존재하지 않는 참여자"));
 }
 
 /**
@@ -107,12 +110,9 @@ public Participant updateParticipantName(Long participantId, String name) throws
  * @since 2022/11/19
  **/
 public Participant updateParticipantPassword(Long participantId, String password) throws EntityNotFoundException {
-    var participant = participantRepository.findById(participantId)
-                                           .orElseThrow(() -> new EntityNotFoundException(
-                                                   "존재하지 않는 참여자 : " + participantId, "존재하지 않는 참여자"));
-
-    var salt     = generateSalt(Participant.getSaltLength());
-    var hashedPw = generateHashedPw(salt, password);
+    var participant = getParticipant(participantId);
+    var salt        = generateSalt(Participant.getSaltLength());
+    var hashedPw    = generateHashedPw(salt, password);
     return participant.updatePassword(hashedPw, salt);
 }
 
@@ -123,9 +123,7 @@ public Participant updateParticipantPassword(Long participantId, String password
  * @since 2022/11/19
  **/
 public void removeParticipant(Long participantId) throws EntityNotFoundException {
-    var participant = participantRepository.findById(participantId)
-                                           .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 참여자 : " + participantId, "존재하지 " +
-                                                                                                                            "않는 참여자"));
+    var participant = getParticipant(participantId);
     participantRepository.delete(participant);
 }
 
@@ -135,20 +133,20 @@ public void removeParticipant(Long participantId) throws EntityNotFoundException
  * @author teddy
  * @since 2022/11/19
  **/
-public Participant login(String name, String password) throws EntityNotFoundException, InvalidValueException {
+public Participant login(ParticipantRequestDto requestDto) throws EntityNotFoundException, InvalidValueException {
     var participant =
-            participantRepository.findByName(name)
-                                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 참여자 : " + name + "존재하지 않는 " +
+            participantRepository.findByName(requestDto.getName())
+                                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 참여자 : " + requestDto.getName() + "존재하지 않는 " +
                                                                                 "참여자"));
     var storedPw   = participant.getPassword();
     var storedSalt = participant.getSalt();
-    var receivedPw = generateHashedPw(storedSalt, password);
+    var receivedPw = generateHashedPw(storedSalt, requestDto.getPassword());
     if(storedPw.equals(receivedPw)) {
         var participantSession = new ParticipantSession(participant);
         httpSession.setAttribute("participant", participantSession);
         return participant;
     } else {
-        throw new InvalidValueException("유효하지 않은 비밀번호 : " + password, "유효하지 않은 비밀번호");
+        throw new InvalidValueException("유효하지 않은 비밀번호 : " + requestDto.getPassword(), "유효하지 않은 비밀번호");
     }
 }
 
@@ -181,18 +179,6 @@ public Participant getCurrentParticipant() throws UnauthorizedException {
     } catch(EntityNotFoundException e) {
         throw new UnauthorizedException("정보를 찾을 수 없습니다.", "참여자 정보를 찾을 수 없습니다");
     }
-}
-
-/**
- * 참여자 가져오기
- *
- * @author yeh35
- * @since 2022-11-01
- */
-public Participant getParticipant(Long participantId) throws EntityNotFoundException {
-    return participantRepository.findById(participantId)
-                                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 참여자 : " + participantId,
-                                                                               "존재하지 않는 참여자"));
 }
 
 }
