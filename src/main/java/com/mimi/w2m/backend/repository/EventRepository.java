@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * EventRepository
@@ -18,7 +17,9 @@ import java.util.Optional;
  **/
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-Optional<Event> findByTitle(String title);
+@Query("SELECT e FROM Event e WHERE e.title = :title")
+List<Event> findByTitle(
+        @Param("title") String title);
 
 @Query("SELECT e FROM Event e WHERE e.user = :user")
 List<Event> findAllByUser(

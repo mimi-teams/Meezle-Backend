@@ -1,10 +1,14 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
+import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.participle.EventParticipleTimeRequestDto;
 import com.mimi.w2m.backend.dto.security.UserSession;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
+import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.error.UnauthorizedException;
 import com.mimi.w2m.backend.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -76,7 +81,7 @@ public Event getEvent(Long eventId) throws EntityNotFoundException {
  * @since 2022/11/20
  **/
 @Transactional
-public Event calculateSharedTime(Long eventId) throws EntityNotFoundException {
+public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, InvalidValueException {
     var event                = getEvent(eventId);
     var eventParticipleTimes = eventParticipleTimeService.getEventsParticipate(eventId);
 
@@ -94,7 +99,9 @@ public Event calculateSharedTime(Long eventId) throws EntityNotFoundException {
             }
         });
     });
-    return event.update(dayOfWeeks, ableTime.get("beginTime"), ableTime.get("endTime"));
+    final var participleTime = ParticipleTime.of(ableTime)
+                                             .orElseThrow(() -> new InvalidValueException("부정확한 시작 및 종료 시간 : " + ableTime, "부정확한 시작 및 종료 시간"));
+    return event.update(dayOfWeeks, participleTime);
 }
 
 /**
@@ -105,12 +112,17 @@ public Event calculateSharedTime(Long eventId) throws EntityNotFoundException {
  * @since 2022/11/21
  **/
 @Transactional
-public Event setEventTimeDirectly(EventParticipleTimeRequestDto requestDto) throws EntityNotFoundException {
-    var user           = userService.getUser(requestDto.getOwnerId());
-    var event          = getEvent(requestDto.getEventId());
-    var participleTime = requestDto.to(event, user);
-    var ableTime       = participleTime.getParticipleTimes().stream().collect(toList()).get(0);
-    return event.update(participleTime.getAbleDayOfWeeks(), ableTime.beginTime(), ableTime.endTime());
+public Event setEventTimeDirectly(EventParticipleTimeRequestDto requestDto) throws EntityNotFoundException,
+                                                                                   InvalidValueException {
+    var event = getEvent(requestDto.getEventId());
+    var dayOfWeeks = new SetDayOfWeekConverter()
+                             .convertToEntityAttribute(requestDto.getAbleDayOfWeeks());
+    var participleTime = new SetParticipleTimeConverter()
+                                 .convertToEntityAttribute(requestDto.getParticipleTimes());
+    if(participleTime.size() != 1) {
+        throw new InvalidValueException("참여 시간은 유일해야 합니다 : " + participleTime, "참여 시간은 유일해야 합니다");
+    }
+    return event.update(dayOfWeeks, participleTime.stream().toList().get(0));
 }
 
 @Transactional
@@ -147,14 +159,15 @@ public void checkEventModifiable(Long eventId, Long userId) throws UnauthorizedE
  * @author yeh35
  * @since 2022-10-31
  */
-public Event getEventByTitle(String title) throws EntityNotFoundException {
-    var event = eventRepository.findByTitle(title)
-                               .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + title, "존재하지 않는 이벤트"));
-    if(Objects.isNull(event.getDeletedDate())) {
-        throw new EntityNotFoundException("삭제된 이벤트 : " + title, "존재하지 않는 이벤트");
-    } else {
-        return event;
+public List<Event> getEventByTitle(String title) throws EntityNotFoundException {
+    var events = eventRepository.findByTitle(title);
+    if(events.isEmpty()) {
+        throw new EntityNotFoundException("이벤트가 존재하지 않습니다 : " + title, "이벤트가 존재하지 않습니다");
     }
+    return events.stream()
+                 .filter(event -> Objects.isNull(event.getDeletedDate()) ||
+                                  LocalDateTime.now().isBefore(event.getDeletedDate()))
+                 .collect(toList());
 }
 
 /**

@@ -6,10 +6,16 @@ plugins {
 
 
 group = "com.mimi.w2m.backend"
-sourceCompatibility = "18"
+sourceCompatibility = "17"
 
 repositories {
 	mavenCentral()
+}
+
+configurations {
+	all {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
 }
 
 dependencies {
@@ -30,17 +36,24 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
 	// Test
-	testImplementation "org.springframework.boot:spring-boot-starter-test"
-	implementation 'org.springframework.security:spring-security-test:5.7.3'
+	implementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
+	implementation 'org.springframework.security:spring-security-test:5.7.5'
+
+	// Security
+	implementation 'org.springframework.security:spring-security-core:5.7.5'
+	implementation 'org.springframework.security:spring-security-web:5.7.5'
 
 	// Authentication
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.7.4'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.7.5'
 
 	// Session
 	implementation 'org.springframework.session:spring-session-jdbc:2.7.0'
 
 	//Open-API (Swagger)
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+
+	//Logger
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2:2.7.5'
 }
 
 tasks.named("test") {
@@ -50,4 +63,5 @@ tasks.named("test") {
 // Activate Test profile
 tasks.test {
 	systemProperty 'spring.profiles.active', 'test'
+//	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
 }
