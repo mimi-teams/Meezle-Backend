@@ -4,6 +4,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.time.DayOfWeek;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -17,21 +18,29 @@ public class SetDayOfWeekConverter implements AttributeConverter<Set<DayOfWeek>,
 
 @Override
 public String convertToDatabaseColumn(Set<DayOfWeek> attribute) {
-    final var builder = new StringBuilder();
-    attribute.forEach(dayOfWeek -> {
-        builder.append(dayOfWeek.name());
-        builder.append(",");
-    });
-    return builder.toString();
+    if(Objects.isNull(attribute)) {
+        return null;
+    } else {
+        final var builder = new StringBuilder();
+        attribute.forEach(dayOfWeek -> {
+            builder.append(dayOfWeek.name());
+            builder.append(",");
+        });
+        return builder.toString();
+    }
 }
 
 @Override
 public Set<DayOfWeek> convertToEntityAttribute(String dbData) {
-    final var split = dbData.split(",");
-    final var set   = new HashSet<DayOfWeek>();
-    for(String item : split) {
-        set.add(DayOfWeek.valueOf(item));
+    if(Objects.isNull(dbData)) {
+        return new HashSet<>();
+    } else {
+        final var split = dbData.split(",");
+        final var set   = new HashSet<DayOfWeek>();
+        for(String item : split) {
+            set.add(DayOfWeek.valueOf(item));
+        }
+        return set;
     }
-    return set;
 }
 }

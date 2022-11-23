@@ -27,7 +27,7 @@ public Role convertToEntityAttribute(String dbData) {
     } else if(dbData.equals(Role.USER.getKey())) {
         return Role.USER;
     } else {
-        return Role.Tester;
+        return Role.NONE;
     }
 }
 }

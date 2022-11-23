@@ -1,10 +1,13 @@
 package com.mimi.w2m.backend.domain.converter;
 
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
+import com.mimi.w2m.backend.error.InvalidValueException;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,19 +23,29 @@ public class SetParticipleTimeConverter implements AttributeConverter<Set<Partic
 
 @Override
 public String convertToDatabaseColumn(Set<ParticipleTime> attribute) {
-    var builder = new StringBuilder();
-    for(var participleTime :
-            attribute) {
-        builder.append(participleTime);
-        builder.append(',');
+    if(Objects.isNull(attribute)) {
+        return null;
+    } else {
+        var builder = new StringBuilder();
+        for(var participleTime :
+                attribute) {
+            builder.append(participleTime);
+            builder.append(',');
+        }
+        return builder.toString();
     }
-    return builder.toString();
 }
 
 @Override
-public Set<ParticipleTime> convertToEntityAttribute(String dbData) {
-    return Arrays.stream(dbData.split(","))
-                 .map(ParticipleTime::of)
-                 .collect(Collectors.toSet());
+public Set<ParticipleTime> convertToEntityAttribute(String dbData) throws InvalidValueException {
+    if(Objects.isNull(dbData)) {
+        return new HashSet<>();
+    } else {
+        return Arrays.stream(dbData.split(","))
+                     .map(datum -> ParticipleTime.of(datum)
+                                                 .orElseThrow(() -> new InvalidValueException("유효하지 않은 시간 범위 : " + datum,
+                                                                                              "유효하지 않은 시간 범위")))
+                     .collect(Collectors.toSet());
+    }
 }
 }

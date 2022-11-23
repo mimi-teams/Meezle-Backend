@@ -20,23 +20,22 @@ import java.util.Set;
  **/
 @Entity
 @Getter
-@Table(name = "meezle_event_participable_time")
+@Table(name = "meezle_event_participle_time")
 public class EventParticipleTime {
 @Id
-@Column(name = "event_participable_time_id")
+@Column(name = "event_participle_time_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long id;
 
 @Comment(value = "각 참여자가 입력한 자신이 가능한 요일")
 @Convert(converter = SetDayOfWeekConverter.class)
-@Column(name = "able_date", columnDefinition = "VARCHAR(100)")
+@Column(name = "able_day_of_weeks", nullable = false, columnDefinition = "VARCHAR(100)")
 private Set<DayOfWeek> ableDayOfWeeks;
 
 @Comment(value = "각 참여자가 입력한 날짜별 가능한 시간의 집합")
 @Convert(converter = SetParticipleTimeConverter.class)
-@Column(name = "participle_times")
+@Column(name = "able_times", nullable = false, columnDefinition = "VARCHAR(500)")
 private Set<ParticipleTime> participleTimes;
-
 
 @Comment("연관된 event")
 @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
@@ -59,15 +58,15 @@ protected EventParticipleTime() {
 @Builder
 public EventParticipleTime(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleTime> participleTimes, Event event,
                            User user, Participant participant) {
-    this.ableDayOfWeeks = ableDayOfWeeks;
+    this.ableDayOfWeeks  = ableDayOfWeeks;
     this.participleTimes = participleTimes;
-    this.event          = event;
-    this.user           = user;
-    this.participant    = participant;
+    this.event           = event;
+    this.user            = user;
+    this.participant     = participant;
 }
 
-EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleTime> participleTimes) {
-    this.ableDayOfWeeks = ableDayOfWeeks;
+public EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleTime> participleTimes) {
+    this.ableDayOfWeeks  = ableDayOfWeeks;
     this.participleTimes = participleTimes;
     return this;
 }

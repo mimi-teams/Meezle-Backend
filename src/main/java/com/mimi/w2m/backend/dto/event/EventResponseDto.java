@@ -2,13 +2,13 @@ package com.mimi.w2m.backend.dto.event;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 /**
  * EventResponseDto
@@ -21,25 +21,21 @@ import java.time.LocalTime;
 @Schema
 public class EventResponseDto implements Serializable {
 
-private final Long          eventId;
+private final Long           eventId;
 @Schema(description = "이벤트 생성자 id")
-private final Long          userId;
-private final String        title;
+private final Long           userId;
+private final String         title;
 @DateTimeFormat(pattern = "yyyy-mm-dd'T'hh:mm:ss")
-private final LocalDateTime deletedDate;
+private final LocalDateTime  deletedDate;
 @DateTimeFormat(pattern = "yyyy-mm-dd'T'hh:mm:ss")
-private final LocalDateTime dDay;
+private final LocalDateTime  dDay;
 @Schema(description = "MONDAY,... 의 형식")
-private final String        dayOfWeeks;
-@Schema(description = "ParticipleTime의 공통 부분 or 확정된 시간")
-@DateTimeFormat(pattern = "hh:mm:ss")
-private final LocalTime     beginTime;
-@Schema(description = "ParticipleTime의 공통 부분 or 확정된 시간")
-@DateTimeFormat(pattern = "hh:mm:ss")
-private final LocalTime     endTime;
-private final ColorDto      color;
+private final String         dayOfWeeks;
+@Schema(description = "hh:mm:ss-hh:mm:ss 의 형식")
+private final ParticipleTime participleTime;
+private final ColorDto       color;
 @Schema(description = "1000자까지 됩니다.")
-private final String        description;
+private final String         description;
 
 public static EventResponseDto of(Event entity) {
     return EventResponseDto.builder()
@@ -49,8 +45,7 @@ public static EventResponseDto of(Event entity) {
                            .deletedDate(entity.getDeletedDate())
                            .dDay(entity.getDDay())
                            .dayOfWeeks(new SetDayOfWeekConverter().convertToDatabaseColumn(entity.getDayOfWeeks()))
-                           .beginTime(entity.getBeginTime())
-                           .endTime(entity.getEndTime())
+                           .participleTime(entity.getParticipleTime())
                            .color(ColorDto.of(entity.getColor()))
                            .description(entity.getDescription())
                            .build();
