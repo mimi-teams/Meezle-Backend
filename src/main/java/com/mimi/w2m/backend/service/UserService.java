@@ -66,7 +66,9 @@ public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2Authentic
 @Comment("DB를 조회해 가입된 이메일인지 확인하고, 신규 가입을 진행한다")
 User signUpOrLoad(OAuthAttributes attributes) {
     var user = userRepository.findByEmail(attributes.getEmail());
-    return user.orElse(signup(attributes.toEntity()));
+    // Optional.orElse 구문은 Else statement 도 반드시 실행된다
+    //    return user.orElse(signup(attributes.toEntity()));
+    return user.orElseGet(() -> signup(attributes.toEntity()));
 }
 
 /**
