@@ -5,12 +5,14 @@ import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.logging.log4j.util.Strings;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -57,8 +59,8 @@ private ParticipleTime participleTime;
 @Column(name = "color", nullable = false)
 private Color color;
 
-@Comment("이벤트 세부 설명. 없으면 null")
-@Column(name = "description", columnDefinition = "VARCHAR(1000)")
+@Comment("이벤트 세부 설명. 없으면 \"\"")
+@Column(name = "description", nullable = false, columnDefinition = "VARCHAR(1000)")
 private String description;
 
 @Comment("이벤트를 생성한 사용자")
@@ -76,7 +78,7 @@ public Event(String title, LocalDateTime dDay, Set<DayOfWeek> dayOfWeeks, Partic
     this.user           = user;
     this.deletedDate    = null;
     this.color          = color;
-    this.description    = description;
+    this.description    = Objects.isNull(description) ? Strings.EMPTY : description;
 }
 
 protected Event() {
@@ -91,7 +93,7 @@ public Event update(String title, String description, Color color, LocalDateTime
 }
 
 public Event update(Set<DayOfWeek> dayOfWeeks, ParticipleTime participleTime) {
-    this.dayOfWeeks = dayOfWeeks;
+    this.dayOfWeeks     = dayOfWeeks;
     this.participleTime = participleTime;
     return this;
 }
