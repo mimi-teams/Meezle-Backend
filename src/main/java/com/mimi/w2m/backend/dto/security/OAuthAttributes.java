@@ -45,7 +45,7 @@ private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String
 }
 
 private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
-    var kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+    var kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
     var kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
     return OAuthAttributes.builder()
                           .name((String) kakaoProfile.get("nickname"))

@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.Formatter;
 import java.util.Objects;
 import java.util.Set;
 
@@ -69,8 +70,8 @@ private String description;
 private User user;
 
 @Builder
-public Event(String title, LocalDateTime dDay, Set<DayOfWeek> dayOfWeeks, ParticipleTime participleTime,
-             User user, Color color, String description) {
+public Event(String title, LocalDateTime dDay, Set<DayOfWeek> dayOfWeeks, ParticipleTime participleTime, User user,
+             Color color, String description) {
     this.title          = title;
     this.dDay           = dDay;
     this.dayOfWeeks     = dayOfWeeks;
@@ -101,5 +102,13 @@ public Event update(Set<DayOfWeek> dayOfWeeks, ParticipleTime participleTime) {
 public Event delete() {
     this.deletedDate = LocalDateTime.now();
     return this;
+}
+
+@Override
+public String toString() {
+    final var formatter = new Formatter();
+    return formatter.format("EventEntity[title=%s, user=%s, dDay=%s, deletedDay=%s, dayOfWeeks=%s, participleTime=%s,"
+                            + " color=%s, description=%s]", this.title, this.user, this.dDay, this.deletedDate,
+                            this.dayOfWeeks, this.participleTime, this.color, this.description).toString();
 }
 }
