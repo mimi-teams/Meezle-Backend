@@ -24,9 +24,9 @@ void convertToDatabaseColumn() {
 
     //when
     final var givenParticipleTimeString = converter.convertToDatabaseColumn(Set.of(ParticipleTime.of("00:00:00-01:01" +
-                                                                                                     ":01").get(),
+                                                                                                     ":01"),
                                                                                    ParticipleTime.of("01:01:01-02:02" +
-                                                                                                     ":02").get()));
+                                                                                                     ":02")));
 
     //then
     assertThat(expectedParticipleTimeString).contains(givenParticipleTimeString.split(","));
@@ -35,8 +35,8 @@ void convertToDatabaseColumn() {
 @Test
 void convertToEntityAttribute() {
     //given
-    final var expectedParticipleTime = Set.of(ParticipleTime.of("00:00:00-01:01:01").get(),
-                                              ParticipleTime.of("01:01:01-02:02:02").get());
+    final var expectedParticipleTime = Set.of(ParticipleTime.of("00:00:00-01:01:01"),
+                                              ParticipleTime.of("01:01:01-02:02:02"));
 
     //when
     final var givenParticipleTime = converter.convertToEntityAttribute("00:00:00-01:01:01,01:01:01-02:02:02,");

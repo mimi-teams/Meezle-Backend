@@ -1,8 +1,10 @@
 package com.mimi.w2m.backend.domain.type;
 
+import com.mimi.w2m.backend.error.InvalidValueException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 /**
  * ParticipleTimeTest
@@ -21,7 +23,7 @@ void validRange() {
     final var givenValidParticipleTime = ParticipleTime.of(expectedValidParticipleTimeString);
 
     //then
-    assertThat(givenValidParticipleTime.isPresent()).isTrue();
+    assertThat(givenValidParticipleTime).isNotNull();
 }
 
 @Test
@@ -30,9 +32,7 @@ void invalidRange() {
     final var expectedInvalidParticipleTimeString = "11:11:11-00:00:00";
 
     //when
-    final var givenInvalidParticipleTime = ParticipleTime.of(expectedInvalidParticipleTimeString);
-
-    //then
-    assertThat(givenInvalidParticipleTime).isEmpty();
+    assertThatThrownBy(() -> ParticipleTime.of(expectedInvalidParticipleTimeString))
+            .isInstanceOf(InvalidValueException.class);
 }
 }

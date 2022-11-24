@@ -6,6 +6,7 @@ import com.mimi.w2m.backend.domain.Participant;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
 import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
+import com.mimi.w2m.backend.error.InvalidValueException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -28,7 +29,7 @@ private final Long eventId;
 @Schema(description = "User or Participant의 id")
 private final Long ownerId;
 
-public EventParticipleTime to(Event event, User user) {
+public EventParticipleTime to(Event event, User user) throws InvalidValueException {
     return EventParticipleTime.builder()
                               .event(event)
                               .user(user)
@@ -37,7 +38,7 @@ public EventParticipleTime to(Event event, User user) {
                               .build();
 }
 
-public EventParticipleTime to(Event event, Participant participant) {
+public EventParticipleTime to(Event event, Participant participant) throws InvalidValueException {
     return EventParticipleTime.builder()
                               .event(event)
                               .participant(participant)

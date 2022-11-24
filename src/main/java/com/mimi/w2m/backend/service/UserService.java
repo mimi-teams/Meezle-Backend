@@ -119,6 +119,7 @@ public User getUser(Long userId) throws EntityNotFoundException {
  * @author teddy
  * @since 2022/11/19
  **/
+@Transactional
 public void removeUser(Long userId) throws EntityNotFoundException {
     var user = getUser(userId);
     userRepository.delete(user);
@@ -130,6 +131,7 @@ public void removeUser(Long userId) throws EntityNotFoundException {
  * @author teddy
  * @since 2022/11/19
  **/
+@Transactional
 public User updateUser(Long userId, String name, String email) throws EntityNotFoundException,
                                                                       EntityDuplicatedException {
     var user = getUser(userId);

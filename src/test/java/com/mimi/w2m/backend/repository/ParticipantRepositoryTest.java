@@ -42,7 +42,7 @@ void setUp() {
                               .builder()
                               .title("event")
                               .dayOfWeeks(Set.of(DayOfWeek.values()))
-                              .participleTime(ParticipleTime.of("00:00:00-11:11:11").get())
+                              .participleTime(ParticipleTime.of("00:00:00-11:11:11"))
                               .user(user)
                               .color(Color.RED)
                               .build();

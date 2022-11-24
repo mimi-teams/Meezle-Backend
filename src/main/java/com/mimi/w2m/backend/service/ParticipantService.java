@@ -82,6 +82,7 @@ public List<Participant> getAllParticipantInEvent(Long eventId) throws EntityNot
  * @author teddy
  * @since 2022/11/19
  **/
+@Transactional
 public Participant updateParticipantName(Long participantId, String name) throws EntityNotFoundException,
                                                                                  EntityDuplicatedException {
     var participant = getParticipant(participantId);
@@ -109,6 +110,7 @@ public Participant getParticipant(Long participantId) throws EntityNotFoundExcep
  * @author teddy
  * @since 2022/11/19
  **/
+@Transactional
 public Participant updateParticipantPassword(Long participantId, String password) throws EntityNotFoundException {
     var participant = getParticipant(participantId);
     var salt        = generateSalt(Participant.getSaltLength());
@@ -122,6 +124,7 @@ public Participant updateParticipantPassword(Long participantId, String password
  * @author teddy
  * @since 2022/11/19
  **/
+@Transactional
 public void removeParticipant(Long participantId) throws EntityNotFoundException {
     var participant = getParticipant(participantId);
     participantRepository.delete(participant);
@@ -133,6 +136,7 @@ public void removeParticipant(Long participantId) throws EntityNotFoundException
  * @author teddy
  * @since 2022/11/19
  **/
+@Transactional
 public Participant login(ParticipantRequestDto requestDto) throws EntityNotFoundException, InvalidValueException {
     var participant =
             participantRepository.findByName(requestDto.getName())
@@ -156,6 +160,7 @@ public Participant login(ParticipantRequestDto requestDto) throws EntityNotFound
  * @author teddy
  * @since 2022/11/19
  **/
+@Transactional
 public void logout() throws EntityNotFoundException {
     Optional.ofNullable((ParticipantSession) httpSession.getAttribute("participant"))
             .orElseThrow(() -> new EntityNotFoundException("로그인된 참여자 정보가 없습니다"));

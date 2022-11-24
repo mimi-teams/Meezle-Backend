@@ -83,7 +83,7 @@ public Event getEvent(Long eventId) throws EntityNotFoundException {
 @Transactional
 public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, InvalidValueException {
     var event                = getEvent(eventId);
-    var eventParticipleTimes = eventParticipleTimeService.getEventsParticipate(eventId);
+    var eventParticipleTimes = eventParticipleTimeService.getEventParticipleTimes(eventId);
 
     final var dayOfWeeks = new java.util.HashSet<>(Set.of(values()));
     final var ableTime   = new java.util.HashMap<>(Map.of("beginTime", LocalTime.MIN, "endTime", LocalTime.MAX));

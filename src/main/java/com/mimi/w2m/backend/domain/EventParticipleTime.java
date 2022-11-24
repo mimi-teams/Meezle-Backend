@@ -9,6 +9,7 @@ import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
+import java.util.Formatter;
 import java.util.Set;
 
 /**
@@ -69,5 +70,13 @@ public EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleT
     this.ableDayOfWeeks  = ableDayOfWeeks;
     this.participleTimes = participleTimes;
     return this;
+}
+
+@Override
+public String toString() {
+    final var formatter = new Formatter();
+    return formatter.format("EventParticipleTimeEntity[ableDayOfWeeks=%s, participleTimes=%s, event=%s, user=%s, " +
+                            "participant=%s]"
+            , this.ableDayOfWeeks, this.participleTimes, this.event, this.user, this.participant).toString();
 }
 }

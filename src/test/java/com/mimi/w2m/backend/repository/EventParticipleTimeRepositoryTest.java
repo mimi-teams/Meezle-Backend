@@ -59,7 +59,7 @@ void setUp() {
     final var eventParticipleTime1 = EventParticipleTime
                                              .builder()
                                              .ableDayOfWeeks(Set.of(DayOfWeek.values()))
-                                             .participleTimes(Set.of(ParticipleTime.of("00:00:00-11:11:11").get()))
+                                             .participleTimes(Set.of(ParticipleTime.of("00:00:00-11:11:11")))
                                              .event(event)
                                              .user(user)
                                              .build();
@@ -68,7 +68,7 @@ void setUp() {
     final var eventParticipleTime2 = EventParticipleTime
                                              .builder()
                                              .ableDayOfWeeks(Set.of(DayOfWeek.values()))
-                                             .participleTimes(Set.of(ParticipleTime.of("00:00:00-11:11:11").get()))
+                                             .participleTimes(Set.of(ParticipleTime.of("00:00:00-11:11:11")))
                                              .event(event)
                                              .participant(participant)
                                              .build();
@@ -100,7 +100,7 @@ void find() {
 void update() {
     //given
     final var updatedDayOfWeeks      = Set.of(DayOfWeek.values());
-    final var updatedParticipleTimes = Set.of(ParticipleTime.of("00:00:00-12:12:12").get());
+    final var updatedParticipleTimes = Set.of(ParticipleTime.of("00:00:00-12:12:12"));
 
     final var expectedEvent = eventRepository.findByTitle("event").get(0);
     final var expectedUser  = userRepository.findByName("user").get(0);

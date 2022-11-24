@@ -49,7 +49,7 @@ void setUp() {
                                .builder()
                                .title("event2")
                                .dayOfWeeks(Set.of(DayOfWeek.values()))
-                               .participleTime(ParticipleTime.of("00:00:00-11:11:11").get())
+                               .participleTime(ParticipleTime.of("00:00:00-11:11:11"))
                                .user(user)
                                .color(Color.RED)
                                .build();
@@ -92,7 +92,7 @@ void update() {
     final var updatedDescription = "UpdatedDescription";
 
     final var updatedDayOfWeeks     = Set.of(DayOfWeek.values());
-    final var updatedParticipleTime = ParticipleTime.of("00:00:00-11:11:11").get();
+    final var updatedParticipleTime = ParticipleTime.of("00:00:00-11:11:11");
 
     final var expectedEvent = eventRepository.findByTitle("event1").get(0);
 
