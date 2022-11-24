@@ -27,6 +27,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
+/**
+ * UserServiceTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 private final        Logger         logger = LogManager.getLogger(UserServiceTest.class);
@@ -232,10 +239,10 @@ void updateUser() {
                              .name("user")
                              .email("user@meezle.org")
                              .build();
-    final var updatedName = "updatedUser";
-    final var updatedEmail = "updatedUser@meezle.org";
+    final var updatedName     = "updatedUser";
+    final var updatedEmail    = "updatedUser@meezle.org";
     final var duplicatedEmail = "user@meezle.org";
-    final var notExistUserId = 0L;
+    final var notExistUserId  = 0L;
 
     given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
     given(userRepository.findById(notExistUserId)).willReturn(Optional.empty());

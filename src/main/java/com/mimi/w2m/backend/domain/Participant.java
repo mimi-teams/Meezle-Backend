@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
+import java.util.Formatter;
 
 /**
  * Participant
@@ -45,7 +46,7 @@ private       Event  event;
 public Participant(String name, String password, String salt, Event event) {
     this.name     = name;
     this.password = password;
-    this.salt = salt;
+    this.salt     = salt;
     this.event    = event;
 }
 
@@ -65,5 +66,13 @@ public Participant updatePassword(String password, String salt) {
     this.password = password;
     this.salt     = salt;
     return this;
+}
+
+@Override
+public String toString() {
+    final var formatter = new Formatter();
+    return formatter
+                   .format("ParticipantEntity[name=%s, password=%s, slat=%s]", this.name, this.password, this.salt)
+                   .toString();
 }
 }

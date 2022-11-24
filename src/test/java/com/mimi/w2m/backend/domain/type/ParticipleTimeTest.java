@@ -4,6 +4,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * ParticipleTimeTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 class ParticipleTimeTest {
 @Test
 void validRange() {

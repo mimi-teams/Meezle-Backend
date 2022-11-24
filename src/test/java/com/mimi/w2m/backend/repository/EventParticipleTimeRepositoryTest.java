@@ -17,6 +17,13 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * EventParticipleTimeRepositoryTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class EventParticipleTimeRepositoryTest {

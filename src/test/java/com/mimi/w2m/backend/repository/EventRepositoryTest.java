@@ -16,6 +16,13 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * EventRepositoryTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class EventRepositoryTest {
@@ -32,11 +39,11 @@ void setUp() {
     userRepository.save(user);
 
     final var event1 = Event
-                              .builder()
-                              .title("event1")
-                              .user(user)
-                              .color(Color.RED)
-                              .build();
+                               .builder()
+                               .title("event1")
+                               .user(user)
+                               .color(Color.RED)
+                               .build();
     eventRepository.save(event1);
     final var event2 = Event
                                .builder()
@@ -65,7 +72,7 @@ void findByTitle() {
 @Test
 void findAllByUser() {
     //given
-    final var user = userRepository.findByName("user").get(0);
+    final var user           = userRepository.findByName("user").get(0);
     final var expectedEvent1 = eventRepository.findByTitle("event1").get(0);
     final var expectedEvent2 = eventRepository.findByTitle("event2").get(0);
 
@@ -79,12 +86,12 @@ void findAllByUser() {
 @Test
 void update() {
     //given
-    final var updatedTitle = "updatedTitle";
-    final var updatedDDay = LocalDateTime.of(2000, 1, 1, 0, 0);
-    final var updatedColor = Color.BLUE;
+    final var updatedTitle       = "updatedTitle";
+    final var updatedDDay        = LocalDateTime.of(2000, 1, 1, 0, 0);
+    final var updatedColor       = Color.BLUE;
     final var updatedDescription = "UpdatedDescription";
 
-    final var updatedDayOfWeeks = Set.of(DayOfWeek.values());
+    final var updatedDayOfWeeks     = Set.of(DayOfWeek.values());
     final var updatedParticipleTime = ParticipleTime.of("00:00:00-11:11:11").get();
 
     final var expectedEvent = eventRepository.findByTitle("event1").get(0);
@@ -101,7 +108,7 @@ void update() {
 
 @Test
 void delete() {
-    final var event = eventRepository.findByTitle("event1").get(0);
+    final var event         = eventRepository.findByTitle("event1").get(0);
     final var beforeDeleted = LocalDateTime.now();
 
     //when

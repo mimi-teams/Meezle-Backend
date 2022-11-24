@@ -5,6 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * RoleConverterTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 class RoleConverterTest {
 private final RoleConverter converter = new RoleConverter();
 

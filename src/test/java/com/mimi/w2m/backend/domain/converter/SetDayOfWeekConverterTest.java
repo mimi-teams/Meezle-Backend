@@ -7,6 +7,13 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * SetDayOfWeekConverterTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 class SetDayOfWeekConverterTest {
 private final SetDayOfWeekConverter converter = new SetDayOfWeekConverter();
 
@@ -17,7 +24,7 @@ void convertToDatabaseColumn() {
 
     //when
     final var givenDayOfWeek = converter.convertToEntityAttribute("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY," +
-                                                                 "SUNDAY");
+                                                                  "SUNDAY");
 
     //then
     assertThat(expectedDayOfWeek.equals(givenDayOfWeek)).isTrue();

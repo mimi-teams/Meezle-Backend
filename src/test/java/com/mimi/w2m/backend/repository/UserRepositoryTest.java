@@ -12,6 +12,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * UserRepositoryTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserRepositoryTest {
@@ -75,7 +82,7 @@ void update() {
 @Test
 void checkRole() {
     //given
-    final var user = userRepository.findByName("tester").get(0);
+    final var user         = userRepository.findByName("tester").get(0);
     final var expectedRole = Role.USER;
 
     //when
