@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.domain.converter;
 
 import com.mimi.w2m.backend.domain.type.Role;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -15,6 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class RoleConverterTest {
 private final RoleConverter converter = new RoleConverter();
 
+@DisplayName("ROLE TYPE -> ROLE STR 변환")
 @Test
 void convertToDatabaseColumn() {
     //given
@@ -33,6 +35,7 @@ void convertToDatabaseColumn() {
     assertThat(expectedNoneString).isEqualTo(givenNoneString);
 }
 
+@DisplayName("ROLE STR -> ROLE TYPE 변환")
 @Test
 void convertToEntityAttribute() {
     //given

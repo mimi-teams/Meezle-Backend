@@ -12,6 +12,7 @@ import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -89,6 +90,7 @@ void createEvent() {
     logger.error(expectedEvent);
 }
 
+@DisplayName("dayOfWeeks 와 participleTime 을 제외한 나머지 정보 수정")
 @Test
 void modifyEvent() {
     //given
@@ -131,6 +133,7 @@ void modifyEvent() {
     then(eventRepository).should(times(2)).findById(anyLong());
 }
 
+@DisplayName("EventParticipleTime 의 공통 부분 계산")
 @Test
 void calculateSharedTime() {
     //given
@@ -139,7 +142,6 @@ void calculateSharedTime() {
                              .name("user")
                              .email("user@meezle.org")
                              .build();
-    final var userId = 1L;
     final var event = Event
                               .builder()
                               .title("event")
@@ -183,6 +185,7 @@ void calculateSharedTime() {
     then(eventParticipleTimeService).should(times(1)).getEventParticipleTimes(anyLong());
 }
 
+@DisplayName("DayOfWeek 와 ParticipleTime 을 직접 설정")
 @Test
 void setEventTimeDirectly() {
     //given

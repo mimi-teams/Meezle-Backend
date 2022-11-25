@@ -10,6 +10,7 @@ import com.mimi.w2m.backend.repository.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,7 @@ private final        Logger         logger = LogManager.getLogger(UserServiceTes
 void setup() {
 }
 
+@DisplayName("BDDMockito 사용법 테스트")
 @Test
 void mockito() {
     //given
@@ -92,6 +94,7 @@ void mockito() {
     assertThat(invalidTester).isEmpty();
 }
 
+@DisplayName("가입된 유저 정보 가져오기 or 유저 가입시키기")
 @Test
 void signUpOrLoad() {
     //given

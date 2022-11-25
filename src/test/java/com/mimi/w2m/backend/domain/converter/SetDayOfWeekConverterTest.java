@@ -1,5 +1,6 @@
 package com.mimi.w2m.backend.domain.converter;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
@@ -17,8 +18,22 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class SetDayOfWeekConverterTest {
 private final SetDayOfWeekConverter converter = new SetDayOfWeekConverter();
 
+@DisplayName("SetDayOfWeek TYPE -> SetDayOfWeek STR 변환")
 @Test
 void convertToDatabaseColumn() {
+    //given
+    final var expectedDayOfWeekString = "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY";
+
+    //when
+    final var givenDayOfWeekString = converter.convertToDatabaseColumn(Set.of(DayOfWeek.values()));
+
+    //then
+    assertThat(expectedDayOfWeekString).contains(givenDayOfWeekString.split(","));
+}
+
+@DisplayName("SetDayOfWeek STR -> SetDayOfWeek TYPE 변환")
+@Test
+void convertToEntityAttribute() {
     //given
     final var expectedDayOfWeek = Set.of(DayOfWeek.values());
 
@@ -28,17 +43,5 @@ void convertToDatabaseColumn() {
 
     //then
     assertThat(expectedDayOfWeek.equals(givenDayOfWeek)).isTrue();
-}
-
-@Test
-void convertToEntityAttribute() {
-    //given
-    final var expectedDayOfWeekString = "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY";
-
-    //when
-    final var givenDayOfWeekString = converter.convertToDatabaseColumn(Set.of(DayOfWeek.values()));
-
-    //then
-    assertThat(expectedDayOfWeekString).contains(givenDayOfWeekString.split(","));
 }
 }

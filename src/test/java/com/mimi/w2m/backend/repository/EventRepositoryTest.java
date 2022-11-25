@@ -4,6 +4,7 @@ import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -106,6 +107,7 @@ void update() {
     assertThat(expectedEvent).isEqualTo(givenEvent);
 }
 
+@DisplayName("Event 삭제(DeletedDate 설정)")
 @Test
 void delete() {
     final var event         = eventRepository.findByTitle("event1").get(0);

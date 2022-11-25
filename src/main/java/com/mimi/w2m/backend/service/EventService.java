@@ -136,7 +136,8 @@ public Event deleteEvent(Long eventId) throws EntityNotFoundException {
  * @author yeh35
  * @since 2022-10-31
  */
-public void checkEventModifiable(Long eventId, Long userId) throws UnauthorizedException, EntityNotFoundException {
+public void
+checkEventModifiable(Long eventId, Long userId) throws UnauthorizedException, EntityNotFoundException {
     var userSession = Optional.ofNullable((UserSession) httpSession.getAttribute("user"))
                               .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 세션"));
     if(!userId.equals(userSession.getUserId())) {

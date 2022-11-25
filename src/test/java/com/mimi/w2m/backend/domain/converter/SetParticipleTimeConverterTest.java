@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.domain.converter;
 
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class SetParticipleTimeConverterTest {
 private final SetParticipleTimeConverter converter = new SetParticipleTimeConverter();
 
+@DisplayName("SetParticipleTime TYPE -> SetParticipleTime STR 변환")
 @Test
 void convertToDatabaseColumn() {
     //given
@@ -32,6 +34,7 @@ void convertToDatabaseColumn() {
     assertThat(expectedParticipleTimeString).contains(givenParticipleTimeString.split(","));
 }
 
+@DisplayName("SetParticipleTime STR -> SetParticipleTime TYPE 변환")
 @Test
 void convertToEntityAttribute() {
     //given

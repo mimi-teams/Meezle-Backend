@@ -14,6 +14,7 @@ import com.mimi.w2m.backend.repository.EventRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.core.util.Strings;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -51,6 +52,7 @@ private final        Logger                        logger = LogManager.getLogger
 @Mock private        EventParticipleTimeRepository eventParticipleTimeRepository;
 @InjectMocks private EventParticipleTimeService    eventParticipleTimeService;
 
+@DisplayName("EventParticipleTime 은 새롭게 입력할 때, 삭제하고, 다시 생성")
 @Test
 void createOrUpdate() {
     //given

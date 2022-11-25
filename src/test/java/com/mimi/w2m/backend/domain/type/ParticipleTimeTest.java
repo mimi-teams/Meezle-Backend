@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.domain.type;
 
 import com.mimi.w2m.backend.error.InvalidValueException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
  * @since 2022/11/24
  **/
 class ParticipleTimeTest {
+@DisplayName("ParticipleTime 의 유효 범위 확인하기")
 @Test
 void validRange() {
     //given
@@ -26,6 +28,7 @@ void validRange() {
     assertThat(givenValidParticipleTime).isNotNull();
 }
 
+@DisplayName("ParticipleTime 의 잘못된 값 확인하기")
 @Test
 void invalidRange() {
     //given
