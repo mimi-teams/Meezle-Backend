@@ -4,10 +4,12 @@ import com.mimi.w2m.backend.domain.converter.RoleConverter;
 import com.mimi.w2m.backend.domain.type.Role;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.util.Formatter;
+import java.util.Objects;
 
 /**
  * Participant
@@ -74,5 +76,28 @@ public String toString() {
     return formatter
                    .format("ParticipantEntity[name=%s, password=%s, slat=%s]", this.name, this.password, this.salt)
                    .toString();
+}
+
+@Override
+public int hashCode() {
+    return getClass().hashCode();
+}
+
+/**
+ * 후보키인 name 을 기준으로 비교한다
+ *
+ * @author teddy
+ * @since 2022/11/25
+ **/
+@Override
+public boolean equals(Object o) {
+    if(this == o) {
+        return true;
+    }
+    if(o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+        return false;
+    }
+    Participant that = (Participant) o;
+    return name != null && Objects.equals(name, that.name);
 }
 }

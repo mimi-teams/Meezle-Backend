@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.security.OAuthAttributes;
-import com.mimi.w2m.backend.dto.security.UserSession;
+import com.mimi.w2m.backend.dto.security.SessionInfo;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.UnauthorizedException;
 import com.mimi.w2m.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * UserService
@@ -54,7 +53,7 @@ public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2Authentic
     var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.getAttributes());
     var user       = signUpOrLoad(Objects.requireNonNull(attributes));
 
-    httpSession.setAttribute("user", new UserSession(user));
+    httpSession.setAttribute(SessionInfo.key, new SessionInfo(user.getId(), Role.USER));
     return new DefaultOAuth2User(
             Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())), // Authority 를 설정할 때, ROLE_**
             // 문자열이 넣어져야만 한다!!(우씨 몇 시간 잡아먹은거양..)
@@ -83,23 +82,15 @@ public User signup(User user) {
 }
 
 /**
- * 현재 로그인된 유저
+ * 이용자 삭제하기
  *
- * @author yeh35
- * @since 2022-11-05
- */
-public User getCurrentUser() throws UnauthorizedException {
-    Long userId = -1L;
-    try {
-        var userSession =
-                Optional.ofNullable((UserSession) httpSession.getAttribute("user"))
-                        .orElseThrow(() -> new UnauthorizedException("로그인된 유저의 정보를 찾을 수 없습니다."));
-        userId = userSession.getUserId();
-        return getUser(userId);
-    } catch(EntityNotFoundException e) {
-        logger.warn("로그인은 되어있는데 유저 정보가 없습니다.!! userId = " + userId);
-        throw new UnauthorizedException("정보를 찾을 수 없습니다.", "유저 정보를 찾을 수 없습니다.");
-    }
+ * @author teddy
+ * @since 2022/11/19
+ **/
+@Transactional
+public void removeUser(Long userId) throws EntityNotFoundException {
+    var user = getUser(userId);
+    userRepository.delete(user);
 }
 
 /**
@@ -111,18 +102,6 @@ public User getCurrentUser() throws UnauthorizedException {
 public User getUser(Long userId) throws EntityNotFoundException {
     return userRepository.findById(userId)
                          .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 : " + userId, "존재하지 않는 유저"));
-}
-
-/**
- * 이용자 삭제하기
- *
- * @author teddy
- * @since 2022/11/19
- **/
-@Transactional
-public void removeUser(Long userId) throws EntityNotFoundException {
-    var user = getUser(userId);
-    userRepository.delete(user);
 }
 
 /**
