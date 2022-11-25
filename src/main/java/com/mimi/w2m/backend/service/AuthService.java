@@ -23,22 +23,20 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
-private final HttpSession                httpSession;
-private final UserService                userService;
-private final EventService               eventService;
-private final ParticipantService         participantService;
+private final HttpSession        httpSession;
+private final UserService        userService;
+private final EventService       eventService;
+private final ParticipantService participantService;
 
 void isCurrentLogin(Long id, Role role) throws UnauthorizedException, EntityNotFoundException {
     final var info = (SessionInfo) httpSession.getAttribute(SessionInfo.key);
     if(Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
         final var formatter = new Formatter();
-        var msg = "";
-        if(Objects.isNull(info)) {
-            msg = formatter.format("로그인된 이용자 정보와 불일치 : received[id=%d, role=%s] <-> stored[null]", id, role).toString();
-        } else {
-            msg = formatter.format("로그인된 이용자 정보와 불일치 : received[id=%d, role=%s] <-> stored[id=%d, role=%s]", id, role
-                    , info.loginId(), info.role()).toString();
-        }
+        final var msg = Objects.isNull(info) ?
+                        formatter.format("로그인된 이용자 정보와 불일치 : received[id=%d, role=%s] <-> stored[null]",
+                                         id, role).toString() :
+                        formatter.format("로그인된 이용자 정보와 불일치 : received[id=%d, role=%s] <-> stored[id=%d, role=%s]",
+                                         id, role, info.loginId(), info.role()).toString();
         throw new UnauthorizedException(msg, "로그인된 이용자 정보와 불일치");
     } else {
         //Check EntityNotFound
