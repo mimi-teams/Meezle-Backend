@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 각 참여자의 이벤트 참여 시간을 담당하는 서비스
@@ -36,16 +35,17 @@ private final EventParticipleTimeRepository eventParticipleTimeRepository;
  * @author yeh35
  * @since 2022-11-01
  */
-public EventParticipleTime createOrUpdate(Long id, EventParticipleTimeRequestDto requestDto, Role role) throws InvalidValueException, EntityNotFoundException {
+@Transactional
+public EventParticipleTime createOrUpdate(EventParticipleTimeRequestDto requestDto, Role role) throws InvalidValueException, EntityNotFoundException {
     var event = eventRepository.findById(requestDto.getEventId())
                                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + requestDto.getEventId(), "존재하지 않는 이벤트"));
     if(role == Role.USER) {
-        var user = userService.getUser(id);
+        var user = userService.getUser(requestDto.getOwnerId());
         eventParticipleTimeRepository.deleteAll(eventParticipleTimeRepository.findAllByEntityAtEvent(user, event));
         return eventParticipleTimeRepository.save(requestDto.to(event, user));
 
     } else if(role == Role.PARTICIPANT) {
-        var participant = participantService.getParticipant(id);
+        var participant = participantService.getParticipant(requestDto.getOwnerId());
         eventParticipleTimeRepository.deleteAll(eventParticipleTimeRepository.findAllByEntityAtEvent(participant,
                                                                                                      event));
         return eventParticipleTimeRepository.save(requestDto.to(event, participant));
@@ -60,7 +60,7 @@ public EventParticipleTime createOrUpdate(Long id, EventParticipleTimeRequestDto
  * @author yeh35
  * @since 2022-10-31
  */
-public List<EventParticipleTime> getEventsParticipate(Long eventId) throws EntityNotFoundException {
+public List<EventParticipleTime> getEventParticipleTimes(Long eventId) throws EntityNotFoundException {
     var event = eventRepository.findById(eventId)
                                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + eventId, "존재하지 않는 " +
                                                                                                           "이벤트"));
@@ -73,22 +73,16 @@ public List<EventParticipleTime> getEventsParticipate(Long eventId) throws Entit
  * @author yeh35
  * @since 2022-11-01
  */
-public List<EventParticipleTime> getEventParticipleTimeList(Long eventId, Long id, Role role) throws EntityNotFoundException, InvalidValueException {
+public List<EventParticipleTime> getEventParticipleTimes(Long eventId, Long id, Role role) throws EntityNotFoundException, InvalidValueException {
     var event = eventRepository.findById(eventId)
                                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + eventId, "존재하지 않는 " +
                                                                                                           "이벤트"));
     if(role == Role.USER) {
         var user = userService.getUser(id);
-        return eventParticipleTimeRepository.findAllByEvent(event)
-                                            .stream()
-                                            .filter(entity -> entity.getUser().equals(user))
-                                            .collect(Collectors.toList());
+        return eventParticipleTimeRepository.findAllByEntityAtEvent(user, event);
     } else if(role == Role.PARTICIPANT) {
         var participant = participantService.getParticipant(id);
-        return eventParticipleTimeRepository.findAllByEvent(event)
-                                            .stream()
-                                            .filter(entity -> entity.getParticipant().equals(participant))
-                                            .collect(Collectors.toList());
+        return eventParticipleTimeRepository.findAllByEntityAtEvent(participant, event);
     } else {
         throw new InvalidValueException("유효하지 않은 사용자 : " + role.getKey(), "유효하지 않은 사용자");
     }

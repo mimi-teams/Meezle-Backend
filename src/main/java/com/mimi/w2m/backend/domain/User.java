@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
+import java.util.Formatter;
 
 /**
  * User
@@ -47,5 +48,11 @@ public User update(String name, String email) {
     this.name  = name;
     this.email = email;
     return this;
+}
+
+@Override
+public String toString() {
+    final var formatter = new Formatter();
+    return formatter.format("UserEntity[name=%s, email=%s]", this.name, this.email).toString();
 }
 }

@@ -42,9 +42,7 @@ public Set<ParticipleTime> convertToEntityAttribute(String dbData) throws Invali
         return new HashSet<>();
     } else {
         return Arrays.stream(dbData.split(","))
-                     .map(datum -> ParticipleTime.of(datum)
-                                                 .orElseThrow(() -> new InvalidValueException("유효하지 않은 시간 범위 : " + datum,
-                                                                                              "유효하지 않은 시간 범위")))
+                     .map(ParticipleTime::of)
                      .collect(Collectors.toSet());
     }
 }

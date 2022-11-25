@@ -16,6 +16,13 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * ParticipantRepositoryTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ParticipantRepositoryTest {
@@ -35,27 +42,27 @@ void setUp() {
                               .builder()
                               .title("event")
                               .dayOfWeeks(Set.of(DayOfWeek.values()))
-                              .participleTime(ParticipleTime.of("00:00:00-11:11:11").get())
+                              .participleTime(ParticipleTime.of("00:00:00-11:11:11"))
                               .user(user)
                               .color(Color.RED)
                               .build();
     eventRepository.save(event);
     final var participant1 = Participant
-                                    .builder()
-                                    .name("participant1")
-                                    .password("not-empty-password")
-                                    .salt("salt")
-                                    .event(event)
-                                    .build();
+                                     .builder()
+                                     .name("participant1")
+                                     .password("not-empty-password")
+                                     .salt("salt")
+                                     .event(event)
+                                     .build();
     participantRepository.save(participant1);
 
     final var participant2 = Participant
-                                    .builder()
-                                    .name("participant2")
-                                    .password("not-empty-password")
-                                    .salt("salt")
-                                    .event(event)
-                                    .build();
+                                     .builder()
+                                     .name("participant2")
+                                     .password("not-empty-password")
+                                     .salt("salt")
+                                     .event(event)
+                                     .build();
     participantRepository.save(participant2);
 }
 
@@ -75,7 +82,7 @@ void findByName() {
 @Test
 void findAllByEvent() {
     //given
-    final var event = eventRepository.findByTitle("event").get(0);
+    final var event                = eventRepository.findByTitle("event").get(0);
     final var expectedParticipant1 = participantRepository.findByName("participant1").get();
     final var expectedParticipant2 = participantRepository.findByName("participant2").get();
 
@@ -90,9 +97,9 @@ void findAllByEvent() {
 @Test
 void update() {
     //given
-    final var updatedName = "teddy";
-    final var updatedPw = "good-pw";
-    final var updatedSalt = "good-salt";
+    final var updatedName         = "teddy";
+    final var updatedPw           = "good-pw";
+    final var updatedSalt         = "good-salt";
     final var expectedParticipant = participantRepository.findByName("participant1").get();
 
     //when

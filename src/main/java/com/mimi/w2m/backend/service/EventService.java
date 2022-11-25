@@ -46,8 +46,8 @@ private final EventRepository            eventRepository;
  * @since 2022-10-31
  */
 @Transactional
-public Event createEvent(Long userId, EventRequestDto requestDto) throws EntityNotFoundException {
-    var user = userService.getUser(userId);
+public Event createEvent(EventRequestDto requestDto) throws EntityNotFoundException {
+    var user = userService.getUser(requestDto.getUserId());
     return eventRepository.save(requestDto.to(user));
 }
 
@@ -83,7 +83,7 @@ public Event getEvent(Long eventId) throws EntityNotFoundException {
 @Transactional
 public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, InvalidValueException {
     var event                = getEvent(eventId);
-    var eventParticipleTimes = eventParticipleTimeService.getEventsParticipate(eventId);
+    var eventParticipleTimes = eventParticipleTimeService.getEventParticipleTimes(eventId);
 
     final var dayOfWeeks = new java.util.HashSet<>(Set.of(values()));
     final var ableTime   = new java.util.HashMap<>(Map.of("beginTime", LocalTime.MIN, "endTime", LocalTime.MAX));
@@ -99,8 +99,7 @@ public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, I
             }
         });
     });
-    final var participleTime = ParticipleTime.of(ableTime)
-                                             .orElseThrow(() -> new InvalidValueException("부정확한 시작 및 종료 시간 : " + ableTime, "부정확한 시작 및 종료 시간"));
+    final var participleTime = ParticipleTime.of(ableTime);
     return event.update(dayOfWeeks, participleTime);
 }
 
@@ -126,9 +125,9 @@ public Event setEventTimeDirectly(EventParticipleTimeRequestDto requestDto) thro
 }
 
 @Transactional
-public void deleteEvent(Long eventId) throws EntityNotFoundException {
+public Event deleteEvent(Long eventId) throws EntityNotFoundException {
     var event = getEvent(eventId);
-    event.delete();
+    return event.delete();
 }
 
 /**
@@ -137,7 +136,8 @@ public void deleteEvent(Long eventId) throws EntityNotFoundException {
  * @author yeh35
  * @since 2022-10-31
  */
-public void checkEventModifiable(Long eventId, Long userId) throws UnauthorizedException, EntityNotFoundException {
+public void
+checkEventModifiable(Long eventId, Long userId) throws UnauthorizedException, EntityNotFoundException {
     var userSession = Optional.ofNullable((UserSession) httpSession.getAttribute("user"))
                               .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 세션"));
     if(!userId.equals(userSession.getUserId())) {
@@ -160,14 +160,16 @@ public void checkEventModifiable(Long eventId, Long userId) throws UnauthorizedE
  * @since 2022-10-31
  */
 public List<Event> getEventByTitle(String title) throws EntityNotFoundException {
-    var events = eventRepository.findByTitle(title);
+    var events = eventRepository.findByTitle(title)
+                                .stream()
+                                .filter(event -> Objects.isNull(event.getDeletedDate()) ||
+                                                 LocalDateTime.now().isBefore(event.getDeletedDate()))
+                                .collect(toList());
     if(events.isEmpty()) {
         throw new EntityNotFoundException("이벤트가 존재하지 않습니다 : " + title, "이벤트가 존재하지 않습니다");
+    } else {
+        return events;
     }
-    return events.stream()
-                 .filter(event -> Objects.isNull(event.getDeletedDate()) ||
-                                  LocalDateTime.now().isBefore(event.getDeletedDate()))
-                 .collect(toList());
 }
 
 /**

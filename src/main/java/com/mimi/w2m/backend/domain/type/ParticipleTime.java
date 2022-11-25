@@ -1,13 +1,14 @@
 package com.mimi.w2m.backend.domain.type;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mimi.w2m.backend.error.InvalidValueException;
 
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * ParticipleTime : 참여가능한 start & end time
@@ -25,15 +26,19 @@ private ParticipleTime(LocalTime beginTime, LocalTime endTime){
     this.endTime   = endTime;
 }
 
-public static Optional<ParticipleTime> of(String participleTimeStr) {
+public static ParticipleTime of(String participleTimeStr) throws InvalidValueException {
     var splitTimes = participleTimeStr.split("-");
     var formatter  = DateTimeFormatter.ofPattern("HH:mm:ss");
-    var beginTime  = LocalTime.parse(splitTimes[0], formatter);
-    var endTime    = LocalTime.parse(splitTimes[1], formatter);
-    if(verify(beginTime, endTime)) {
-        return Optional.of(new ParticipleTime(beginTime, endTime));
-    } else {
-        return Optional.empty();
+    try {
+        var beginTime = LocalTime.parse(splitTimes[0], formatter);
+        var endTime   = LocalTime.parse(splitTimes[1], formatter);
+        if(verify(beginTime, endTime)) {
+            return new ParticipleTime(beginTime, endTime);
+        } else {
+            throw new InvalidValueException("유효하지 않은 시간 형식 : " + participleTimeStr, "유효하지 않은 시간 형식");
+        }
+    } catch(DateTimeParseException e) {
+        throw new InvalidValueException("유효하지 않은 시간 형식 : " + participleTimeStr, "유효하지 않은 시간 형식");
     }
 }
 
@@ -41,16 +46,14 @@ private static Boolean verify(LocalTime beginTime, LocalTime endTime) {
     return beginTime.isBefore(endTime);
 }
 
-public static Optional<ParticipleTime> of(Map<String, LocalTime> participleTimeMap) {
+public static ParticipleTime of(Map<String, LocalTime> participleTimeMap) throws InvalidValueException {
     var beginTime = participleTimeMap.get("beginTime");
     var endTime   = participleTimeMap.get("endTime");
 
     if(Objects.isNull(beginTime) || Objects.isNull(endTime)) {
-        return Optional.empty();
-    } else if(verify(beginTime, endTime)) {
-        return Optional.of(new ParticipleTime(beginTime, endTime));
+       throw new InvalidValueException("유효하지 않은 시간 형식 : " + participleTimeMap, "유효하지 않은 시간 형식");
     } else {
-        return Optional.empty();
+        return new ParticipleTime(beginTime, endTime);
     }
 }
 

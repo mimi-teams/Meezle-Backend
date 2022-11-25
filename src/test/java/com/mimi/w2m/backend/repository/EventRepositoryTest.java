@@ -4,6 +4,7 @@ import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,6 +17,13 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+/**
+ * EventRepositoryTest
+ *
+ * @author teddy
+ * @version 1.0.0
+ * @since 2022/11/24
+ **/
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class EventRepositoryTest {
@@ -32,17 +40,17 @@ void setUp() {
     userRepository.save(user);
 
     final var event1 = Event
-                              .builder()
-                              .title("event1")
-                              .user(user)
-                              .color(Color.RED)
-                              .build();
+                               .builder()
+                               .title("event1")
+                               .user(user)
+                               .color(Color.RED)
+                               .build();
     eventRepository.save(event1);
     final var event2 = Event
                                .builder()
                                .title("event2")
                                .dayOfWeeks(Set.of(DayOfWeek.values()))
-                               .participleTime(ParticipleTime.of("00:00:00-11:11:11").get())
+                               .participleTime(ParticipleTime.of("00:00:00-11:11:11"))
                                .user(user)
                                .color(Color.RED)
                                .build();
@@ -65,7 +73,7 @@ void findByTitle() {
 @Test
 void findAllByUser() {
     //given
-    final var user = userRepository.findByName("user").get(0);
+    final var user           = userRepository.findByName("user").get(0);
     final var expectedEvent1 = eventRepository.findByTitle("event1").get(0);
     final var expectedEvent2 = eventRepository.findByTitle("event2").get(0);
 
@@ -79,13 +87,13 @@ void findAllByUser() {
 @Test
 void update() {
     //given
-    final var updatedTitle = "updatedTitle";
-    final var updatedDDay = LocalDateTime.of(2000, 1, 1, 0, 0);
-    final var updatedColor = Color.BLUE;
+    final var updatedTitle       = "updatedTitle";
+    final var updatedDDay        = LocalDateTime.of(2000, 1, 1, 0, 0);
+    final var updatedColor       = Color.BLUE;
     final var updatedDescription = "UpdatedDescription";
 
-    final var updatedDayOfWeeks = Set.of(DayOfWeek.values());
-    final var updatedParticipleTime = ParticipleTime.of("00:00:00-11:11:11").get();
+    final var updatedDayOfWeeks     = Set.of(DayOfWeek.values());
+    final var updatedParticipleTime = ParticipleTime.of("00:00:00-11:11:11");
 
     final var expectedEvent = eventRepository.findByTitle("event1").get(0);
 
@@ -99,9 +107,10 @@ void update() {
     assertThat(expectedEvent).isEqualTo(givenEvent);
 }
 
+@DisplayName("Event 삭제(DeletedDate 설정)")
 @Test
 void delete() {
-    final var event = eventRepository.findByTitle("event1").get(0);
+    final var event         = eventRepository.findByTitle("event1").get(0);
     final var beforeDeleted = LocalDateTime.now();
 
     //when
