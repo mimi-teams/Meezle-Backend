@@ -4,10 +4,12 @@ import com.mimi.w2m.backend.domain.converter.RoleConverter;
 import com.mimi.w2m.backend.domain.type.Role;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.util.Formatter;
+import java.util.Objects;
 
 /**
  * User
@@ -54,5 +56,28 @@ public User update(String name, String email) {
 public String toString() {
     final var formatter = new Formatter();
     return formatter.format("UserEntity[name=%s, email=%s]", this.name, this.email).toString();
+}
+
+@Override
+public int hashCode() {
+    return getClass().hashCode();
+}
+
+/**
+ * 후보키인 email 을 기준으로 비교한다(test consistency 유지를 위해)
+ *
+ * @author teddy
+ * @since 2022/11/25
+ **/
+@Override
+public boolean equals(Object o) {
+    if(this == o) {
+        return true;
+    }
+    if(o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+        return false;
+    }
+    User user = (User) o;
+    return email != null && Objects.equals(email, user.email);
 }
 }

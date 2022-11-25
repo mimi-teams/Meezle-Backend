@@ -2,10 +2,8 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.security.OAuthAttributes;
-import com.mimi.w2m.backend.dto.security.UserSession;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.UnauthorizedException;
 import com.mimi.w2m.backend.repository.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +35,6 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 private final        Logger         logger = LogManager.getLogger(UserServiceTest.class);
-@Mock private        HttpSession    httpSession;
 @Mock private        UserRepository userRepository;
 @InjectMocks private UserService    userService;
 
@@ -123,62 +119,6 @@ void signUpOrLoad() {
 
     assertThat(expectedLoad.toString()).isEqualTo(signedAttributes.toEntity().toString());
     assertThat(expectedSignUp.toString()).isEqualTo(unsignedAttributes.toEntity().toString());
-}
-
-@Test
-void getCurrentUserValid() {
-    //given
-    final var loginUser = User
-                                  .builder()
-                                  .name("logined")
-                                  .email("logined@meezle.org")
-                                  .build();
-    final var userSession = new UserSession(loginUser);
-
-    given(httpSession.getAttribute("user")).willReturn(userSession);
-    given(userRepository.findById(loginUser.getId())).willReturn(Optional.of(loginUser));
-
-    //when
-    final var expectedUser = userService.getCurrentUser();
-
-    //then
-    then(httpSession).should(times(1)).getAttribute(anyString());
-    then(userRepository).should(times(1)).findById(any());
-
-    assertThat(expectedUser.toString()).isEqualTo(loginUser.toString());
-}
-
-@Test
-void getCurrentUserNotLogin() {
-    //given
-    given(httpSession.getAttribute("user")).willReturn(null);
-
-    //when
-    assertThatThrownBy(() -> userService.getCurrentUser()).isInstanceOf(UnauthorizedException.class);
-
-    //then
-    then(httpSession).should(times(1)).getAttribute(anyString());
-}
-
-@Test
-void getCurrentUserLoginButNotExist() {
-    //given
-    final var invalidUser = User
-                                    .builder()
-                                    .name("invalid")
-                                    .email("invalid@meezle.org")
-                                    .build();
-    final var userSession = new UserSession(invalidUser);
-
-    given(httpSession.getAttribute("user")).willReturn(userSession);
-    given(userRepository.findById(invalidUser.getId())).willReturn(Optional.empty());
-
-    //when
-    assertThatThrownBy(() -> userService.getCurrentUser()).isInstanceOf(UnauthorizedException.class);
-
-    //then
-    then(httpSession).should(times(1)).getAttribute(anyString());
-    then(userRepository).should(times(1)).findById(any());
 }
 
 @Test

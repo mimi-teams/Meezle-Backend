@@ -1,12 +1,12 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.participant.ParticipantRequestDto;
-import com.mimi.w2m.backend.dto.security.ParticipantSession;
+import com.mimi.w2m.backend.dto.security.SessionInfo;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
-import com.mimi.w2m.backend.error.UnauthorizedException;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
@@ -146,8 +146,8 @@ public Participant login(ParticipantRequestDto requestDto) throws EntityNotFound
     var storedSalt = participant.getSalt();
     var receivedPw = generateHashedPw(storedSalt, requestDto.getPassword());
     if(storedPw.equals(receivedPw)) {
-        var participantSession = new ParticipantSession(participant);
-        httpSession.setAttribute("participant", participantSession);
+        var info = new SessionInfo(participant.getId(), Role.PARTICIPANT);
+        httpSession.setAttribute(SessionInfo.key, info);
         return participant;
     } else {
         throw new InvalidValueException("유효하지 않은 비밀번호 : " + requestDto.getPassword(), "유효하지 않은 비밀번호");
@@ -162,28 +162,8 @@ public Participant login(ParticipantRequestDto requestDto) throws EntityNotFound
  **/
 @Transactional
 public void logout() throws EntityNotFoundException {
-    Optional.ofNullable((ParticipantSession) httpSession.getAttribute("participant"))
+    Optional.ofNullable((SessionInfo) httpSession.getAttribute(SessionInfo.key))
             .orElseThrow(() -> new EntityNotFoundException("로그인된 참여자 정보가 없습니다"));
-    httpSession.removeAttribute("participant");
+    httpSession.removeAttribute(SessionInfo.key);
 }
-
-/**
- * 현재 참여자 가져오기
- *
- * @author teddy
- * @since 2022/11/19
- **/
-public Participant getCurrentParticipant() throws UnauthorizedException {
-    var participantId = -1L;
-    try {
-        var participantSession =
-                Optional.ofNullable((ParticipantSession) httpSession.getAttribute("participant"))
-                        .orElseThrow(() -> new UnauthorizedException("로그인된 참여자의 정보를 찾을 수 없습니다"));
-        participantId = participantSession.getParticipantId();
-        return getParticipant(participantId);
-    } catch(EntityNotFoundException e) {
-        throw new UnauthorizedException("정보를 찾을 수 없습니다.", "참여자 정보를 찾을 수 없습니다");
-    }
-}
-
 }

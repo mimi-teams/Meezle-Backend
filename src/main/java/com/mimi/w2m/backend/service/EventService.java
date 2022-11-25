@@ -6,19 +6,19 @@ import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.participle.EventParticipleTimeRequestDto;
-import com.mimi.w2m.backend.dto.security.UserSession;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
-import com.mimi.w2m.backend.error.UnauthorizedException;
 import com.mimi.w2m.backend.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static java.time.DayOfWeek.values;
 import static java.util.stream.Collectors.toList;
@@ -33,7 +33,6 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventService {
-private final HttpSession                httpSession;
 private final UserService                userService;
 private final EventParticipleTimeService eventParticipleTimeService;
 private final EventRepository            eventRepository;
@@ -128,29 +127,6 @@ public Event setEventTimeDirectly(EventParticipleTimeRequestDto requestDto) thro
 public Event deleteEvent(Long eventId) throws EntityNotFoundException {
     var event = getEvent(eventId);
     return event.delete();
-}
-
-/**
- * Event 를 수정할 권리가 있는지 확인한다(host & Login 한 사용자와 동일한지 확인한다) -> controller 에서 수행한다
- *
- * @author yeh35
- * @since 2022-10-31
- */
-public void
-checkEventModifiable(Long eventId, Long userId) throws UnauthorizedException, EntityNotFoundException {
-    var userSession = Optional.ofNullable((UserSession) httpSession.getAttribute("user"))
-                              .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 세션"));
-    if(!userId.equals(userSession.getUserId())) {
-        throw new UnauthorizedException(String.format("현재 이용자 정보와 일치하지 않습니다 : userId = %d, userSession = %d", userId,
-                                                      userSession.getUserId()), "현재 이용자 정보와 일치하지 않습니다");
-    }
-    var user  = userService.getUser(userId);
-    var event = getEvent(eventId);
-
-    if(!event.getUser().getId().equals(user.getId())) {
-        throw new UnauthorizedException(String.format("해당 이벤트에 수정권한이 없습니다. : user = %d, event = %d", userId,
-                                                      eventId), "해당 이벤트에 수정권한이 없습니다.");
-    }
 }
 
 /**
