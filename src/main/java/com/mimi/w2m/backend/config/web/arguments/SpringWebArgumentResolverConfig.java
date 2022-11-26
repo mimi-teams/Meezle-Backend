@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.config.web;
+package com.mimi.w2m.backend.config.web.arguments;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +13,11 @@ import java.util.List;
  */
 @Configuration
 @RequiredArgsConstructor
-public class SpringWebConfig implements WebMvcConfigurer {
-    private final LoginArgumentResolver loginUserArgumentResolver;
+public class SpringWebArgumentResolverConfig implements WebMvcConfigurer {
+private final LoginArgumentResolver loginUserArgumentResolver;
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolverList) {
-        argumentResolverList.add(loginUserArgumentResolver);
-    }
+@Override
+public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolverList) {
+    argumentResolverList.add(loginUserArgumentResolver);
+}
 }

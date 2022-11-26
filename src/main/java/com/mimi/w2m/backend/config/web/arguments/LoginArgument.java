@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.config.web;
+package com.mimi.w2m.backend.config.web.arguments;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

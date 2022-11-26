@@ -23,6 +23,7 @@ public enum ApiResultCode {
     NOT_LOGIN(6, UNAUTHORIZED, "로그인 안된 유저입니다."),
     EVENT_NOT_FOUND(7, NOT_FOUND, "이벤트가 존재하지 않습니다."),
     ENTITY_DUPLICATED(8, DUPLICATED, "해당 Entity 가 이미 존재함"),
+    UNUSED_API(9, BAD_REQUEST, "사용하지 않는 API 입니다"),
 
     ;
 

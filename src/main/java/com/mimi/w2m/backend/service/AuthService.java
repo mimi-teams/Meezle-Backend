@@ -28,7 +28,7 @@ private final UserService        userService;
 private final EventService       eventService;
 private final ParticipantService participantService;
 
-void isCurrentLogin(Long id, Role role) throws UnauthorizedException, EntityNotFoundException {
+public void isCurrentLogin(Long id, Role role) throws UnauthorizedException, EntityNotFoundException {
     final var info = (SessionInfo) httpSession.getAttribute(SessionInfo.key);
     if(Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
         final var formatter = new Formatter();
@@ -48,7 +48,7 @@ void isCurrentLogin(Long id, Role role) throws UnauthorizedException, EntityNotF
     }
 }
 
-void isHost(Long userId, Long eventId) throws UnauthorizedException, EntityNotFoundException {
+public void isHost(Long userId, Long eventId) throws UnauthorizedException, EntityNotFoundException {
     final var event = eventService.getEvent(eventId);
     final var user  = userService.getUser(userId);
     if(!event.getUser().equals(user)) {

@@ -31,17 +31,11 @@ private final UserService customOAuth2UserService;
  * 말고, SecurityFilterChain으로 통합해 작성하자! 대응하는 chain의 구문: http.authorizeRequests().antMatcher(....).permitAll() :
  * antMathcer에 해당하는 uri를 모두에게 개방한다
  */
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//
-//        return web -> {
-//            web.ignoring().antMatchers("/resources/**");
-//            web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-//        };
-//    }
+
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeRequests()
+            .antMatchers("**").permitAll()
         .antMatchers("/api/v1/security/login/**").permitAll()
         .antMatchers("/api/v1/**").hasAnyRole(Role.USER.name(), Role.PARTICIPANT.getKey())
         .anyRequest().permitAll().and()

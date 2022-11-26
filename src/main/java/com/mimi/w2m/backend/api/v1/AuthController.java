@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.api.auth;
+package com.mimi.w2m.backend.api.v1;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -19,7 +19,7 @@ import java.util.Objects;
 @RequestMapping("/auth/v1")
 @RestController
 public class AuthController {
-    
+
     /**
      * OAuth2 인증을 위한 리다이렉트 ....
      * TODO 이거 설명을 추가해줭

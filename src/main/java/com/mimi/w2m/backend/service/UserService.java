@@ -41,6 +41,7 @@ private final UserRepository userRepository;
 private final Log            logger = LogFactory.getLog(this.getClass());
 
 @Comment("OAuth2를 사용해 login 을 처리하고, 이용자 정보를 저장 및 갱신하기 위해 이용한다")
+@Transactional
 @Override
 public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     var delegate   = new DefaultOAuth2UserService();
@@ -102,6 +103,11 @@ public void removeUser(Long userId) throws EntityNotFoundException {
 public User getUser(Long userId) throws EntityNotFoundException {
     return userRepository.findById(userId)
                          .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 : " + userId, "존재하지 않는 유저"));
+}
+
+public User getUserByEmail(String email) throws EntityNotFoundException {
+    return userRepository.findByEmail(email)
+                         .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 : " + email, "존재하지 않는 유저"));
 }
 
 /**
