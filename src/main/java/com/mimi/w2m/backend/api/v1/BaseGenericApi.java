@@ -5,6 +5,7 @@ import com.mimi.w2m.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -46,9 +47,9 @@ public abstract ApiResponse<RES_DTO> put(
         @PathVariable("id") PK id,
         @RequestBody REQ_DTO reqDto);
 
-@Operation(method = "DELETE", description = "[인증] DTO 삭제(반환 없음)")
+@Operation(method = "DELETE", description = "[인증] DTO 삭제('/'로 Redirect)")
 @DeleteMapping(path = "/{id}")
-public abstract ApiResponse<RES_DTO> delete(
+public abstract ResponseEntity<?> delete(
         @PathVariable("id") PK id);
 
 }

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * Participant 를 관리하는 서비스
@@ -76,6 +76,11 @@ public List<Participant> getAllParticipantInEvent(Long eventId) throws EntityNot
     return participantRepository.findAllByEvent(event);
 }
 
+public Participant updateParticipant(Long participantId, ParticipantRequestDto requestDto) throws EntityNotFoundException, EntityDuplicatedException {
+    updateParticipantName(participantId, requestDto.getName());
+    return updateParticipantPassword(participantId, requestDto.getPassword());
+}
+
 /**
  * name = CK!
  *
@@ -83,13 +88,31 @@ public List<Participant> getAllParticipantInEvent(Long eventId) throws EntityNot
  * @since 2022/11/19
  **/
 @Transactional
-public Participant updateParticipantName(Long participantId, String name) throws EntityNotFoundException,
-                                                                                 EntityDuplicatedException {
+protected Participant updateParticipantName(Long participantId, String name) throws EntityNotFoundException,
+                                                                                    EntityDuplicatedException {
     var participant = getParticipant(participantId);
-    participantRepository.findByName(name).ifPresent((entity) -> {
-        throw new EntityDuplicatedException("이미 존재하는 참여자 : " + name, "이미 존재하는 참여자");
-    });
-    return participant.updateName(name);
+    if(!Objects.equals(participant.getName(), name)) {
+        participantRepository.findByName(name).ifPresent(entity -> {
+            throw new EntityDuplicatedException("이미 존재하는 참여자 : " + name, "이미 존재하는 참여자");
+        });
+        return participant.updateName(name);
+    } else {
+        return participant;
+    }
+}
+
+/**
+ * password 의 경우, hashed 로 바뀔 것을 고려하여 name 과 password update 를 별도로 만든다.
+ *
+ * @author teddy
+ * @since 2022/11/19
+ **/
+@Transactional
+protected Participant updateParticipantPassword(Long participantId, String password) throws EntityNotFoundException {
+    var participant = getParticipant(participantId);
+    var salt        = generateSalt(Participant.getSaltLength());
+    var hashedPw    = generateHashedPw(salt, password);
+    return participant.updatePassword(hashedPw, salt);
 }
 
 /**
@@ -102,20 +125,6 @@ public Participant getParticipant(Long participantId) throws EntityNotFoundExcep
     return participantRepository.findById(participantId)
                                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 참여자 : " + participantId,
                                                                                "존재하지 않는 참여자"));
-}
-
-/**
- * password 의 경우, hashed 로 바뀔 것을 고려하여 name 과 password update 를 별도로 만든다.
- *
- * @author teddy
- * @since 2022/11/19
- **/
-@Transactional
-public Participant updateParticipantPassword(Long participantId, String password) throws EntityNotFoundException {
-    var participant = getParticipant(participantId);
-    var salt        = generateSalt(Participant.getSaltLength());
-    var hashedPw    = generateHashedPw(salt, password);
-    return participant.updatePassword(hashedPw, salt);
 }
 
 /**
@@ -154,20 +163,11 @@ public Participant login(ParticipantRequestDto requestDto) throws EntityNotFound
     }
 }
 
-/**
- * 참여자 로그아웃 처리하기. Session 에서 ParticipantSession 정보를 제거한다
- *
- * @author teddy
- * @since 2022/11/19
- **/
-@Transactional
-public void logout() throws EntityNotFoundException {
-    Optional.ofNullable((LoginInfo) httpSession.getAttribute(LoginInfo.key))
-            .orElseThrow(() -> new EntityNotFoundException("로그인된 참여자 정보가 없습니다"));
-    httpSession.removeAttribute(LoginInfo.key);
-}
-
 public void deleteAll(List<Participant> participants) {
     participantRepository.deleteAll(participants);
+}
+
+public void delete(Participant participant) {
+    participantRepository.delete(participant);
 }
 }

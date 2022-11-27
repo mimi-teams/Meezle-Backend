@@ -12,14 +12,14 @@ import com.mimi.w2m.backend.dto.ApiResultCode;
 public class UnauthorizedException extends BusinessException {
 
 public UnauthorizedException(String message) {
-    super(ApiResultCode.NOT_LOGIN, message);
+    super(ApiResultCode.UNAUTHORIZED, message);
 }
 
 public UnauthorizedException(String message, String messageToClient) {
-    super(ApiResultCode.NOT_LOGIN, message, messageToClient);
+    super(ApiResultCode.UNAUTHORIZED, message, messageToClient);
 }
 
 public UnauthorizedException(String message, String messageToClient, Throwable cause) {
-    super(ApiResultCode.NOT_LOGIN, message, messageToClient, cause);
+    super(ApiResultCode.UNAUTHORIZED, message, messageToClient, cause);
 }
 }

@@ -19,8 +19,7 @@ public enum ApiResultCode {
     ENTITY_NOT_FOUND(3, NOT_FOUND, "해당 Entity 를 찾을 수 없음"),
 
     INVALID_VALUE(4, BAD_REQUEST, "잘못된 값으로 요청"),
-    ILLEGAL_ACCESS(5, UNAUTHORIZED, "잘못된 접근입니다."),
-    NOT_LOGIN(6, UNAUTHORIZED, "로그인 안된 유저입니다."),
+    UNAUTHORIZED(5, ApiHttpStatus.UNAUTHORIZED, "잘못된 접근입니다."),
     EVENT_NOT_FOUND(7, NOT_FOUND, "이벤트가 존재하지 않습니다."),
     ENTITY_DUPLICATED(8, DUPLICATED, "해당 Entity 가 이미 존재함"),
     UNUSED_API(9, BAD_REQUEST, "사용하지 않는 API 입니다"),

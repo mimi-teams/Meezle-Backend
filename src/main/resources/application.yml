@@ -2,5 +2,12 @@ spring:
   profiles:
     include: oauth
 
-
 springdoc.use-fqn: true  #Swagger에서 Schema를 Class Full Name으로 하기 위한 설정
+
+server:
+  error:
+    include-exception: false
+    include-message: never
+    include-stacktrace: never
+    whitelabel:
+      enabled: false
