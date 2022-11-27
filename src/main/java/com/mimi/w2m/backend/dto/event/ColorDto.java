@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.dto.event;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -14,14 +14,24 @@ import java.io.Serializable;
  * @version 1.0.0
  * @since 2022/11/17
  **/
-@Data
-@Builder
+@Getter
 @Schema(description = "Color를 받기 위한 dto")
 public class ColorDto implements Serializable {
-private final Integer red;
-private final Integer green;
-private final Integer blue;
-private final Integer alpha;
+private Integer red;
+private Integer green;
+private Integer blue;
+private Integer alpha;
+
+@Builder
+public ColorDto(Integer red, Integer green, Integer blue, Integer alpha) {
+    this.red   = red;
+    this.green = green;
+    this.blue  = blue;
+    this.alpha = alpha;
+}
+
+protected ColorDto() {
+}
 
 public static ColorDto of(Color color) {
     return ColorDto.builder()

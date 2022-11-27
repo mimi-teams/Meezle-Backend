@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
+import java.io.Serializable;
+
 /**
  * @author yeh35
  * @since 2022-11-05
@@ -11,7 +13,7 @@ import org.springframework.lang.Nullable;
 
 @Schema(name = "ApiResponse", description = "API에 응답에 일관성을 유지하기 위해서 존재한다.")
 @Getter
-public class ApiResponse<T> {
+public class ApiResponse<T> implements Serializable {
 
 private final ApiResultCode code;
 

@@ -4,9 +4,10 @@ import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -18,27 +19,30 @@ import java.util.Objects;
  * @since 2022/11/17
  **/
 
-@Data
-@Builder
+@Getter
 @Schema(description = "Event를 생성할 때, 전달하는 정보")
-public class EventRequestDto {
+public class EventRequestDto implements Serializable {
 
-private final String title;
+private String        title;
 @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 @Schema(description = "종료일")
-private final LocalDateTime dDay;
+private LocalDateTime dDay;
 
 @Schema(description = "Event 색상 정보")
-private final ColorDto color;
+private ColorDto color;
 
 @Schema(description = "1000자까지 허용")
-private final String description;
+private String description;
 
+@Builder
 public EventRequestDto(String title, LocalDateTime dDay, ColorDto color, String description) {
     this.title       = title;
-    this.dDay = Objects.nonNull(dDay) ? dDay : LocalDateTime.of(2099, 12, 31, 23, 59);
+    this.dDay        = Objects.nonNull(dDay) ? dDay : LocalDateTime.of(2099, 12, 31, 23, 59);
     this.color       = color;
     this.description = description;
+}
+
+protected EventRequestDto() {
 }
 
 public Event to(User user) {

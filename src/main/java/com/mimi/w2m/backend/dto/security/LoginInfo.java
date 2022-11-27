@@ -2,6 +2,8 @@ package com.mimi.w2m.backend.dto.security;
 
 import com.mimi.w2m.backend.domain.type.Role;
 
+import java.io.Serializable;
+
 /**
  * SessionInfo
  *
@@ -10,6 +12,6 @@ import com.mimi.w2m.backend.domain.type.Role;
  * @since 2022/11/25
  **/
 public record LoginInfo(Long loginId,
-                        Role role) {
+                        Role role) implements Serializable {
 public static String key = "info";
 }

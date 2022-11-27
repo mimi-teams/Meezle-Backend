@@ -5,18 +5,28 @@ import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.io.Serializable;
 
-@Data
-@Builder
+@Getter
 @Schema
 public class SessionInfoResponseDto implements Serializable {
-private final Long   id;
-private final String role;
-private final String name;
-private final String email;
+private Long   id;
+private String role;
+private String name;
+private String email;
+
+@Builder
+public SessionInfoResponseDto(Long id, String role, String name, String email) {
+    this.id    = id;
+    this.role  = role;
+    this.name  = name;
+    this.email = email;
+}
+
+protected SessionInfoResponseDto() {
+}
 
 public static SessionInfoResponseDto of(User entity) {
     return SessionInfoResponseDto

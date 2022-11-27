@@ -5,6 +5,7 @@ import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -17,25 +18,42 @@ import java.time.LocalDateTime;
  * @version 1.0.0
  * @since 2022/11/17
  **/
-@Builder
+@Getter
 @Schema
 public class EventResponseDto implements Serializable {
 
-private final Long           eventId;
+private Long           eventId;
 @Schema(description = "이벤트 생성자 id")
-private final Long           hostId;
-private final String         title;
+private Long           hostId;
+private String         title;
 @DateTimeFormat(pattern = "yyyy-mm-dd'T'hh:mm:ss")
-private final LocalDateTime  deletedDate;
+private LocalDateTime  deletedDate;
 @DateTimeFormat(pattern = "yyyy-mm-dd'T'hh:mm:ss")
-private final LocalDateTime  dDay;
+private LocalDateTime  dDay;
 @Schema(description = "MONDAY,... 의 형식")
-private final String         dayOfWeeks;
+private String         dayOfWeeks;
 @Schema(description = "hh:mm:ss-hh:mm:ss 의 형식")
-private final ParticipleTime participleTime;
-private final ColorDto       color;
+private ParticipleTime participleTime;
+private ColorDto       color;
 @Schema(description = "1000자까지 됩니다.")
-private final String         description;
+private String         description;
+
+@Builder
+public EventResponseDto(Long eventId, Long hostId, String title, LocalDateTime deletedDate, LocalDateTime dDay,
+                        String dayOfWeeks, ParticipleTime participleTime, ColorDto color, String description) {
+    this.eventId        = eventId;
+    this.hostId         = hostId;
+    this.title          = title;
+    this.deletedDate    = deletedDate;
+    this.dDay           = dDay;
+    this.dayOfWeeks     = dayOfWeeks;
+    this.participleTime = participleTime;
+    this.color          = color;
+    this.description    = description;
+}
+
+protected EventResponseDto() {
+}
 
 public static EventResponseDto of(Event entity) {
     return EventResponseDto.builder()
