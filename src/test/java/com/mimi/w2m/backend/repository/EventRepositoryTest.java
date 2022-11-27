@@ -118,7 +118,7 @@ void delete() {
     final var afterDeleted = LocalDateTime.now();
 
     //then
-    assertThat(event.getDeletedDate()).isAfter(beforeDeleted).isBefore(afterDeleted);
+    assertThat(event.getDeletedAt()).isAfter(beforeDeleted).isBefore(afterDeleted);
 
 }
 }

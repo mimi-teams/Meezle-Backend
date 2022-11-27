@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Formatter;
 import java.util.Objects;
 
@@ -25,22 +26,26 @@ public class User extends BaseTimeEntity {
 @Comment("Aothorization에서의 역할")
 @Convert(converter = RoleConverter.class)
 @Column(name = "role", length = 50, nullable = false, columnDefinition = "VARCHAR(20)")
-private final Role   role = Role.USER;
+private final Role          role = Role.USER;
 @Id
 @Column(name = "user_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-private       Long   id;
+private       Long          id;
 @Comment("가입한 사용자 이름(중복되어도 상관없다)")
 @Column(name = "name", length = 200, nullable = false)
-private       String name;
+private       String        name;
 @Comment("가입한 사용자 이메일(oauth login 등에 사용된다). CK로 동작한다(Unique!)")
 @Column(name = "email", length = 200, nullable = false, unique = true)
-private       String email;
+private       String        email;
+@Comment("이용자 삭제일(없으면 null)")
+@Column(name = "deleted_at")
+private       LocalDateTime deletedAt;
 
 @Builder
 public User(String name, String email) {
-    this.name  = name;
-    this.email = email;
+    this.name      = name;
+    this.email     = email;
+    this.deletedAt = null;
 }
 
 protected User() {
@@ -55,7 +60,7 @@ public User update(String name, String email) {
 @Override
 public String toString() {
     final var formatter = new Formatter();
-    return formatter.format("UserEntity[name=%s, email=%s]", this.name, this.email).toString();
+    return formatter.format("UserEntity[name=%s, email=%s, deletedAt=%s]", this.name, this.email, this.deletedAt).toString();
 }
 
 @Override
@@ -79,5 +84,10 @@ public boolean equals(Object o) {
     }
     User user = (User) o;
     return email != null && Objects.equals(email, user.email);
+}
+
+public User delete() {
+    this.deletedAt = LocalDateTime.now();
+    return this;
 }
 }

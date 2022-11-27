@@ -42,7 +42,7 @@ public static EventResponseDto of(Event entity) {
                            .eventId(entity.getId())
                            .userId(entity.getUser().getId())
                            .title(entity.getTitle())
-                           .deletedDate(entity.getDeletedDate())
+                           .deletedDate(entity.getDeletedAt())
                            .dDay(entity.getDDay())
                            .dayOfWeeks(new SetDayOfWeekConverter().convertToDatabaseColumn(entity.getDayOfWeeks()))
                            .participleTime(entity.getParticipleTime())

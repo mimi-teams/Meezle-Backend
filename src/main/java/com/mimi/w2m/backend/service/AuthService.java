@@ -23,12 +23,11 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
-private final HttpSession        httpSession;
 private final UserService        userService;
 private final EventService       eventService;
 private final ParticipantService participantService;
 
-public void isCurrentLogin(Long id, Role role) throws UnauthorizedException, EntityNotFoundException {
+public void isCurrentLogin(Long id, Role role, HttpSession httpSession) throws UnauthorizedException, EntityNotFoundException {
     final var info = (SessionInfo) httpSession.getAttribute(SessionInfo.key);
     if(Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
         final var formatter = new Formatter();
@@ -55,4 +54,9 @@ public void isHost(Long userId, Long eventId) throws UnauthorizedException, Enti
         throw new UnauthorizedException("유효하지 않은 호스트 : userId=" + userId + ", eventId=" + eventId, "유효하지 않은 호스트");
     }
 }
+
+public void logout(HttpSession httpSession) {
+    httpSession.removeAttribute(SessionInfo.key);
+}
+
 }

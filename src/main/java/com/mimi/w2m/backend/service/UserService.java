@@ -83,13 +83,13 @@ public User signup(User user) {
 }
 
 /**
- * 이용자 삭제하기
+ * 이용자 삭제하기(진짜 삭제)
  *
  * @author teddy
  * @since 2022/11/19
  **/
 @Transactional
-public void removeUser(Long userId) throws EntityNotFoundException {
+public void deleteUserReal(Long userId) throws EntityNotFoundException {
     var user = getUser(userId);
     userRepository.delete(user);
 }
@@ -103,6 +103,18 @@ public void removeUser(Long userId) throws EntityNotFoundException {
 public User getUser(Long userId) throws EntityNotFoundException {
     return userRepository.findById(userId)
                          .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 : " + userId, "존재하지 않는 유저"));
+}
+
+/**
+ * 이용자 삭제하기(deletedAt 만 설정)
+ *
+ * @author teddy
+ * @since 2022/11/27
+ **/
+@Transactional
+public User deleteUserNotReal(Long userId) throws EntityNotFoundException {
+    var user = getUser(userId);
+    return user.delete();
 }
 
 public User getUserByEmail(String email) throws EntityNotFoundException {

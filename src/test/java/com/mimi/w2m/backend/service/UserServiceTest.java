@@ -166,8 +166,8 @@ void removeUser() {
     given(userRepository.findById(invalidUserId)).willReturn(Optional.empty());
 
     //when
-    userService.removeUser(validUserId);
-    assertThatThrownBy(() -> userService.removeUser(invalidUserId)).isInstanceOf(EntityNotFoundException.class);
+    userService.deleteUserReal(validUserId);
+    assertThatThrownBy(() -> userService.deleteUserReal(invalidUserId)).isInstanceOf(EntityNotFoundException.class);
 
     //then
     then(userRepository).should(times(2)).findById(anyLong());

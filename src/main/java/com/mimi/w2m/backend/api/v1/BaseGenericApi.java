@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * BaseGenericApi(DTO : Req/Res DTO Type, PK : Primary Key Type, SV : Service Type)
  *
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path="/meezle/api/v1")
 public abstract class BaseGenericApi<REQ_DTO, RES_DTO, PK, SV> {
 protected final SV service;
+protected final HttpSession httpSession;
 
 @Operation(method = "GET", description = "[인증] ID의 DTO 가져오기(로그인한 사용자는 모두 가능. No Authorization)")
 @GetMapping(path = "/{id}")
