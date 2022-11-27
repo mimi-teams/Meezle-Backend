@@ -27,7 +27,8 @@ private final UserService        userService;
 private final EventService       eventService;
 private final ParticipantService participantService;
 
-public void isValidLogin(Long id, Role role, HttpSession httpSession) throws UnauthorizedException, EntityNotFoundException {
+public void isValidLogin(Long id, Role role, HttpSession httpSession) throws UnauthorizedException,
+                                                                             EntityNotFoundException {
     final var info = (LoginInfo) httpSession.getAttribute(LoginInfo.key);
     if(Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
         final var formatter = new Formatter();
@@ -47,14 +48,30 @@ public void isValidLogin(Long id, Role role, HttpSession httpSession) throws Una
     }
 }
 
+public void isInEvent(LoginInfo info, Long eventId) {
+    switch(info.role()) {
+        case USER -> isHost(info, eventId);
+        case PARTICIPANT -> {
+            final var event            = eventService.getEvent(eventId);
+            final var participantEvent = participantService.getParticipant(info.loginId()).getEvent();
+            if(!Objects.equals(event, participantEvent)) {
+                throw new UnauthorizedException("유효하지 않은 요청: Participant=" + info.loginId(), "이벤트 참여자가 아닙니다");
+            }
+        }
+        case NONE -> throw new UnauthorizedException("유효하지 않은 요청: Role=" + info.role(), "유효하지 않은 이용자");
+    }
+}
+
 public void isHost(LoginInfo loginInfo, Long eventId) throws UnauthorizedException, EntityNotFoundException {
     if(!Objects.equals(loginInfo.role(), Role.USER)) {
-        throw new UnauthorizedException("유효하지 않은 요청: Role=" + loginInfo.role(), "이벤트 생성자만 정보를 수정할 수 있습니다");
+        throw new UnauthorizedException("유효하지 않은 요청: Role=" + loginInfo.role(), "이벤트 생성자가 아닙니다");
     }
     final var event = eventService.getEvent(eventId);
     final var user  = userService.getUser(loginInfo.loginId());
     if(!event.getUser().equals(user)) {
-        throw new UnauthorizedException("유효하지 않은 호스트 : userId=" + loginInfo.loginId() + ", eventId=" + eventId, "유효하지 않은 호스트");
+        throw new UnauthorizedException("유효하지 않은 호스트 : userId=" + loginInfo.loginId() + ", eventId=" + eventId, "유효하지" +
+                                                                                                                " 않은 " +
+                                                                                                                "호스트");
     }
 }
 
@@ -74,5 +91,4 @@ public LoginInfo getCurrentLogin(HttpSession httpSession) throws EntityNotFoundE
 public void logout(HttpSession httpSession) {
     httpSession.removeAttribute(LoginInfo.key);
 }
-
 }

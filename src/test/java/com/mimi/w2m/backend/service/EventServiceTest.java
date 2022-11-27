@@ -193,26 +193,23 @@ void setEventTimeDirectly() {
                               .color(Color.BLACK)
                               .build();
     final var eventId = 1L;
-    final var validRequestDto = new EventParticipleTimeRequestDto("MONDAY,THURSDAY,", "00:00:00-11:11:11", eventId,
-                                                                  userId);
+    final var validRequestDto = new EventParticipleTimeRequestDto("MONDAY,THURSDAY,", "00:00:00-11:11:11");
     final var validDayOfWeeks = Set.of(DayOfWeek.MONDAY, DayOfWeek.THURSDAY);
     final var validParticipleTime = ParticipleTime.of("00:00:00-11:11:11");
-    final var invalidRequestDtoByInvalidDayOfWeek = new EventParticipleTimeRequestDto("Monday,", "00:00:00-11:11:11",
-                                                                                      eventId, userId);
+    final var invalidRequestDtoByInvalidDayOfWeek = new EventParticipleTimeRequestDto("Monday,", "00:00:00-11:11:11");
     final var invalidRequestDtoByInvalidParticipleTimes1 = new EventParticipleTimeRequestDto("MONDAY,", "11:11:11-00" +
-                                                                                                        ":00:00", eventId, userId);
+                                                                                                        ":00:00");
     final var invalidRequestDtoByInvalidParticipleTimes2 = new EventParticipleTimeRequestDto("MONDAY,",
                                                                                              "00:00:00-01:00:00," +
-                                                                                             "01:00:00-02:00:00",
-                                                                                             eventId, userId);
+                                                                                             "01:00:00-02:00:00");
     given(eventRepository.findById(eventId)).willReturn(Optional.of(event));
     //when
-    final var expectedEvent = eventService.setEventTimeDirectly(validRequestDto);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(invalidRequestDtoByInvalidDayOfWeek))
+    final var expectedEvent = eventService.setEventTimeDirectly(eventId, validRequestDto);
+    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidDayOfWeek))
             .isInstanceOf(InvalidValueException.class);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(invalidRequestDtoByInvalidParticipleTimes1))
+    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes1))
             .isInstanceOf(InvalidValueException.class);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(invalidRequestDtoByInvalidParticipleTimes2))
+    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes2))
             .isInstanceOf(InvalidValueException.class);
 
     //then
