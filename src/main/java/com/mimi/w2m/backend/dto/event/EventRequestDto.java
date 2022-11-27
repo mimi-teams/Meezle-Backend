@@ -24,8 +24,6 @@ import java.util.Objects;
 public class EventRequestDto {
 
 private final String title;
-private final Long   userId;
-
 @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 @Schema(description = "종료일")
 private final LocalDateTime dDay;
@@ -36,9 +34,8 @@ private final ColorDto color;
 @Schema(description = "1000자까지 허용")
 private final String description;
 
-public EventRequestDto(String title, Long userId, LocalDateTime dDay, ColorDto color, String description) {
+public EventRequestDto(String title, LocalDateTime dDay, ColorDto color, String description) {
     this.title       = title;
-    this.userId      = userId;
     this.dDay = Objects.nonNull(dDay) ? dDay : LocalDateTime.of(2099, 12, 31, 23, 59);
     this.color       = color;
     this.description = description;

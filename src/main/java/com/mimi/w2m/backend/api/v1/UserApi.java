@@ -41,19 +41,16 @@ import java.util.Set;
 @RestController
 public class UserApi extends BaseGenericApi<UserRequestDto, UserResponseDto, Long, UserService> {
 private final Logger                     logger = LogManager.getLogger(UserApi.class);
-private final AuthService                authService;
 private final EventService               eventService;
 private final ParticipantService         participantService;
 private final EventParticipleTimeService eventParticipleTimeService;
 
-public UserApi(HttpSession httpSession, UserService service, AuthService authService, EventService eventService,
-               ParticipantService participantService,
-               EventParticipleTimeService eventParticipleTimeService) {
-    super(service, httpSession);
-    this.authService                = authService;
-    this.eventService               = eventService;
-    this.participantService         = participantService;
-    this.eventParticipleTimeService = eventParticipleTimeService;
+public UserApi(UserService service, AuthService authService, HttpSession httpSession, EventService eventService,
+               ParticipantService participantService, EventParticipleTimeService timeService) {
+    super(service, authService, httpSession);
+    this.eventService          = eventService;
+    this.participantService    = participantService;
+    eventParticipleTimeService = timeService;
 }
 
 @Override
@@ -69,7 +66,7 @@ public ApiResponse<UserResponseDto> get(
         logger.error("Unexpected Exception occurs");
         logger.error(e.getMessage());
         Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, ApiResultCode.SERVER_ERROR.defaultMessage, null);
+        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
     }
 }
 
@@ -77,15 +74,15 @@ public ApiResponse<UserResponseDto> get(
 @Deprecated
 public ApiResponse<UserResponseDto> post(
         @RequestBody UserRequestDto dto) {
-    return ApiResponse.of(ApiResultCode.UNUSED_API, ApiResultCode.UNUSED_API.defaultMessage, null);
+    return ApiResponse.of(ApiResultCode.UNUSED_API, null);
 }
 
 @Override
 public ApiResponse<UserResponseDto> patch(
-        @PathVariable Long id,
+        @PathVariable("id") Long id,
         @RequestBody UserRequestDto dto) {
     try {
-        authService.isCurrentLogin(id, Role.USER, httpSession);
+        authService.isValidLogin(id, Role.USER, httpSession);
         final var user = service.updateUser(id, dto.getName(), dto.getEmail());
         return ApiResponse.ofSuccess(null);
     } catch(UnauthorizedException e) {
@@ -101,24 +98,23 @@ public ApiResponse<UserResponseDto> patch(
         logger.error("Unexpected Exception occurs");
         logger.error(e.getMessage());
         Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, ApiResultCode.SERVER_ERROR.defaultMessage, null);
+        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
     }
 }
 
 @Override
 @Deprecated
 public ApiResponse<UserResponseDto> put(
-        @PathVariable Long id,
+        @PathVariable("id") Long id,
         @RequestBody UserRequestDto dto) {
-    return ApiResponse.of(ApiResultCode.UNUSED_API, ApiResultCode.UNUSED_API.defaultMessage, null);
+    return ApiResponse.of(ApiResultCode.UNUSED_API, null);
 }
 
-// TODO: 2022/11/26 DELETE의 경우, 연관된 것까지 처리
 @Override
 public ApiResponse<UserResponseDto> delete(
-        @PathVariable Long id) {
+        @PathVariable("id") Long id) {
     try {
-        authService.isCurrentLogin(id, Role.USER, httpSession);
+        authService.isValidLogin(id, Role.USER, httpSession);
         final var associatedEvents = eventService.getEventsCreatedByUser(id);
         associatedEvents.forEach(event -> {
             eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(event.getId()));
@@ -137,7 +133,7 @@ public ApiResponse<UserResponseDto> delete(
         logger.error("Unexpected Exception occurs");
         logger.error(e.getMessage());
         Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, ApiResultCode.SERVER_ERROR.defaultMessage, null);
+        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
     }
 }
 
@@ -155,7 +151,7 @@ public ApiResponse<UserResponseDto> getByEmail(
         logger.error("Unexpected Exception occurs");
         logger.error(e.getMessage());
         Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, ApiResultCode.SERVER_ERROR.defaultMessage, null);
+        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
     }
 }
 
@@ -170,15 +166,13 @@ public ResponseEntity<?> loginWithOauth2(
             headers.setLocation(URI.create("/oauth2/authorization/" + platform));
             return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
         } else {
-            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.INVALID_VALUE,
-                                                                ApiResultCode.INVALID_VALUE.defaultMessage, null)));
+            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.INVALID_VALUE, null)));
         }
     } catch(Exception e) {
         logger.error("Unexpected Exception occurs");
         logger.error(e.getMessage());
         Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.SERVER_ERROR,
-                                                            ApiResultCode.SERVER_ERROR.defaultMessage, null)));
+        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.SERVER_ERROR, null)));
     }
 }
 
@@ -195,15 +189,13 @@ public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletRespo
             return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
         } else {
             logger.warn("Not login");
-            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.ENTITY_NOT_FOUND,
-                                                                ApiResultCode.ENTITY_NOT_FOUND.defaultMessage, null)));
+            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.ENTITY_NOT_FOUND, null)));
         }
     } catch(Exception e) {
         logger.error("Unexpected Exception occurs");
         logger.error(e.getMessage());
         Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.SERVER_ERROR,
-                                                            ApiResultCode.SERVER_ERROR.defaultMessage, null)));
+        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.SERVER_ERROR, null)));
     }
 }
 }

@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.security.SessionInfo;
+import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,8 @@ private final UserService        userService;
 private final EventService       eventService;
 private final ParticipantService participantService;
 
-public void isCurrentLogin(Long id, Role role, HttpSession httpSession) throws UnauthorizedException, EntityNotFoundException {
-    final var info = (SessionInfo) httpSession.getAttribute(SessionInfo.key);
+public void isValidLogin(Long id, Role role, HttpSession httpSession) throws UnauthorizedException, EntityNotFoundException {
+    final var info = (LoginInfo) httpSession.getAttribute(LoginInfo.key);
     if(Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
         final var formatter = new Formatter();
         final var msg = Objects.isNull(info) ?
@@ -47,16 +47,32 @@ public void isCurrentLogin(Long id, Role role, HttpSession httpSession) throws U
     }
 }
 
-public void isHost(Long userId, Long eventId) throws UnauthorizedException, EntityNotFoundException {
+public void isHost(LoginInfo loginInfo, Long eventId) throws UnauthorizedException, EntityNotFoundException {
+    if(!Objects.equals(loginInfo.role(), Role.USER)) {
+        throw new UnauthorizedException("유효하지 않은 요청: Role=" + loginInfo.role(), "이벤트 생성자만 정보를 수정할 수 있습니다");
+    }
     final var event = eventService.getEvent(eventId);
-    final var user  = userService.getUser(userId);
+    final var user  = userService.getUser(loginInfo.loginId());
     if(!event.getUser().equals(user)) {
-        throw new UnauthorizedException("유효하지 않은 호스트 : userId=" + userId + ", eventId=" + eventId, "유효하지 않은 호스트");
+        throw new UnauthorizedException("유효하지 않은 호스트 : userId=" + loginInfo.loginId() + ", eventId=" + eventId, "유효하지 않은 호스트");
     }
 }
 
+public LoginInfo getCurrentLogin(HttpSession httpSession) throws EntityNotFoundException, UnauthorizedException {
+    final var info = (LoginInfo) httpSession.getAttribute(LoginInfo.key);
+    if(Objects.isNull(info)) {
+        throw new EntityNotFoundException("로그인한 이용자가 없습니다", "로그인한 이용자가 없습니다");
+    }
+    switch(info.role()) {
+        case USER -> userService.getUser(info.loginId());
+        case PARTICIPANT -> participantService.getParticipant(info.loginId());
+        case NONE -> throw new UnauthorizedException("유효하지 않은 사용자 : " + info.role(), "유효하지 않은 사용자");
+    }
+    return info;
+}
+
 public void logout(HttpSession httpSession) {
-    httpSession.removeAttribute(SessionInfo.key);
+    httpSession.removeAttribute(LoginInfo.key);
 }
 
 }

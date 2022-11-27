@@ -2,8 +2,8 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.dto.security.OAuthAttributes;
-import com.mimi.w2m.backend.dto.security.SessionInfo;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.repository.UserRepository;
@@ -54,7 +54,7 @@ public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2Authentic
     var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.getAttributes());
     var user       = signUpOrLoad(Objects.requireNonNull(attributes));
 
-    httpSession.setAttribute(SessionInfo.key, new SessionInfo(user.getId(), Role.USER));
+    httpSession.setAttribute(LoginInfo.key, new LoginInfo(user.getId(), Role.USER));
     return new DefaultOAuth2User(
             Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())), // Authority 를 설정할 때, ROLE_**
             // 문자열이 넣어져야만 한다!!(우씨 몇 시간 잡아먹은거양..)

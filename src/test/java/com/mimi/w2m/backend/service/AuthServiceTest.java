@@ -4,7 +4,7 @@ import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.Participant;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.security.SessionInfo;
+import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.UnauthorizedException;
 import org.junit.jupiter.api.Test;
@@ -48,12 +48,12 @@ void isCurrentLoginValidUser() {
     final var userId    = 1L;
     final var validId   = userId;
     final var validRole = Role.USER;
-    final var validInfo = new SessionInfo(validId, validRole);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
+    final var validInfo = new LoginInfo(validId, validRole);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
     given(userService.getUser(userId)).willReturn(user);
 
     //when
-    authService.isCurrentLogin(validId, validRole, httpSession);
+    authService.isValidLogin(validId, validRole, httpSession);
 
     //then
     then(httpSession).should(times(1)).getAttribute(anyString());
@@ -69,12 +69,12 @@ void isCurrentLoginValidParticipant() {
                                     .build();
     final var participantId = 1L;
     final var validRole     = Role.PARTICIPANT;
-    final var validInfo     = new SessionInfo(participantId, validRole);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
+    final var validInfo     = new LoginInfo(participantId, validRole);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
     given(participantService.getParticipant(participantId)).willReturn(participant);
 
     //when
-    authService.isCurrentLogin(participantId, validRole, httpSession);
+    authService.isValidLogin(participantId, validRole, httpSession);
 
     //then
     then(httpSession).should(times(1)).getAttribute(anyString());
@@ -87,11 +87,11 @@ void isCurrentLoginInValidByMismatchingRole() {
     final var validId     = 1L;
     final var validRole   = Role.PARTICIPANT;
     final var invalidRole = Role.USER;
-    final var validInfo   = new SessionInfo(validId, validRole);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
+    final var validInfo   = new LoginInfo(validId, validRole);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, invalidRole, httpSession))
+    assertThatThrownBy(() -> authService.isValidLogin(validId, invalidRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then
@@ -104,11 +104,11 @@ void isCurrentLoginInValidByMismatchingId() {
     final var validId   = 1L;
     final var invalidId = 0L;
     final var validRole = Role.PARTICIPANT;
-    final var validInfo = new SessionInfo(validId, validRole);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
+    final var validInfo = new LoginInfo(validId, validRole);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(invalidId, validRole, httpSession))
+    assertThatThrownBy(() -> authService.isValidLogin(invalidId, validRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then
@@ -120,10 +120,10 @@ void isCurrentLoginInValidByNullInfo() {
     //given
     final var validId   = 1L;
     final var validRole = Role.PARTICIPANT;
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(null);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(null);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
+    assertThatThrownBy(() -> authService.isValidLogin(validId, validRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then
@@ -135,12 +135,12 @@ void isCurrentLoginInValidByNotExistedUser() {
     //given
     final var validId   = 1L;
     final var validRole = Role.USER;
-    final var validInfo = new SessionInfo(validId, validRole);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
+    final var validInfo = new LoginInfo(validId, validRole);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
     given(userService.getUser(validId)).willThrow(EntityNotFoundException.class);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
+    assertThatThrownBy(() -> authService.isValidLogin(validId, validRole, httpSession))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
@@ -153,12 +153,12 @@ void isCurrentLoginInValidByNotExistedParticipant() {
     //given
     final var validId   = 1L;
     final var validRole = Role.PARTICIPANT;
-    final var validInfo = new SessionInfo(validId, validRole);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
+    final var validInfo = new LoginInfo(validId, validRole);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
     given(participantService.getParticipant(validId)).willThrow(EntityNotFoundException.class);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
+    assertThatThrownBy(() -> authService.isValidLogin(validId, validRole, httpSession))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
@@ -171,11 +171,11 @@ void isCurrentLoginInValidByNoneRole() {
     //given
     final var validId   = 1L;
     final var validRole = Role.NONE;
-    final var validInfo = new SessionInfo(validId, validRole);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
+    final var validInfo = new LoginInfo(validId, validRole);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
+    assertThatThrownBy(() -> authService.isValidLogin(validId, validRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then
@@ -201,7 +201,7 @@ void isHostValid() {
     given(userService.getUser(hostId)).willReturn(host);
 
     //when
-    authService.isHost(hostId, eventId);
+    authService.isHost(new LoginInfo(hostId, Role.USER), eventId);
 
     //then
     then(eventService).should(times(1)).getEvent(anyLong());
@@ -232,7 +232,7 @@ void isHostInValidByNotHost() {
     given(userService.getUser(invalidUserId)).willReturn(invalidUser);
 
     //when
-    assertThatThrownBy(() -> authService.isHost(invalidUserId, eventId))
+    assertThatThrownBy(() -> authService.isHost(new LoginInfo(invalidUserId, Role.USER), eventId))
             .isInstanceOf(UnauthorizedException.class);
 
     //then

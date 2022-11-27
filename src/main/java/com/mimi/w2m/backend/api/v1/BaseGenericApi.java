@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.dto.ApiResponse;
+import com.mimi.w2m.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpSession;
 @RequestMapping(path="/meezle/api/v1")
 public abstract class BaseGenericApi<REQ_DTO, RES_DTO, PK, SV> {
 protected final SV service;
+protected final AuthService authService;
 protected final HttpSession httpSession;
 
 @Operation(method = "GET", description = "[인증] ID의 DTO 가져오기(로그인한 사용자는 모두 가능. No Authorization)")

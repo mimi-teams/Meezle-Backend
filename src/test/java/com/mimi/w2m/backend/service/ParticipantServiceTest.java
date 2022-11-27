@@ -5,7 +5,7 @@ import com.mimi.w2m.backend.domain.Participant;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.participant.ParticipantRequestDto;
-import com.mimi.w2m.backend.dto.security.SessionInfo;
+import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
@@ -337,8 +337,8 @@ void logoutValid() {
                                          .name("valid")
                                          .event(validEvent)
                                          .build();
-    final var info = new SessionInfo(validParticipant.getId(), Role.PARTICIPANT);
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(info);
+    final var info = new LoginInfo(validParticipant.getId(), Role.PARTICIPANT);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(info);
 
     //when
     participantService.logout();
@@ -350,7 +350,7 @@ void logoutValid() {
 @Test
 void logoutInValid() {
     //given
-    given(httpSession.getAttribute(SessionInfo.key)).willReturn(null);
+    given(httpSession.getAttribute(LoginInfo.key)).willReturn(null);
 
     //when
     assertThatThrownBy(() -> participantService.logout()).isInstanceOf(EntityNotFoundException.class);

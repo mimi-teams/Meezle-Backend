@@ -58,31 +58,23 @@ void createEvent() {
                              .build();
     final var validUserId   = 1L;
     final var invalidUserId = 0L;
-    final var validRequestDto = EventRequestDto
+    final var requestDto = EventRequestDto
                                         .builder()
-                                        .title("valid")
-                                        .userId(validUserId)
+                                        .title("event")
                                         .dDay(null)
                                         .color(ColorDto.of(Color.RED))
                                         .build();
-    final var invalidRequestDtoByInvalidUserId = EventRequestDto
-                                                         .builder()
-                                                         .title("invalid")
-                                                         .userId(invalidUserId)
-                                                         .dDay(null)
-                                                         .color(ColorDto.of(Color.RED))
-                                                         .build();
     given(userService.getUser(validUserId)).willReturn(user);
     given(userService.getUser(invalidUserId)).willThrow(EntityNotFoundException.class);
     given(eventRepository.save(any(Event.class))).willAnswer(invoc -> invoc.getArgument(0));
 
     //when
-    final var expectedEvent = eventService.createEvent(validRequestDto);
-    assertThatThrownBy(() -> eventService.createEvent(invalidRequestDtoByInvalidUserId))
+    final var expectedEvent = eventService.createEvent(validUserId, requestDto);
+    assertThatThrownBy(() -> eventService.createEvent(invalidUserId, requestDto))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
-    assertThat(expectedEvent.toString()).isEqualTo(validRequestDto.to(user).toString());
+    assertThat(expectedEvent.toString()).isEqualTo(requestDto.to(user).toString());
 
     then(userService).should(times(2)).getUser(anyLong());
     then(eventRepository).should(times(1)).save(any(Event.class));
@@ -111,7 +103,6 @@ void modifyEvent() {
     final var validRequestDto = EventRequestDto
                                         .builder()
                                         .title("updated")
-                                        .userId(userId)
                                         .description("updated")
                                         .dDay(LocalDateTime.of(2000, 1, 1, 0, 0, 0))
                                         .color(ColorDto.of(Color.BLACK))

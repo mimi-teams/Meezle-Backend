@@ -3,7 +3,7 @@ package com.mimi.w2m.backend.api;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.ApiResponse;
 import com.mimi.w2m.backend.dto.ApiResultCode;
-import com.mimi.w2m.backend.dto.security.SessionInfo;
+import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.dto.security.SessionInfoResponseDto;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
@@ -36,12 +36,12 @@ private final ParticipantService participantService;
 @GetMapping(path = "")
 public ApiResponse<SessionInfoResponseDto> get() {
     try {
-        final var sessionInfo = (SessionInfo) httpSession.getAttribute(SessionInfo.key);
+        final var sessionInfo = (LoginInfo) httpSession.getAttribute(LoginInfo.key);
         if(Objects.nonNull(sessionInfo)) {
             final var dto = switch(sessionInfo.role()) {
                 case USER -> SessionInfoResponseDto.of(userService.getUser(sessionInfo.loginId()));
                 case PARTICIPANT -> SessionInfoResponseDto.of(participantService.getParticipant(sessionInfo.loginId()));
-                case NONE -> throw new InvalidValueException("잘못된 역할입니다 : " + Role.NONE, "잘못된 역할입니다");
+                case NONE -> throw new InvalidValueException("잘못된 역할 : " + Role.NONE, "잘못된 이용자입니다.");
             };
             return ApiResponse.ofSuccess(dto);
         } else {
