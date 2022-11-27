@@ -8,7 +8,10 @@ import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
 import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
 import com.mimi.w2m.backend.error.InvalidValueException;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.io.Serializable;
 
 /**
  * EventParticipleTimeRequestDto
@@ -17,17 +20,28 @@ import lombok.Data;
  * @version 1.0.0
  * @since 2022/11/17
  **/
-@Data
+@Getter
 @Schema
-public class EventParticipleTimeRequestDto {
+public class EventParticipleTimeRequestDto implements Serializable {
 @Schema(description = "MONDAY,... 의 형식")
-private final String ableDayOfWeeks;
+private String ableDayOfWeeks;
 @Schema(description = "beginTime-endTime, ... 의 형식")
-private final String participleTimes;
+private String participleTimes;
 @Schema(description = "연관된 event")
-private final Long eventId;
+private Long   eventId;
 @Schema(description = "User or Participant의 id")
-private final Long ownerId;
+private Long   ownerId;
+
+@Builder
+public EventParticipleTimeRequestDto(String ableDayOfWeeks, String participleTimes, Long eventId, Long ownerId) {
+    this.ableDayOfWeeks  = ableDayOfWeeks;
+    this.participleTimes = participleTimes;
+    this.eventId         = eventId;
+    this.ownerId         = ownerId;
+}
+
+protected EventParticipleTimeRequestDto() {
+}
 
 public EventParticipleTime to(Event event, User user) throws InvalidValueException {
     return EventParticipleTime.builder()

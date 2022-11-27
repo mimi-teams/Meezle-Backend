@@ -5,9 +5,6 @@ import com.mimi.w2m.backend.dto.ApiResponse;
 import com.mimi.w2m.backend.dto.ApiResultCode;
 import com.mimi.w2m.backend.dto.user.UserRequestDto;
 import com.mimi.w2m.backend.dto.user.UserResponseDto;
-import com.mimi.w2m.backend.error.EntityDuplicatedException;
-import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.UnauthorizedException;
 import com.mimi.w2m.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -56,18 +52,8 @@ public UserApi(UserService service, AuthService authService, HttpSession httpSes
 @Override
 public ApiResponse<UserResponseDto> get(
         @PathVariable("id") Long id) {
-    try {
-        final var user = service.getUser(id);
-        return ApiResponse.ofSuccess(UserResponseDto.of(user));
-    } catch(EntityNotFoundException e) {
-        logger.warn(e.message);
-        return ApiResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
-    } catch(Exception e) {
-        logger.error("Unexpected Exception occurs");
-        logger.error(e.getMessage());
-        Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
-    }
+    final var user = service.getUser(id);
+    return ApiResponse.ofSuccess(UserResponseDto.of(user));
 }
 
 @Override
@@ -81,25 +67,9 @@ public ApiResponse<UserResponseDto> post(
 public ApiResponse<UserResponseDto> patch(
         @PathVariable("id") Long id,
         @RequestBody UserRequestDto dto) {
-    try {
-        authService.isValidLogin(id, Role.USER, httpSession);
-        final var user = service.updateUser(id, dto.getName(), dto.getEmail());
-        return ApiResponse.ofSuccess(null);
-    } catch(UnauthorizedException e) {
-        logger.warn(e.message);
-        return ApiResponse.of(ApiResultCode.ILLEGAL_ACCESS, e.messageToClient, null);
-    } catch(EntityNotFoundException e) {
-        logger.warn(e.message);
-        return ApiResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
-    } catch(EntityDuplicatedException e) {
-        logger.warn(e.message);
-        return ApiResponse.of(ApiResultCode.ENTITY_DUPLICATED, e.messageToClient, null);
-    } catch(Exception e) {
-        logger.error("Unexpected Exception occurs");
-        logger.error(e.getMessage());
-        Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
-    }
+    authService.isValidLogin(id, Role.USER, httpSession);
+    final var user = service.updateUser(id, dto.getName(), dto.getEmail());
+    return ApiResponse.ofSuccess(null);
 }
 
 @Override
@@ -110,49 +80,31 @@ public ApiResponse<UserResponseDto> put(
     return ApiResponse.of(ApiResultCode.UNUSED_API, null);
 }
 
+@Operation(method = "DELETE", description = "[인증] USER 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
 @Override
-public ApiResponse<UserResponseDto> delete(
+public ResponseEntity<?> delete(
         @PathVariable("id") Long id) {
-    try {
-        authService.isValidLogin(id, Role.USER, httpSession);
-        final var associatedEvents = eventService.getEventsCreatedByUser(id);
-        associatedEvents.forEach(event -> {
-            eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(event.getId()));
-            participantService.deleteAll(participantService.getAllParticipantInEvent(event.getId()));
-        });
-        eventService.deleteAll(associatedEvents);
-        service.deleteUserReal(id);
-        return ApiResponse.ofSuccess(null);
-    } catch(UnauthorizedException e) {
-        logger.warn(e.message);
-        return ApiResponse.of(ApiResultCode.ILLEGAL_ACCESS, e.messageToClient, null);
-    } catch(EntityNotFoundException e) {
-        logger.warn(e.message);
-        return ApiResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
-    } catch(Exception e) {
-        logger.error("Unexpected Exception occurs");
-        logger.error(e.getMessage());
-        Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
-    }
+    authService.isValidLogin(id, Role.USER, httpSession);
+    final var associatedEvents = eventService.getEventsCreatedByUser(id);
+    associatedEvents.forEach(event -> {
+        eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(event.getId()));
+        participantService.deleteAll(participantService.getAllParticipantInEvent(event.getId()));
+    });
+    eventService.deleteAll(associatedEvents);
+
+    authService.logout(httpSession);
+    service.deleteUserReal(id);
+    final var headers = new HttpHeaders();
+    headers.setLocation(URI.create("/"));
+    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
 }
 
 @Operation(method = "GET", description = "[인증] Email 로 이용자 가져오기")
 @GetMapping(path = "")
 public ApiResponse<UserResponseDto> getByEmail(
         @RequestParam String email) {
-    try {
-        final var user = service.getUserByEmail(email);
-        return ApiResponse.ofSuccess(UserResponseDto.of(user));
-    } catch(EntityNotFoundException e) {
-        logger.warn(e.message);
-        return ApiResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
-    } catch(Exception e) {
-        logger.error("Unexpected Exception occurs");
-        logger.error(e.getMessage());
-        Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ApiResponse.of(ApiResultCode.SERVER_ERROR, null);
-    }
+    final var user = service.getUserByEmail(email);
+    return ApiResponse.ofSuccess(UserResponseDto.of(user));
 }
 
 @Operation(method = "GET", description = "[인증X] Oauth Login(platform = google or kakao). 신규 사용자의 경우 새로 등록된다")
@@ -160,42 +112,27 @@ public ApiResponse<UserResponseDto> getByEmail(
 public ResponseEntity<?> loginWithOauth2(
         @RequestParam String platform) {
     final var validPlatforms = Set.of("kakao", "google");
-    try {
-        final var headers = new HttpHeaders();
-        if(validPlatforms.contains(platform)) {
-            headers.setLocation(URI.create("/oauth2/authorization/" + platform));
-            return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-        } else {
-            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.INVALID_VALUE, null)));
-        }
-    } catch(Exception e) {
-        logger.error("Unexpected Exception occurs");
-        logger.error(e.getMessage());
-        Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.SERVER_ERROR, null)));
+    final var headers        = new HttpHeaders();
+    if(validPlatforms.contains(platform)) {
+        headers.setLocation(URI.create("/oauth2/authorization/" + platform));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    } else {
+        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.INVALID_VALUE, null)));
     }
 }
 
 @Operation(method = "GET", description = "[인증] User logout 처리")
 @GetMapping(path = "/logout")
-public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
-    try {
-        final var auth = SecurityContextHolder.getContext().getAuthentication();
-        if(Objects.nonNull(auth)) {
-            authService.logout(httpSession);
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-            final var headers = new HttpHeaders();
-            headers.setLocation(URI.create("/"));
-            return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-        } else {
-            logger.warn("Not login");
-            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.ENTITY_NOT_FOUND, null)));
-        }
-    } catch(Exception e) {
-        logger.error("Unexpected Exception occurs");
-        logger.error(e.getMessage());
-        Arrays.stream(e.getStackTrace()).toList().forEach(logger::error);
-        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.SERVER_ERROR, null)));
+public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    final var auth = SecurityContextHolder.getContext().getAuthentication();
+    if(Objects.nonNull(auth)) {
+        authService.logout(httpSession);
+        new SecurityContextLogoutHandler().logout(request, response, auth);
+    } else {
+        logger.warn("Not login");
     }
+    final var headers = new HttpHeaders();
+    headers.setLocation(URI.create("/"));
+    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
 }
 }

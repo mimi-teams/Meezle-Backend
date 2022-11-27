@@ -5,7 +5,7 @@ import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
 import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.io.Serializable;
 
@@ -16,17 +16,28 @@ import java.io.Serializable;
  * @version 1.0.0
  * @since 2022/11/17
  **/
-@Data
-@Builder
+@Getter
 @Schema
 public class EventParticipleTimeResponseDto implements Serializable {
-private final Long   eventParticipleTimeId;
+private Long   eventParticipleTimeId;
 @Schema(description = "MONDAY,... 의 형식")
-private final String ableDayOfWeeks;
+private String ableDayOfWeeks;
 @Schema(description = "beginTime-endTime,... 의 형식")
-private final String participleTimes;
+private String participleTimes;
 @Schema(description = "연관된 event")
-private final Long   eventId;
+private Long   eventId;
+
+@Builder
+public EventParticipleTimeResponseDto(Long eventParticipleTimeId, String ableDayOfWeeks, String participleTimes,
+                                      Long eventId) {
+    this.eventParticipleTimeId = eventParticipleTimeId;
+    this.ableDayOfWeeks        = ableDayOfWeeks;
+    this.participleTimes       = participleTimes;
+    this.eventId               = eventId;
+}
+
+protected EventParticipleTimeResponseDto() {
+}
 
 public static EventParticipleTimeResponseDto of(EventParticipleTime entity) {
     return EventParticipleTimeResponseDto.builder()

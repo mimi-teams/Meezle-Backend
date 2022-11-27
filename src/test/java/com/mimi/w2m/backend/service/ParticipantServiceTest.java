@@ -3,9 +3,7 @@ package com.mimi.w2m.backend.service;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.Participant;
 import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.participant.ParticipantRequestDto;
-import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
@@ -318,44 +316,44 @@ void login() {
     then(participantRepository).should(times(4)).findByName(anyString()); // created + login
 }
 
-@Test
-void logoutValid() {
-    //given
-    final var host = User
-                             .builder()
-                             .name("host")
-                             .email("host@meezle.org")
-                             .build();
-    final var validEvent = Event
-                                   .builder()
-                                   .title("event")
-                                   .user(host)
-                                   .color(Color.RED)
-                                   .build();
-    final var validParticipant = Participant
-                                         .builder()
-                                         .name("valid")
-                                         .event(validEvent)
-                                         .build();
-    final var info = new LoginInfo(validParticipant.getId(), Role.PARTICIPANT);
-    given(httpSession.getAttribute(LoginInfo.key)).willReturn(info);
-
-    //when
-    participantService.logout();
-
-    //then
-    then(httpSession).should(times(1)).getAttribute(anyString());
-}
-
-@Test
-void logoutInValid() {
-    //given
-    given(httpSession.getAttribute(LoginInfo.key)).willReturn(null);
-
-    //when
-    assertThatThrownBy(() -> participantService.logout()).isInstanceOf(EntityNotFoundException.class);
-
-    //then
-    then(httpSession).should(times(1)).getAttribute(anyString());
-}
+//@Test
+//void logoutValid() {
+//    //given
+//    final var host = User
+//                             .builder()
+//                             .name("host")
+//                             .email("host@meezle.org")
+//                             .build();
+//    final var validEvent = Event
+//                                   .builder()
+//                                   .title("event")
+//                                   .user(host)
+//                                   .color(Color.RED)
+//                                   .build();
+//    final var validParticipant = Participant
+//                                         .builder()
+//                                         .name("valid")
+//                                         .event(validEvent)
+//                                         .build();
+//    final var info = new LoginInfo(validParticipant.getId(), Role.PARTICIPANT);
+//    given(httpSession.getAttribute(LoginInfo.key)).willReturn(info);
+//
+//    //when
+//    participantService.logout();
+//
+//    //then
+//    then(httpSession).should(times(1)).getAttribute(anyString());
+//}
+//
+//@Test
+//void logoutInValid() {
+//    //given
+//    given(httpSession.getAttribute(LoginInfo.key)).willReturn(null);
+//
+//    //when
+//    assertThatThrownBy(() -> participantService.logout()).isInstanceOf(EntityNotFoundException.class);
+//
+//    //then
+//    then(httpSession).should(times(1)).getAttribute(anyString());
+//}
 }

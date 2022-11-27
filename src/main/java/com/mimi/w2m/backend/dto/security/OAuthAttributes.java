@@ -4,6 +4,7 @@ import com.mimi.w2m.backend.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Map;
  * @since : 2022/09/30
  */
 @Getter
-public class OAuthAttributes {
+public class OAuthAttributes implements Serializable {
 private final Map<String, Object> attributes;
 private final String              nameAttributeKey;
 private final String              name;
@@ -45,7 +46,7 @@ private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String
 }
 
 private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
-    var kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
+    var kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
     var kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
     return OAuthAttributes.builder()
                           .name((String) kakaoProfile.get("nickname"))

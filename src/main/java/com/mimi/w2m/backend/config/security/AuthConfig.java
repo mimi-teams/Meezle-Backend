@@ -1,6 +1,5 @@
 package com.mimi.w2m.backend.config.security;
 
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -30,17 +29,22 @@ private final UserService customOAuth2UserService;
 
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//    http.authorizeRequests()
+//        .antMatchers("/").permitAll()
+//        .antMatchers("/meezle/api/v1/users/login").permitAll()
+//        .antMatchers("/meezle/api/v1/users/**").hasAuthority(Role.USER.getKey())
+//        .antMatchers("/meezle/api/v1/participants/login").permitAll()
+//        .antMatchers("/meezle/api/v1/participants/**").hasAuthority(Role.PARTICIPANT.getKey())
+//        .antMatchers("/meezle/api/v1/events/**").hasAnyAuthority(Role.USER.getKey(), Role.PARTICIPANT.getKey())
+//        .anyRequest().permitAll().and()
+//        .logout().disable()
+//        .oauth2Login()
+//        .defaultSuccessUrl("/")
+//        .userInfoEndpoint().userService(customOAuth2UserService);
+
     http.authorizeRequests()
-        .antMatchers("/").permitAll()
-        .antMatchers("/meezle/api/v1/users/login").permitAll()
-        .antMatchers("/meezle/api/v1/participants/login").permitAll()
-        .antMatchers("/meezle/api/v1/users/**").hasAuthority(Role.USER.getKey())
-        .antMatchers("/meezle/api/v1/participants/login").permitAll()
-        .antMatchers("/meezle/api/v1/participants/**").hasAuthority(Role.PARTICIPANT.getKey())
-        .antMatchers("/meezle/api/v1/events/**").hasAnyAuthority(Role.USER.getKey(), Role.PARTICIPANT.getKey())
         .anyRequest().permitAll().and()
-        .logout().deleteCookies("remove").logoutUrl("/meezle/api/v1/users/logout").logoutSuccessUrl("/")
-        .invalidateHttpSession(true).clearAuthentication(true).and()
+        .logout().disable()
         .oauth2Login()
         .defaultSuccessUrl("/")
         .userInfoEndpoint().userService(customOAuth2UserService);
