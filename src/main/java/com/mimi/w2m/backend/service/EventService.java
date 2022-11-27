@@ -45,8 +45,8 @@ private final EventRepository            eventRepository;
  * @since 2022-10-31
  */
 @Transactional
-public Event createEvent(EventRequestDto requestDto) throws EntityNotFoundException {
-    var user = userService.getUser(requestDto.getUserId());
+public Event createEvent(Long hostId, EventRequestDto requestDto) throws EntityNotFoundException {
+    var user = userService.getUser(hostId);
     return eventRepository.save(requestDto.to(user));
 }
 

@@ -3,7 +3,7 @@ package com.mimi.w2m.backend.service;
 import com.mimi.w2m.backend.domain.Participant;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.participant.ParticipantRequestDto;
-import com.mimi.w2m.backend.dto.security.SessionInfo;
+import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
@@ -146,8 +146,8 @@ public Participant login(ParticipantRequestDto requestDto) throws EntityNotFound
     var storedSalt = participant.getSalt();
     var receivedPw = generateHashedPw(storedSalt, requestDto.getPassword());
     if(storedPw.equals(receivedPw)) {
-        var info = new SessionInfo(participant.getId(), Role.PARTICIPANT);
-        httpSession.setAttribute(SessionInfo.key, info);
+        var info = new LoginInfo(participant.getId(), Role.PARTICIPANT);
+        httpSession.setAttribute(LoginInfo.key, info);
         return participant;
     } else {
         throw new InvalidValueException("유효하지 않은 비밀번호 : " + requestDto.getPassword(), "유효하지 않은 비밀번호");
@@ -162,9 +162,9 @@ public Participant login(ParticipantRequestDto requestDto) throws EntityNotFound
  **/
 @Transactional
 public void logout() throws EntityNotFoundException {
-    Optional.ofNullable((SessionInfo) httpSession.getAttribute(SessionInfo.key))
+    Optional.ofNullable((LoginInfo) httpSession.getAttribute(LoginInfo.key))
             .orElseThrow(() -> new EntityNotFoundException("로그인된 참여자 정보가 없습니다"));
-    httpSession.removeAttribute(SessionInfo.key);
+    httpSession.removeAttribute(LoginInfo.key);
 }
 
 public void deleteAll(List<Participant> participants) {

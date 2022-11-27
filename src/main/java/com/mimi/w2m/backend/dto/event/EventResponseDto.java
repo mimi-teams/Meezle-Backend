@@ -23,7 +23,7 @@ public class EventResponseDto implements Serializable {
 
 private final Long           eventId;
 @Schema(description = "이벤트 생성자 id")
-private final Long           userId;
+private final Long           hostId;
 private final String         title;
 @DateTimeFormat(pattern = "yyyy-mm-dd'T'hh:mm:ss")
 private final LocalDateTime  deletedDate;
@@ -40,7 +40,7 @@ private final String         description;
 public static EventResponseDto of(Event entity) {
     return EventResponseDto.builder()
                            .eventId(entity.getId())
-                           .userId(entity.getUser().getId())
+                           .hostId(entity.getUser().getId())
                            .title(entity.getTitle())
                            .deletedDate(entity.getDeletedAt())
                            .dDay(entity.getDDay())

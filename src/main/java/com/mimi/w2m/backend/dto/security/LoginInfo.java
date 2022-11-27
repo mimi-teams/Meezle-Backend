@@ -9,7 +9,7 @@ import com.mimi.w2m.backend.domain.type.Role;
  * @version 1.0.0
  * @since 2022/11/25
  **/
-public record SessionInfo(Long loginId,
-                          Role role) {
+public record LoginInfo(Long loginId,
+                        Role role) {
 public static String key = "info";
 }
