@@ -36,16 +36,16 @@ private final EventParticipleTimeRepository eventParticipleTimeRepository;
  * @since 2022-11-01
  */
 @Transactional
-public EventParticipleTime createOrUpdate(EventParticipleTimeRequestDto requestDto, Role role) throws InvalidValueException, EntityNotFoundException {
-    var event = eventRepository.findById(requestDto.getEventId())
-                               .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + requestDto.getEventId(), "존재하지 않는 이벤트"));
+public EventParticipleTime createOrUpdate(Long eventId, EventParticipleTimeRequestDto requestDto, Long ownerId, Role role) throws InvalidValueException, EntityNotFoundException {
+    var event = eventRepository.findById(eventId)
+                               .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트 : " + eventId, "존재하지 않는 이벤트"));
     if(role == Role.USER) {
-        var user = userService.getUser(requestDto.getOwnerId());
+        var user = userService.getUser(ownerId);
         eventParticipleTimeRepository.deleteAll(eventParticipleTimeRepository.findAllByEntityAtEvent(user, event));
         return eventParticipleTimeRepository.save(requestDto.to(event, user));
 
     } else if(role == Role.PARTICIPANT) {
-        var participant = participantService.getParticipant(requestDto.getOwnerId());
+        var participant = participantService.getParticipant(ownerId);
         eventParticipleTimeRepository.deleteAll(eventParticipleTimeRepository.findAllByEntityAtEvent(participant,
                                                                                                      event));
         return eventParticipleTimeRepository.save(requestDto.to(event, participant));

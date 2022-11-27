@@ -114,5 +114,4 @@ public ResponseEntity<?> logout() {
     headers.setLocation(URI.create("/"));
     return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
 }
-
 }

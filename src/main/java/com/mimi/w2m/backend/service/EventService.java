@@ -110,9 +110,9 @@ public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, I
  * @since 2022/11/21
  **/
 @Transactional
-public Event setEventTimeDirectly(EventParticipleTimeRequestDto requestDto) throws EntityNotFoundException,
+public Event setEventTimeDirectly(Long eventId, EventParticipleTimeRequestDto requestDto) throws EntityNotFoundException,
                                                                                    InvalidValueException {
-    final var event = getEvent(requestDto.getEventId());
+    final var event = getEvent(eventId);
     final var dayOfWeeks = new SetDayOfWeekConverter()
                              .convertToEntityAttribute(requestDto.getAbleDayOfWeeks());
     final var participleTime = new SetParticipleTimeConverter()
@@ -165,7 +165,7 @@ public List<Event> getEventByTitle(String title) throws EntityNotFoundException 
         return events;
     }
 }
-
+// TODO: 2022/11/27 사용자가 다른 이벤트에 참여하는 것을 처리
 /**
  * 삭제된 이벤트도 모두 조회된다
  *

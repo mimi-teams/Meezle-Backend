@@ -27,17 +27,11 @@ public class EventParticipleTimeRequestDto implements Serializable {
 private String ableDayOfWeeks;
 @Schema(description = "beginTime-endTime, ... 의 형식")
 private String participleTimes;
-@Schema(description = "연관된 event")
-private Long   eventId;
-@Schema(description = "User or Participant의 id")
-private Long   ownerId;
 
 @Builder
-public EventParticipleTimeRequestDto(String ableDayOfWeeks, String participleTimes, Long eventId, Long ownerId) {
+public EventParticipleTimeRequestDto(String ableDayOfWeeks, String participleTimes) {
     this.ableDayOfWeeks  = ableDayOfWeeks;
     this.participleTimes = participleTimes;
-    this.eventId         = eventId;
-    this.ownerId         = ownerId;
 }
 
 protected EventParticipleTimeRequestDto() {
