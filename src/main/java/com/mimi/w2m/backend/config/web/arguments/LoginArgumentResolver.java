@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.config.web;
+package com.mimi.w2m.backend.config.web.arguments;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

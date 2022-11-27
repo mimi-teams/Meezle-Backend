@@ -33,7 +33,7 @@ public static <T> ApiResponse<T> ofSuccess(T data) {
 
 @SuppressWarnings("unused")
 public static <T> ApiResponse<T> of(ApiResultCode code, T data) {
-    return new ApiResponse<>(code, "", data);
+    return new ApiResponse<>(code, code.defaultMessage, data);
 }
 
 @SuppressWarnings("unused")

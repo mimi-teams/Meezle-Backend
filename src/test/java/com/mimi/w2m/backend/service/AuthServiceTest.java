@@ -53,7 +53,7 @@ void isCurrentLoginValidUser() {
     given(userService.getUser(userId)).willReturn(user);
 
     //when
-    authService.isCurrentLogin(validId, validRole);
+    authService.isCurrentLogin(validId, validRole, httpSession);
 
     //then
     then(httpSession).should(times(1)).getAttribute(anyString());
@@ -74,7 +74,7 @@ void isCurrentLoginValidParticipant() {
     given(participantService.getParticipant(participantId)).willReturn(participant);
 
     //when
-    authService.isCurrentLogin(participantId, validRole);
+    authService.isCurrentLogin(participantId, validRole, httpSession);
 
     //then
     then(httpSession).should(times(1)).getAttribute(anyString());
@@ -91,7 +91,7 @@ void isCurrentLoginInValidByMismatchingRole() {
     given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, invalidRole))
+    assertThatThrownBy(() -> authService.isCurrentLogin(validId, invalidRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then
@@ -108,7 +108,7 @@ void isCurrentLoginInValidByMismatchingId() {
     given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(invalidId, validRole))
+    assertThatThrownBy(() -> authService.isCurrentLogin(invalidId, validRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then
@@ -123,7 +123,7 @@ void isCurrentLoginInValidByNullInfo() {
     given(httpSession.getAttribute(SessionInfo.key)).willReturn(null);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole))
+    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then
@@ -140,7 +140,7 @@ void isCurrentLoginInValidByNotExistedUser() {
     given(userService.getUser(validId)).willThrow(EntityNotFoundException.class);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole))
+    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
@@ -158,7 +158,7 @@ void isCurrentLoginInValidByNotExistedParticipant() {
     given(participantService.getParticipant(validId)).willThrow(EntityNotFoundException.class);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole))
+    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
@@ -175,7 +175,7 @@ void isCurrentLoginInValidByNoneRole() {
     given(httpSession.getAttribute(SessionInfo.key)).willReturn(validInfo);
 
     //when
-    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole))
+    assertThatThrownBy(() -> authService.isCurrentLogin(validId, validRole, httpSession))
             .isInstanceOf(UnauthorizedException.class);
 
     //then

@@ -8,10 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-
-import java.io.IOException;
-import java.util.Objects;
 
 /**
  * AuthConfig
@@ -25,37 +21,25 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthConfig {
 private final UserService customOAuth2UserService;
+
 /**
- * @return webSecurityCustomizer를 이용해 ignoring을 하는 것은 비권장 사항이다. SecurityFilterChain과 WebSecurityCustomizer를 구분하여
- * 작성하지
+ * @return webSecurityCustomizer를 이용해 ignoring을 하는 것은 비권장 사항이다. SecurityFilterChain과 WebSecurityCustomizer를 구분하여 작성하지
  * 말고, SecurityFilterChain으로 통합해 작성하자! 대응하는 chain의 구문: http.authorizeRequests().antMatcher(....).permitAll() :
  * antMathcer에 해당하는 uri를 모두에게 개방한다
  */
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//
-//        return web -> {
-//            web.ignoring().antMatchers("/resources/**");
-//            web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-//        };
-//    }
+
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-        .antMatchers("/api/v1/security/login/**").permitAll()
-        .antMatchers("/api/v1/**").hasAnyRole(Role.USER.name(), Role.PARTICIPANT.getKey())
+        .antMatchers("/").permitAll()
+        .antMatchers("/meezle/api/v1/users/login").permitAll()
+        .antMatchers("/meezle/api/v1/participants/login").permitAll()
+        .antMatchers("/meezle/api/v1/users/**").hasAuthority(Role.USER.getKey())
+        .antMatchers("/meezle/api/v1/participants/login").permitAll()
+        .antMatchers("/meezle/api/v1/participants/**").hasAuthority(Role.PARTICIPANT.getKey())
+        .antMatchers("/meezle/api/v1/events/**").hasAnyAuthority(Role.USER.getKey(), Role.PARTICIPANT.getKey())
         .anyRequest().permitAll().and()
-        .csrf().disable()
-        .logout().logoutUrl("/api/v1/security/logout").addLogoutHandler(((request, response, authentication) -> {
-            if(!Objects.isNull(authentication)) {
-                new SecurityContextLogoutHandler().logout(request, response, authentication);
-            }
-            try {
-                response.sendRedirect("/");
-            } catch(IOException e) {
-                throw new RuntimeException(e);
-            }
-        }))
+        .logout().deleteCookies("remove").logoutUrl("/meezle/api/v1/users/logout").logoutSuccessUrl("/")
         .invalidateHttpSession(true).clearAuthentication(true).and()
         .oauth2Login()
         .defaultSuccessUrl("/")

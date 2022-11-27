@@ -87,4 +87,8 @@ public List<EventParticipleTime> getEventParticipleTimes(Long eventId, Long id, 
         throw new InvalidValueException("유효하지 않은 사용자 : " + role.getKey(), "유효하지 않은 사용자");
     }
 }
+
+public void deleteAll(List<EventParticipleTime> eventParticipleTimes) {
+    eventParticipleTimeRepository.deleteAll(eventParticipleTimes);
+}
 }

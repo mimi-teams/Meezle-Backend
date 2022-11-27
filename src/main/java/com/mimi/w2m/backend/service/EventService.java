@@ -112,10 +112,10 @@ public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, I
 @Transactional
 public Event setEventTimeDirectly(EventParticipleTimeRequestDto requestDto) throws EntityNotFoundException,
                                                                                    InvalidValueException {
-    var event = getEvent(requestDto.getEventId());
-    var dayOfWeeks = new SetDayOfWeekConverter()
+    final var event = getEvent(requestDto.getEventId());
+    final var dayOfWeeks = new SetDayOfWeekConverter()
                              .convertToEntityAttribute(requestDto.getAbleDayOfWeeks());
-    var participleTime = new SetParticipleTimeConverter()
+    final var participleTime = new SetParticipleTimeConverter()
                                  .convertToEntityAttribute(requestDto.getParticipleTimes());
     if(participleTime.size() != 1) {
         throw new InvalidValueException("참여 시간은 유일해야 합니다 : " + participleTime, "참여 시간은 유일해야 합니다");
@@ -123,9 +123,27 @@ public Event setEventTimeDirectly(EventParticipleTimeRequestDto requestDto) thro
     return event.update(dayOfWeeks, participleTime.stream().toList().get(0));
 }
 
+/**
+ * 이벤트 삭제하기(진짜)
+ *
+ * @author teddy
+ * @since 2022/11/27
+ **/
 @Transactional
-public Event deleteEvent(Long eventId) throws EntityNotFoundException {
-    var event = getEvent(eventId);
+public void deleteEventReal(Long eventId) throws EntityNotFoundException {
+    final var event = getEvent(eventId);
+    eventRepository.delete(event);
+}
+
+/**
+ * 이벤트 삭제하기(deletedAt 설정하기)
+ *
+ * @author teddy
+ * @since 2022/11/27
+ **/
+@Transactional
+public Event deleteEventNotReal(Long eventId) throws EntityNotFoundException {
+    final var event = getEvent(eventId);
     return event.delete();
 }
 
@@ -136,10 +154,10 @@ public Event deleteEvent(Long eventId) throws EntityNotFoundException {
  * @since 2022-10-31
  */
 public List<Event> getEventByTitle(String title) throws EntityNotFoundException {
-    var events = eventRepository.findByTitle(title)
+    final var events = eventRepository.findByTitle(title)
                                 .stream()
-                                .filter(event -> Objects.isNull(event.getDeletedDate()) ||
-                                                 LocalDateTime.now().isBefore(event.getDeletedDate()))
+                                .filter(event -> Objects.isNull(event.getDeletedAt()) ||
+                                                 LocalDateTime.now().isBefore(event.getDeletedAt()))
                                 .collect(toList());
     if(events.isEmpty()) {
         throw new EntityNotFoundException("이벤트가 존재하지 않습니다 : " + title, "이벤트가 존재하지 않습니다");
@@ -163,5 +181,9 @@ public List<Event> getEventsCreatedByUser(Long userId) throws EntityNotFoundExce
     {
         return events;
     }
+}
+
+public void deleteAll(List<Event> events) {
+    eventRepository.deleteAll(events);
 }
 }

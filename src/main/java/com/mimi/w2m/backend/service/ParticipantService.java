@@ -166,4 +166,8 @@ public void logout() throws EntityNotFoundException {
             .orElseThrow(() -> new EntityNotFoundException("로그인된 참여자 정보가 없습니다"));
     httpSession.removeAttribute(SessionInfo.key);
 }
+
+public void deleteAll(List<Participant> participants) {
+    participantRepository.deleteAll(participants);
+}
 }

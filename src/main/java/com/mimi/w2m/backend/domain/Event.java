@@ -39,8 +39,8 @@ private Long id;
 private String title;
 
 @Comment("삭제 일자, 삭제가 안되었으면 null")
-@Column(name = "deleted_date")
-private LocalDateTime deletedDate;
+@Column(name = "deleted_at")
+private LocalDateTime deletedAt;
 
 @Comment("만료 일자, 만료 일자가 없으면 null")
 @Column(name = "d_day")
@@ -77,7 +77,7 @@ public Event(String title, LocalDateTime dDay, Set<DayOfWeek> dayOfWeeks, Partic
     this.dayOfWeeks     = dayOfWeeks;
     this.participleTime = participleTime;
     this.user           = user;
-    this.deletedDate    = null;
+    this.deletedAt      = null;
     this.color          = color;
     this.description    = Objects.isNull(description) ? Strings.EMPTY : description;
 }
@@ -100,7 +100,7 @@ public Event update(Set<DayOfWeek> dayOfWeeks, ParticipleTime participleTime) {
 }
 
 public Event delete() {
-    this.deletedDate = LocalDateTime.now();
+    this.deletedAt = LocalDateTime.now();
     return this;
 }
 
@@ -108,7 +108,7 @@ public Event delete() {
 public String toString() {
     final var formatter = new Formatter();
     return formatter.format("EventEntity[title=%s, user=%s, dDay=%s, deletedDay=%s, dayOfWeeks=%s, participleTime=%s,"
-                            + " color=%s, description=%s]", this.title, this.user, this.dDay, this.deletedDate,
+                            + " color=%s, description=%s]", this.title, this.user, this.dDay, this.deletedAt,
                             this.dayOfWeeks, this.participleTime, this.color, this.description).toString();
 }
 }

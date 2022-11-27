@@ -251,11 +251,11 @@ void deleteEvent() {
 
     //when
     final var beforeDeleted = LocalDateTime.now();
-    final var expectedEvent = eventService.deleteEvent(eventId);
+    final var expectedEvent = eventService.deleteEventNotReal(eventId);
     final var afterDeleted = LocalDateTime.now();
 
     //then
-    assertThat(expectedEvent.getDeletedDate()).isAfter(beforeDeleted).isBefore(afterDeleted);
+    assertThat(expectedEvent.getDeletedAt()).isAfter(beforeDeleted).isBefore(afterDeleted);
 
     then(eventRepository).should(times(1)).findById(anyLong());
 }
@@ -285,7 +285,7 @@ void getEventByTitleValid() {
     given(eventRepository.findByTitle("event")).willReturn(List.of(event1, event2));
 
     //when
-    eventService.deleteEvent(event2Id);
+    eventService.deleteEventNotReal(event2Id);
     final var expectedEvents = eventService.getEventByTitle("event");
 
     //then
@@ -322,8 +322,8 @@ void getEventByTitleInvalid() {
     given(eventRepository.findByTitle("event")).willReturn(List.of(event1, event2));
 
     //when
-    eventService.deleteEvent(event1Id);
-    eventService.deleteEvent(event2Id);
+    eventService.deleteEventNotReal(event1Id);
+    eventService.deleteEventNotReal(event2Id);
     assertThatThrownBy(() -> eventService.getEventByTitle("event"))
             .isInstanceOf(EntityNotFoundException.class);
 
