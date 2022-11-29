@@ -4,6 +4,7 @@
     <JavaCodeStyleSettings>
       <option name="PREFER_LONGER_NAMES" value="false" />
       <option name="REPLACE_INSTANCEOF_AND_CAST" value="true" />
+      <option name="SPACE_AFTER_CLOSING_ANGLE_BRACKET_IN_TYPE_ARGUMENT" value="true" />
       <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION" value="true" />
       <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION_IN_PARAMETER" value="true" />
       <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
@@ -20,11 +21,13 @@
       <option name="JD_KEEP_EMPTY_RETURN" value="false" />
     </JavaCodeStyleSettings>
     <codeStyleSettings language="JAVA">
+      <option name="KEEP_LINE_BREAKS" value="false" />
+      <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+      <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
       <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="1" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
       <option name="KEEP_BLANK_LINES_BETWEEN_PACKAGE_DECLARATION_AND_HEADER" value="1" />
       <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
-      <option name="DO_NOT_INDENT_TOP_LEVEL_CLASS_MEMBERS" value="true" />
       <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
       <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
@@ -49,6 +52,8 @@
       <option name="RESOURCE_LIST_WRAP" value="2" />
       <option name="WRAP_FIRST_METHOD_IN_CALL_CHAIN" value="true" />
       <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="true" />
+      <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
+      <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
       <option name="FOR_STATEMENT_WRAP" value="2" />
       <option name="ARRAY_INITIALIZER_WRAP" value="2" />
       <option name="WRAP_COMMENTS" value="true" />
@@ -56,13 +61,12 @@
       <option name="DOWHILE_BRACE_FORCE" value="3" />
       <option name="WHILE_BRACE_FORCE" value="3" />
       <option name="FOR_BRACE_FORCE" value="3" />
-      <option name="WRAP_LONG_LINES" value="true" />
       <option name="PARAMETER_ANNOTATION_WRAP" value="2" />
       <option name="VARIABLE_ANNOTATION_WRAP" value="2" />
       <option name="ENUM_CONSTANTS_WRAP" value="2" />
       <option name="KEEP_BUILDER_METHODS_INDENTS" value="true" />
       <indentOptions>
-        <option name="USE_RELATIVE_INDENTS" value="true" />
+        <option name="SMART_TABS" value="true" />
       </indentOptions>
       <arrangement>
         <groups>
