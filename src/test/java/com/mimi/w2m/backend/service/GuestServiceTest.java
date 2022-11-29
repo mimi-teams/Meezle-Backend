@@ -1,14 +1,14 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.dto.participant.ParticipantRequestDto;
+import com.mimi.w2m.backend.dto.guest.GuestRequestDto;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventRepository;
-import com.mimi.w2m.backend.repository.ParticipantRepository;
+import com.mimi.w2m.backend.repository.GuestRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -30,19 +30,19 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 /**
- * ParticipantServiceTest
+ * GuestServiceTest
  *
  * @author teddy
  * @version 1.0.0
  * @since 2022/11/24
  **/
 @ExtendWith(MockitoExtension.class)
-class ParticipantServiceTest {
-private final        Logger                logger = LogManager.getLogger(ParticipantServiceTest.class);
-@Mock private        ParticipantRepository participantRepository;
-@Mock private        EventRepository       eventRepository;
-@Mock private        HttpSession           httpSession;
-@InjectMocks private ParticipantService    participantService;
+class GuestServiceTest {
+private final Logger          logger = LogManager.getLogger(GuestServiceTest.class);
+@Mock private GuestRepository guestRepository;
+@Mock private EventRepository eventRepository;
+@Mock private        HttpSession  httpSession;
+@InjectMocks private GuestService guestService;
 
 @Test
 void createParticipantValid() {
@@ -60,22 +60,22 @@ void createParticipantValid() {
                                    .color(Color.RED)
                                    .build();
 
-    final var validRequestDto1 = new ParticipantRequestDto("participant", null, validEventId);
-    final var validRequestDto2 = new ParticipantRequestDto("participant2", "password", validEventId);
+    final var validRequestDto1 = new GuestRequestDto("participant", null, validEventId);
+    final var validRequestDto2 = new GuestRequestDto("participant2", "password", validEventId);
     given(eventRepository.findById(validEventId)).willReturn(Optional.of(validEvent));
-    given(participantRepository.findByName(validRequestDto1.getName())).willReturn(Optional.empty());
-    given(participantRepository.findByName(validRequestDto2.getName())).willReturn(Optional.empty());
-    given(participantRepository.save(any(Participant.class))).willAnswer(invoc -> invoc.getArgument(0));
+    given(guestRepository.findByName(validRequestDto1.getName())).willReturn(Optional.empty());
+    given(guestRepository.findByName(validRequestDto2.getName())).willReturn(Optional.empty());
+    given(guestRepository.save(any(Guest.class))).willAnswer(invoc -> invoc.getArgument(0));
     //when
-    final var expectedParticipant1 = participantService.createParticipant(validRequestDto1);
-    final var expectedParticipant2 = participantService.createParticipant(validRequestDto2);
+    final var expectedParticipant1 = guestService.create(validRequestDto1);
+    final var expectedParticipant2 = guestService.create(validRequestDto2);
     //then
     assertThat(expectedParticipant1.getName()).isEqualTo(validRequestDto1.getName());
     assertThat(expectedParticipant2.getName()).isEqualTo(validRequestDto2.getName());
 
     then(eventRepository).should(times(2)).findById(anyLong());
-    then(participantRepository).should(times(2)).findByName(anyString());
-    then(participantRepository).should(times(2)).save(any(Participant.class));
+    then(guestRepository).should(times(2)).findByName(anyString());
+    then(guestRepository).should(times(2)).save(any(Guest.class));
 
     logger.error(expectedParticipant1.toString());
     logger.error(expectedParticipant2.toString());
@@ -98,20 +98,20 @@ void createParticipantInValid() {
 
     final var validEventId             = 1L;
     final var notExistEventId          = 0L;
-    final var duplicatedNameRequestDto = new ParticipantRequestDto("duplicated", null, validEventId);
-    final var notExistEventRequestDto  = new ParticipantRequestDto("invalid", null, notExistEventId);
+    final var duplicatedNameRequestDto = new GuestRequestDto("duplicated", null, validEventId);
+    final var notExistEventRequestDto  = new GuestRequestDto("invalid", null, notExistEventId);
     given(eventRepository.findById(notExistEventId)).willReturn(Optional.empty());
-    given(participantRepository.findByName(duplicatedNameRequestDto.getName()))
+    given(guestRepository.findByName(duplicatedNameRequestDto.getName()))
             .willReturn(Optional.of(duplicatedNameRequestDto.to(validEvent, "salt", "password")));
     //when
-    assertThatThrownBy(() -> participantService.createParticipant(duplicatedNameRequestDto))
+    assertThatThrownBy(() -> guestService.create(duplicatedNameRequestDto))
             .isInstanceOf(EntityDuplicatedException.class);
-    assertThatThrownBy(() -> participantService.createParticipant(notExistEventRequestDto))
+    assertThatThrownBy(() -> guestService.create(notExistEventRequestDto))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
     then(eventRepository).should(times(1)).findById(anyLong());
-    then(participantRepository).should(times(2)).findByName(anyString());
+    then(guestRepository).should(times(2)).findByName(anyString());
 }
 
 @Test
@@ -131,29 +131,29 @@ void getAllParticipantInEvent() {
     final var validEventId   = 1L;
     final var invalidEventId = 0L;
 
-    final var participant1 = Participant
+    final var participant1 = Guest
                                      .builder()
                                      .name("participant1")
                                      .event(validEvent)
                                      .build();
-    final var participant2 = Participant
+    final var participant2 = Guest
                                      .builder()
                                      .name("participant2")
                                      .event(validEvent)
                                      .build();
     given(eventRepository.findById(validEventId)).willReturn(Optional.of(validEvent));
     given(eventRepository.findById(invalidEventId)).willReturn(Optional.empty());
-    given(participantRepository.findAllByEvent(validEvent)).willReturn(List.of(participant1, participant2));
+    given(guestRepository.findAllByEvent(validEvent)).willReturn(List.of(participant1, participant2));
 
     //when
-    final var expectedParticipants = participantService.getAllParticipantInEvent(validEventId);
-    assertThatThrownBy(() -> participantService.getAllParticipantInEvent(invalidEventId))
+    final var expectedParticipants = guestService.getAllInEvent(validEventId);
+    assertThatThrownBy(() -> guestService.getAllInEvent(invalidEventId))
             .isInstanceOf(EntityNotFoundException.class);
     //then
     assertThat(expectedParticipants).asList().containsExactly(participant1, participant2);
 
     then(eventRepository).should(times(2)).findById(anyLong());
-    then(participantRepository).should(times(1)).findAllByEvent(any(Event.class));
+    then(guestRepository).should(times(1)).findAllByEvent(any(Event.class));
 }
 
 @Test
@@ -170,12 +170,12 @@ void updateParticipantName() {
                                    .user(host)
                                    .color(Color.RED)
                                    .build();
-    final var validParticipant = Participant
+    final var validParticipant = Guest
                                          .builder()
                                          .name("valid")
                                          .event(validEvent)
                                          .build();
-    final var duplicatedParticipant = Participant
+    final var duplicatedParticipant = Guest
                                               .builder()
                                               .name("duplicated")
                                               .event(validEvent)
@@ -185,23 +185,23 @@ void updateParticipantName() {
     final var updatedName          = "updated";
     final var duplicatedName       = "duplicated";
 
-    given(participantRepository.findById(validParticipantId)).willReturn(Optional.of(validParticipant));
-    given(participantRepository.findById(invalidParticipantId)).willReturn(Optional.empty());
-    given(participantRepository.findByName(updatedName)).willReturn(Optional.empty());
-    given(participantRepository.findByName(duplicatedName)).willReturn(Optional.of(duplicatedParticipant));
+    given(guestRepository.findById(validParticipantId)).willReturn(Optional.of(validParticipant));
+    given(guestRepository.findById(invalidParticipantId)).willReturn(Optional.empty());
+    given(guestRepository.findByName(updatedName)).willReturn(Optional.empty());
+    given(guestRepository.findByName(duplicatedName)).willReturn(Optional.of(duplicatedParticipant));
 
     //when
-    final var expectedParticipant = participantService.updateParticipantName(validParticipantId, updatedName);
-    assertThatThrownBy(() -> participantService.updateParticipantName(validParticipantId, duplicatedName))
+    final var expectedParticipant = guestService.updateName(validParticipantId, updatedName);
+    assertThatThrownBy(() -> guestService.updateName(validParticipantId, duplicatedName))
             .isInstanceOf(EntityDuplicatedException.class);
-    assertThatThrownBy(() -> participantService.updateParticipantName(invalidParticipantId, updatedName))
+    assertThatThrownBy(() -> guestService.updateName(invalidParticipantId, updatedName))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
     assertThat(expectedParticipant.getName()).isEqualTo(updatedName);
 
-    then(participantRepository).should(times(3)).findById(anyLong());
-    then(participantRepository).should(times(2)).findByName(anyString());
+    then(guestRepository).should(times(3)).findById(anyLong());
+    then(guestRepository).should(times(2)).findByName(anyString());
 }
 
 @Test
@@ -218,7 +218,7 @@ void updateParticipantPassword() {
                                    .user(host)
                                    .color(Color.RED)
                                    .build();
-    final var validParticipant = Participant
+    final var validParticipant = Guest
                                          .builder()
                                          .name("valid")
                                          .event(validEvent)
@@ -226,19 +226,19 @@ void updateParticipantPassword() {
     final var validParticipantId   = 1L;
     final var invalidParticipantId = 0L;
     final var password             = "updated";
-    given(participantRepository.findById(validParticipantId)).willReturn(Optional.of(validParticipant));
-    given(participantRepository.findById(invalidParticipantId)).willReturn(Optional.empty());
+    given(guestRepository.findById(validParticipantId)).willReturn(Optional.of(validParticipant));
+    given(guestRepository.findById(invalidParticipantId)).willReturn(Optional.empty());
 
     //when
-    final var expectedParticipant = participantService.updateParticipantPassword(validParticipantId, password);
-    assertThatThrownBy(() -> participantService.updateParticipantPassword(invalidParticipantId, password))
+    final var expectedParticipant = guestService.updatePassword(validParticipantId, password);
+    assertThatThrownBy(() -> guestService.updatePassword(invalidParticipantId, password))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
     assertThat(expectedParticipant.getPassword()).isNotNull();
     assertThat(expectedParticipant.getSalt()).isNotNull();
 
-    then(participantRepository).should(times(2)).findById(anyLong());
+    then(guestRepository).should(times(2)).findById(anyLong());
 }
 
 @Test
@@ -255,23 +255,23 @@ void removeParticipant() {
                                    .user(host)
                                    .color(Color.RED)
                                    .build();
-    final var validParticipant = Participant
+    final var validParticipant = Guest
                                          .builder()
                                          .name("valid")
                                          .event(validEvent)
                                          .build();
     final var validParticipantId   = 1L;
     final var invalidParticipantId = 0L;
-    given(participantRepository.findById(validParticipantId)).willReturn(Optional.of(validParticipant));
-    given(participantRepository.findById(invalidParticipantId)).willReturn(Optional.empty());
+    given(guestRepository.findById(validParticipantId)).willReturn(Optional.of(validParticipant));
+    given(guestRepository.findById(invalidParticipantId)).willReturn(Optional.empty());
 
     //when
-    participantService.removeParticipant(validParticipantId);
-    assertThatThrownBy(() -> participantService.removeParticipant(invalidParticipantId))
+    guestService.remove(validParticipantId);
+    assertThatThrownBy(() -> guestService.remove(invalidParticipantId))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
-    then(participantRepository).should(times(2)).findById(anyLong());
+    then(guestRepository).should(times(2)).findById(anyLong());
 }
 
 @Test
@@ -288,32 +288,32 @@ void login() {
                                    .user(host)
                                    .color(Color.RED)
                                    .build();
-    final var validRequestDto       = new ParticipantRequestDto("valid", "valid", 0L);
-    final var invalidNameRequestDto = new ParticipantRequestDto("invalid", null, 0L);
-    final var invalidPwRequestDto   = new ParticipantRequestDto("valid", "invalid", 0L);
+    final var validRequestDto       = new GuestRequestDto("valid", "valid", 0L);
+    final var invalidNameRequestDto = new GuestRequestDto("invalid", null, 0L);
+    final var invalidPwRequestDto   = new GuestRequestDto("valid", "invalid", 0L);
 
     // hashedPw를 만들기 위해, createParticipant 를 사용한다
     given(eventRepository.findById(any())).willReturn(Optional.of(validEvent));
-    given(participantRepository.save(any(Participant.class))).willAnswer(invoc -> invoc.getArgument(0));
-    final var validParticipant = participantService.createParticipant(validRequestDto);
+    given(guestRepository.save(any(Guest.class))).willAnswer(invoc -> invoc.getArgument(0));
+    final var validParticipant = guestService.create(validRequestDto);
     then(eventRepository).should(times(1)).findById(any());
-    then(participantRepository).should(times(1)).save(any(Participant.class));
+    then(guestRepository).should(times(1)).save(any(Guest.class));
     // createdParticipant Done
 
-    given(participantRepository.findByName(validRequestDto.getName())).willReturn(Optional.of(validParticipant));
-    given(participantRepository.findByName(invalidNameRequestDto.getName())).willReturn(Optional.empty());
+    given(guestRepository.findByName(validRequestDto.getName())).willReturn(Optional.of(validParticipant));
+    given(guestRepository.findByName(invalidNameRequestDto.getName())).willReturn(Optional.empty());
 
     //when
-    final var expectedParticipant = participantService.login(validRequestDto);
-    assertThatThrownBy(() -> participantService.login(invalidNameRequestDto))
+    final var expectedParticipant = guestService.login(validRequestDto);
+    assertThatThrownBy(() -> guestService.login(invalidNameRequestDto))
             .isInstanceOf(EntityNotFoundException.class);
-    assertThatThrownBy(() -> participantService.login(invalidPwRequestDto))
+    assertThatThrownBy(() -> guestService.login(invalidPwRequestDto))
             .isInstanceOf(InvalidValueException.class);
 
     //then
     assertThat(expectedParticipant.toString()).isEqualTo(validParticipant.toString());
 
-    then(participantRepository).should(times(4)).findByName(anyString()); // created + login
+    then(guestRepository).should(times(4)).findByName(anyString()); // created + login
 }
 
 //@Test
@@ -330,7 +330,7 @@ void login() {
 //                                   .user(host)
 //                                   .color(Color.RED)
 //                                   .build();
-//    final var validParticipant = Participant
+//    final var validParticipant = Guest
 //                                         .builder()
 //                                         .name("valid")
 //                                         .event(validEvent)

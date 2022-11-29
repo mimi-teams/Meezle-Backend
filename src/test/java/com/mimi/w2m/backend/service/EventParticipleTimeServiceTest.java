@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipleTime;
-import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.domain.type.Role;
@@ -42,9 +42,9 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 class EventParticipleTimeServiceTest {
 private final        Logger                        logger = LogManager.getLogger(EventParticipleTimeServiceTest.class);
-@Mock private        UserService                   userService;
-@Mock private        ParticipantService            participantService;
-@Mock private        EventRepository               eventRepository;
+@Mock private UserService     userService;
+@Mock private GuestService    guestService;
+@Mock private EventRepository eventRepository;
 @Mock private        EventParticipleTimeRepository eventParticipleTimeRepository;
 @InjectMocks private EventParticipleTimeService    eventParticipleTimeService;
 
@@ -69,7 +69,7 @@ private final        Logger                        logger = LogManager.getLogger
 //    final var validEventId   = 1L;
 //    final var invalidEventId = 0L;
 //
-//    final var validParticipant = Participant
+//    final var validParticipant = Guest
 //                                         .builder()
 //                                         .name("valid")
 //                                         .event(validEvent)
@@ -105,7 +105,7 @@ private final        Logger                        logger = LogManager.getLogger
 //    given(eventRepository.findById(validEventId)).willReturn(Optional.of(validEvent));
 //    given(eventRepository.findById(invalidEventId)).willReturn(Optional.empty());
 //    given(userService.getUser(validUserId)).willReturn(validUser);
-//    given(participantService.getParticipant(validParticipantId)).willReturn(validParticipant);
+//    given(participantService.getGuest(validParticipantId)).willReturn(validParticipant);
 //    given(eventParticipleTimeRepository.save(any(EventParticipleTime.class))).willAnswer(invoc -> invoc.getArgument(0));
 //
 //    //when
@@ -136,7 +136,7 @@ private final        Logger                        logger = LogManager.getLogger
 //
 //    then(eventRepository).should(times(18)).findById(anyLong());
 //    then(userService).should(times(13)).getUser(anyLong());
-//    then(participantService).should(times(1)).getParticipant(anyLong());
+//    then(participantService).should(times(1)).getGuest(anyLong());
 //    then(eventParticipleTimeRepository).should(times(2)).save(any(EventParticipleTime.class));
 //
 //    logger.error(expectedUserParticipleTime);
@@ -212,7 +212,7 @@ void getEventParticipleTimesByEventAndOwnerId() {
                                    .build();
     final var validEventId   = 1L;
     final var invalidEventId = 0L;
-    final var participant = Participant
+    final var participant = Guest
                                     .builder()
                                     .name("participant")
                                     .event(validEvent)
@@ -237,8 +237,8 @@ void getEventParticipleTimesByEventAndOwnerId() {
     given(eventRepository.findById(invalidEventId)).willReturn(Optional.empty());
     given(userService.getUser(validUserId)).willReturn(user);
     given(userService.getUser(invalidUserId)).willThrow(EntityNotFoundException.class);
-    given(participantService.getParticipant(validParticipantId)).willReturn(participant);
-    given(participantService.getParticipant(invalidParticipantId)).willThrow(EntityNotFoundException.class);
+    given(guestService.get(validParticipantId)).willReturn(participant);
+    given(guestService.get(invalidParticipantId)).willThrow(EntityNotFoundException.class);
     given(eventParticipleTimeRepository.findAllByEntityAtEvent(user, validEvent)).willReturn(List.of(participleTime1));
     given(eventParticipleTimeRepository.findAllByEntityAtEvent(participant, validEvent)).willReturn(List.of(participleTime2));
 
@@ -247,13 +247,13 @@ void getEventParticipleTimesByEventAndOwnerId() {
                                                                                                  validUserId,
                                                                                                  Role.USER);
     final var expectedParticipleTimesByParticipant = eventParticipleTimeService.getEventParticipleTimes(validEventId,
-                                                                                                        validParticipantId, Role.PARTICIPANT);
+                                                                                                        validParticipantId, Role.GUEST);
     assertThatThrownBy(() -> eventParticipleTimeService.getEventParticipleTimes(invalidEventId, validUserId, Role.USER))
             .isInstanceOf(EntityNotFoundException.class);
     assertThatThrownBy(() -> eventParticipleTimeService.getEventParticipleTimes(validEventId, invalidUserId, Role.USER))
             .isInstanceOf(EntityNotFoundException.class);
     assertThatThrownBy(() -> eventParticipleTimeService.getEventParticipleTimes(validEventId, invalidParticipantId,
-                                                                                Role.PARTICIPANT))
+                                                                                Role.GUEST))
             .isInstanceOf(EntityNotFoundException.class);
     assertThatThrownBy(() -> eventParticipleTimeService.getEventParticipleTimes(validEventId, validUserId, Role.NONE))
             .isInstanceOf(InvalidValueException.class);
@@ -264,10 +264,10 @@ void getEventParticipleTimesByEventAndOwnerId() {
 
     then(eventRepository).should(times(6)).findById(anyLong());
     then(userService).should(times(2)).getUser(anyLong());
-    then(participantService).should(times(2)).getParticipant(anyLong());
+    then(guestService).should(times(2)).get(anyLong());
     then(eventParticipleTimeRepository).should(times(1))
                                        .findAllByEntityAtEvent(any(User.class), any(Event.class));
     then(eventParticipleTimeRepository).should(times(1))
-                                       .findAllByEntityAtEvent(any(Participant.class), any(Event.class));
+                                       .findAllByEntityAtEvent(any(Guest.class), any(Event.class));
 }
 }

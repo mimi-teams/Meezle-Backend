@@ -23,7 +23,7 @@ import java.util.Objects;
 @Getter
 @Table(name = "mimi_user")
 public class User extends BaseTimeEntity {
-@Comment("Aothorization에서의 역할")
+@Comment("Authorization 에서의 역할")
 @Convert(converter = RoleConverter.class)
 @Column(name = "role", length = 50, nullable = false, columnDefinition = "VARCHAR(20)")
 private final Role          role = Role.USER;
@@ -31,10 +31,10 @@ private final Role          role = Role.USER;
 @Column(name = "user_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private       Long          id;
-@Comment("가입한 사용자 이름(중복되어도 상관없다)")
+@Comment("가입한 사용자 이름(중복O)")
 @Column(name = "name", length = 200, nullable = false)
 private       String        name;
-@Comment("가입한 사용자 이메일(oauth login 등에 사용된다). CK로 동작한다(Unique!)")
+@Comment("가입한 사용자 이메일(oauth login 에 사용(중복X)")
 @Column(name = "email", length = 200, nullable = false, unique = true)
 private       String        email;
 @Comment("이용자 삭제일(없으면 null)")

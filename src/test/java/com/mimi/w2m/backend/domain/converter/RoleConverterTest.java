@@ -21,12 +21,12 @@ private final RoleConverter converter = new RoleConverter();
 void convertToDatabaseColumn() {
     //given
     final var expectedUserString        = Role.USER.getKey();
-    final var expectedParticipantString = Role.PARTICIPANT.getKey();
+    final var expectedParticipantString = Role.GUEST.getKey();
     final var expectedNoneString        = Role.NONE.getKey();
 
     //when
     final var givenUserString        = converter.convertToDatabaseColumn(Role.USER);
-    final var givenParticipantString = converter.convertToDatabaseColumn(Role.PARTICIPANT);
+    final var givenParticipantString = converter.convertToDatabaseColumn(Role.GUEST);
     final var givenNoneString        = converter.convertToDatabaseColumn(Role.NONE);
 
     //then
@@ -40,7 +40,7 @@ void convertToDatabaseColumn() {
 void convertToEntityAttribute() {
     //given
     final var expectedUserRole        = Role.USER;
-    final var expectedParticipantRole = Role.PARTICIPANT;
+    final var expectedParticipantRole = Role.GUEST;
     final var expectedNoneRole        = Role.NONE;
 
     //when

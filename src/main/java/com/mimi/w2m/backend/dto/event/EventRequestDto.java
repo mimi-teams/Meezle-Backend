@@ -18,7 +18,7 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 2022/11/17
  **/
-
+// TODO: 2022/11/27 설정 가능한 제한 시간 설정 
 @Getter
 @Schema(description = "Event를 생성할 때, 전달하는 정보")
 public class EventRequestDto implements Serializable {

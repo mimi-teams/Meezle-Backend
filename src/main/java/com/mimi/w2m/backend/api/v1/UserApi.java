@@ -35,35 +35,26 @@ import java.util.Set;
 @Tag(name = "User Api", description = "User 와 관련된 Api 관리")
 @RequestMapping(path = "/users")
 @RestController
-public class UserApi extends BaseGenericApi<UserRequestDto, UserResponseDto, Long, UserService> {
+public class UserApi extends BaseGenericApi<UserService> {
 private final Logger                     logger = LogManager.getLogger(UserApi.class);
 private final EventService               eventService;
-private final ParticipantService         participantService;
+private final GuestService               guestService;
 private final EventParticipleTimeService eventParticipleTimeService;
 
 public UserApi(UserService service, AuthService authService, HttpSession httpSession, EventService eventService,
-               ParticipantService participantService, EventParticipleTimeService timeService) {
+               GuestService guestService, EventParticipleTimeService timeService) {
     super(service, authService, httpSession);
     this.eventService          = eventService;
-    this.participantService    = participantService;
+    this.guestService          = guestService;
     eventParticipleTimeService = timeService;
 }
 
-@Override
 public ApiResponse<UserResponseDto> get(
         @PathVariable("id") Long id) {
     final var user = service.getUser(id);
     return ApiResponse.ofSuccess(UserResponseDto.of(user));
 }
 
-@Override
-@Deprecated
-public ApiResponse<UserResponseDto> post(
-        @RequestBody UserRequestDto dto) {
-    return ApiResponse.of(ApiResultCode.UNUSED_API, null);
-}
-
-@Override
 public ApiResponse<UserResponseDto> patch(
         @PathVariable("id") Long id,
         @RequestBody UserRequestDto dto) {
@@ -72,23 +63,14 @@ public ApiResponse<UserResponseDto> patch(
     return ApiResponse.ofSuccess(null);
 }
 
-@Override
-@Deprecated
-public ApiResponse<UserResponseDto> put(
-        @PathVariable("id") Long id,
-        @RequestBody UserRequestDto dto) {
-    return ApiResponse.of(ApiResultCode.UNUSED_API, null);
-}
-
 @Operation(method = "DELETE", description = "[인증] USER 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
-@Override
 public ResponseEntity<?> delete(
         @PathVariable("id") Long id) {
     authService.isValidLogin(id, Role.USER, httpSession);
     final var associatedEvents = eventService.getEventsCreatedByUser(id);
     associatedEvents.forEach(event -> {
         eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(event.getId()));
-        participantService.deleteAll(participantService.getAllParticipantInEvent(event.getId()));
+        guestService.deleteAll(guestService.getAllInEvent(event.getId()));
     });
     eventService.deleteAll(associatedEvents);
 
