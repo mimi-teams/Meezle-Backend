@@ -12,7 +12,7 @@ import java.util.Formatter;
 import java.util.Objects;
 
 /**
- * Participant
+ * Guest
  *
  * @author teddy
  * @version 1.0.0
@@ -20,18 +20,19 @@ import java.util.Objects;
  **/
 @Entity
 @Getter
-@Table(name = "meezle_participant")
-public class Participant extends BaseTimeEntity {
-@Comment("Aothorization에서의 역할")
+@Table(name = "meezle_guest", uniqueConstraints = {@UniqueConstraint(columnNames = {"name",
+                                                                                    "event_id"})})
+public class Guest extends BaseTimeEntity {
+@Comment("Authorization 에서의 역할")
 @Convert(converter = RoleConverter.class)
 @Column(name = "role", length = 50, nullable = false, columnDefinition = "VARCHAR(20)")
-private final Role   role = Role.PARTICIPANT;
+private final Role   role = Role.GUEST;
 @Id
-@Column(name = "participant_id")
+@Column(name = "guest_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private       Long   id;
 @Comment("참여자의 이름")
-@Column(name = "name", length = 200, nullable = false, unique = true)
+@Column(name = "name", length = 200, nullable = false)
 private       String name;
 @Comment("Salt")
 @Column(name = "salt", length = 200)
@@ -45,26 +46,26 @@ private       String password;
 private       Event  event;
 
 @Builder
-public Participant(String name, String password, String salt, Event event) {
+public Guest(String name, String password, String salt, Event event) {
     this.name     = name;
     this.password = password;
     this.salt     = salt;
     this.event    = event;
 }
 
-protected Participant() {
+protected Guest() {
 }
 
 public static Integer getSaltLength() {
     return 200;
 }
 
-public Participant updateName(String name) {
+public Guest updateName(String name) {
     this.name = name;
     return this;
 }
 
-public Participant updatePassword(String password, String salt) {
+public Guest updatePassword(String password, String salt) {
     this.password = password;
     this.salt     = salt;
     return this;
@@ -74,7 +75,7 @@ public Participant updatePassword(String password, String salt) {
 public String toString() {
     final var formatter = new Formatter();
     return formatter
-                   .format("ParticipantEntity[name=%s, password=%s, slat=%s]", this.name, this.password, this.salt)
+                   .format("GuestEntity[name=%s, password=%s, slat=%s]", this.name, this.password, this.salt)
                    .toString();
 }
 
@@ -97,7 +98,7 @@ public boolean equals(Object o) {
     if(o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
         return false;
     }
-    Participant that = (Participant) o;
+    Guest that = (Guest) o;
     return name != null && Objects.equals(name, that.name);
 }
 }

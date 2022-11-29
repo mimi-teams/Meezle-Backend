@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.repository;
 
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,7 @@ import java.util.Set;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
- * ParticipantRepositoryTest
+ * GuestRepositoryTest
  *
  * @author teddy
  * @version 1.0.0
@@ -25,9 +25,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
  **/
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class ParticipantRepositoryTest {
-@Autowired private ParticipantRepository participantRepository;
-@Autowired private UserRepository        userRepository;
+class GuestRepositoryTest {
+@Autowired private GuestRepository guestRepository;
+@Autowired private UserRepository  userRepository;
 @Autowired private EventRepository       eventRepository;
 
 @BeforeEach
@@ -47,23 +47,23 @@ void setUp() {
                               .color(Color.RED)
                               .build();
     eventRepository.save(event);
-    final var participant1 = Participant
+    final var participant1 = Guest
                                      .builder()
                                      .name("participant1")
                                      .password("not-empty-password")
                                      .salt("salt")
                                      .event(event)
                                      .build();
-    participantRepository.save(participant1);
+    guestRepository.save(participant1);
 
-    final var participant2 = Participant
+    final var participant2 = Guest
                                      .builder()
                                      .name("participant2")
                                      .password("not-empty-password")
                                      .salt("salt")
                                      .event(event)
                                      .build();
-    participantRepository.save(participant2);
+    guestRepository.save(participant2);
 }
 
 @Test
@@ -72,7 +72,7 @@ void findByName() {
     final var expectedName = "participant1";
 
     //when
-    final var givenParticipant = participantRepository.findByName(expectedName);
+    final var givenParticipant = guestRepository.findByName(expectedName);
 
     //then
     assertThat(givenParticipant).isPresent();
@@ -83,11 +83,11 @@ void findByName() {
 void findAllByEvent() {
     //given
     final var event                = eventRepository.findByTitle("event").get(0);
-    final var expectedParticipant1 = participantRepository.findByName("participant1").get();
-    final var expectedParticipant2 = participantRepository.findByName("participant2").get();
+    final var expectedParticipant1 = guestRepository.findByName("participant1").get();
+    final var expectedParticipant2 = guestRepository.findByName("participant2").get();
 
     //when
-    final var expectedParticipants = participantRepository.findAllByEvent(event);
+    final var expectedParticipants = guestRepository.findAllByEvent(event);
 
     //then
     assertThat(expectedParticipants.size()).isEqualTo(2);
@@ -100,12 +100,12 @@ void update() {
     final var updatedName         = "teddy";
     final var updatedPw           = "good-pw";
     final var updatedSalt         = "good-salt";
-    final var expectedParticipant = participantRepository.findByName("participant1").get();
+    final var expectedParticipant = guestRepository.findByName("participant1").get();
 
     //when
     expectedParticipant.updateName(updatedName);
     expectedParticipant.updatePassword(updatedPw, updatedSalt);
-    final var givenParticipant = participantRepository.findByName(updatedName);
+    final var givenParticipant = guestRepository.findByName(updatedName);
 
     //then
     assertThat(expectedParticipant).isEqualTo(givenParticipant.get());

@@ -22,6 +22,7 @@ private Integer green;
 private Integer blue;
 private Integer alpha;
 
+// TODO: 2022/11/27 RGB를 #rrbbgg 형식으로 주고받기
 @Builder
 public ColorDto(Integer red, Integer green, Integer blue, Integer alpha) {
     this.red   = red;

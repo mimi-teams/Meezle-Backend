@@ -11,17 +11,17 @@ import java.io.Serializable;
  * @since 2022-11-05
  */
 
-@Schema(name = "ApiResponse", description = "API에 응답에 일관성을 유지하기 위해서 존재한다.")
+@Schema(name = "ApiResponse", description = "API 에 응답에 일관성을 유지하기 위해서 존재한다.")
 @Getter
 public class ApiResponse<T> implements Serializable {
 
-private final ApiResultCode code;
+@Schema private final ApiResultCode code;
 
 /**
  * `null`또는 `blank`인 경우 `code`에 `defaultMessage`가 대체한다.
  */
-private final @Nullable String message;
-private final           T      data;
+@Schema private final @Nullable String message;
+@Schema private final           T      data;
 
 public ApiResponse(ApiResultCode code, String message, T data) {
     this.code    = code;

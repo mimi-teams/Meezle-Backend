@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
@@ -33,9 +33,9 @@ import static org.mockito.Mockito.times;
 class AuthServiceTest {
 @Mock private        HttpSession        httpSession;
 @Mock private        UserService        userService;
-@Mock private        EventService       eventService;
-@Mock private        ParticipantService participantService;
-@InjectMocks private AuthService        authService;
+@Mock private        EventService eventService;
+@Mock private        GuestService guestService;
+@InjectMocks private AuthService  authService;
 
 @Test
 void isCurrentLoginValidUser() {
@@ -63,29 +63,29 @@ void isCurrentLoginValidUser() {
 @Test
 void isCurrentLoginValidParticipant() {
     //given
-    final var participant = Participant
+    final var participant = Guest
                                     .builder()
                                     .name("user")
                                     .build();
     final var participantId = 1L;
-    final var validRole     = Role.PARTICIPANT;
+    final var validRole     = Role.GUEST;
     final var validInfo     = new LoginInfo(participantId, validRole);
     given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
-    given(participantService.getParticipant(participantId)).willReturn(participant);
+    given(guestService.get(participantId)).willReturn(participant);
 
     //when
     authService.isValidLogin(participantId, validRole, httpSession);
 
     //then
     then(httpSession).should(times(1)).getAttribute(anyString());
-    then(participantService).should(times(1)).getParticipant(anyLong());
+    then(guestService).should(times(1)).get(anyLong());
 }
 
 @Test
 void isCurrentLoginInValidByMismatchingRole() {
     //given
     final var validId     = 1L;
-    final var validRole   = Role.PARTICIPANT;
+    final var validRole   = Role.GUEST;
     final var invalidRole = Role.USER;
     final var validInfo   = new LoginInfo(validId, validRole);
     given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
@@ -103,7 +103,7 @@ void isCurrentLoginInValidByMismatchingId() {
     //given
     final var validId   = 1L;
     final var invalidId = 0L;
-    final var validRole = Role.PARTICIPANT;
+    final var validRole = Role.GUEST;
     final var validInfo = new LoginInfo(validId, validRole);
     given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
 
@@ -119,7 +119,7 @@ void isCurrentLoginInValidByMismatchingId() {
 void isCurrentLoginInValidByNullInfo() {
     //given
     final var validId   = 1L;
-    final var validRole = Role.PARTICIPANT;
+    final var validRole = Role.GUEST;
     given(httpSession.getAttribute(LoginInfo.key)).willReturn(null);
 
     //when
@@ -152,10 +152,10 @@ void isCurrentLoginInValidByNotExistedUser() {
 void isCurrentLoginInValidByNotExistedParticipant() {
     //given
     final var validId   = 1L;
-    final var validRole = Role.PARTICIPANT;
+    final var validRole = Role.GUEST;
     final var validInfo = new LoginInfo(validId, validRole);
     given(httpSession.getAttribute(LoginInfo.key)).willReturn(validInfo);
-    given(participantService.getParticipant(validId)).willThrow(EntityNotFoundException.class);
+    given(guestService.get(validId)).willThrow(EntityNotFoundException.class);
 
     //when
     assertThatThrownBy(() -> authService.isValidLogin(validId, validRole, httpSession))
@@ -163,7 +163,7 @@ void isCurrentLoginInValidByNotExistedParticipant() {
 
     //then
     then(httpSession).should(times(1)).getAttribute(anyString());
-    then(participantService).should(times(1)).getParticipant(anyLong());
+    then(guestService).should(times(1)).get(anyLong());
 }
 
 @Test

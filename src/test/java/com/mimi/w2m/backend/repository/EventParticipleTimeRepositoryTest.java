@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.repository;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipleTime;
-import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +27,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class EventParticipleTimeRepositoryTest {
-@Autowired private UserRepository                userRepository;
-@Autowired private ParticipantRepository         participantRepository;
-@Autowired private EventRepository               eventRepository;
+@Autowired private UserRepository  userRepository;
+@Autowired private GuestRepository guestRepository;
+@Autowired private EventRepository eventRepository;
 @Autowired private EventParticipleTimeRepository eventParticipleTimeRepository;
 
 @BeforeEach
@@ -49,12 +49,12 @@ void setUp() {
                               .build();
     eventRepository.save(event);
 
-    final var participant = Participant
+    final var participant = Guest
                                     .builder()
                                     .name("participant")
                                     .event(event)
                                     .build();
-    participantRepository.save(participant);
+    guestRepository.save(participant);
 
     final var eventParticipleTime1 = EventParticipleTime
                                              .builder()
@@ -81,7 +81,7 @@ void find() {
     //given
     final var expectedEvent       = eventRepository.findByTitle("event").get(0);
     final var expectedUser        = userRepository.findByName("user").get(0);
-    final var expectedParticipant = participantRepository.findByName("participant").get();
+    final var expectedParticipant = guestRepository.findByName("participant").get();
 
     final var expectedParticipleTime1 = eventParticipleTimeRepository.findAllByEntityAtEvent(expectedUser,
                                                                                              expectedEvent).get(0);
