@@ -24,8 +24,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthService {
 private final UserService        userService;
-private final EventService       eventService;
-private final ParticipantService participantService;
+private final EventService eventService;
+private final GuestService guestService;
 
 public void isValidLogin(Long id, Role role, HttpSession httpSession) throws UnauthorizedException,
                                                                              EntityNotFoundException {
@@ -42,7 +42,7 @@ public void isValidLogin(Long id, Role role, HttpSession httpSession) throws Una
         //Check EntityNotFound
         switch(role) {
             case USER -> userService.getUser(id);
-            case PARTICIPANT -> participantService.getParticipant(id);
+            case GUEST -> guestService.get(id);
             case NONE -> throw new UnauthorizedException("유효하지 않은 사용자 : " + role, "유효하지 않은 사용자");
         }
     }
@@ -51,11 +51,11 @@ public void isValidLogin(Long id, Role role, HttpSession httpSession) throws Una
 public void isInEvent(LoginInfo info, Long eventId) {
     switch(info.role()) {
         case USER -> isHost(info, eventId);
-        case PARTICIPANT -> {
+        case GUEST -> {
             final var event            = eventService.getEvent(eventId);
-            final var participantEvent = participantService.getParticipant(info.loginId()).getEvent();
+            final var participantEvent = guestService.get(info.loginId()).getEvent();
             if(!Objects.equals(event, participantEvent)) {
-                throw new UnauthorizedException("유효하지 않은 요청: Participant=" + info.loginId(), "이벤트 참여자가 아닙니다");
+                throw new UnauthorizedException("유효하지 않은 요청: Guest=" + info.loginId(), "이벤트 참여자가 아닙니다");
             }
         }
         case NONE -> throw new UnauthorizedException("유효하지 않은 요청: Role=" + info.role(), "유효하지 않은 이용자");
@@ -82,7 +82,7 @@ public LoginInfo getCurrentLogin(HttpSession httpSession) throws EntityNotFoundE
     }
     switch(info.role()) {
         case USER -> userService.getUser(info.loginId());
-        case PARTICIPANT -> participantService.getParticipant(info.loginId());
+        case GUEST -> guestService.get(info.loginId());
         case NONE -> throw new UnauthorizedException("유효하지 않은 사용자 : " + info.role(), "유효하지 않은 사용자");
     }
     return info;

@@ -1,8 +1,5 @@
 package com.mimi.w2m.backend.dto.security;
 
-import com.mimi.w2m.backend.domain.Participant;
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,40 +7,26 @@ import lombok.Getter;
 import java.io.Serializable;
 
 @Getter
-@Schema
+@Schema(description = "로그인 성공 시 반환되는 값")
 public class SessionInfoResponseDto implements Serializable {
+@Schema
 private Long   id;
+@Schema
 private String role;
-private String name;
-private String email;
 
 @Builder
-public SessionInfoResponseDto(Long id, String role, String name, String email) {
-    this.id    = id;
-    this.role  = role;
-    this.name  = name;
-    this.email = email;
+public SessionInfoResponseDto(Long id, String role) {
+    this.id   = id;
+    this.role = role;
 }
 
 protected SessionInfoResponseDto() {
 }
 
-public static SessionInfoResponseDto of(User entity) {
-    return SessionInfoResponseDto
-                   .builder()
-                   .id(entity.getId())
-                   .role(Role.USER.getKey())
-                   .name(entity.getName())
-                   .email(entity.getEmail())
-                   .build();
-}
-
-public static SessionInfoResponseDto of(Participant entity) {
-    return SessionInfoResponseDto
-                   .builder()
-                   .id(entity.getId())
-                   .role(Role.PARTICIPANT.getKey())
-                   .name(entity.getName())
-                   .build();
+public static SessionInfoResponseDto of(LoginInfo info) {
+    return SessionInfoResponseDto.builder()
+                                 .id(info.loginId())
+                                 .role(info.role().getKey())
+                                 .build();
 }
 }

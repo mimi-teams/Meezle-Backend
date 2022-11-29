@@ -22,8 +22,8 @@ public String convertToDatabaseColumn(Role attribute) {
 
 @Override
 public Role convertToEntityAttribute(String dbData) {
-    if(dbData.equals(Role.PARTICIPANT.getKey())) {
-        return Role.PARTICIPANT;
+    if(dbData.equals(Role.GUEST.getKey())) {
+        return Role.GUEST;
     } else if(dbData.equals(Role.USER.getKey())) {
         return Role.USER;
     } else {

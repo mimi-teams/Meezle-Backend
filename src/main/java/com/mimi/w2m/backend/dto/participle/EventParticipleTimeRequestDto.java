@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.dto.participle;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipleTime;
-import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
 import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
@@ -46,10 +46,10 @@ public EventParticipleTime to(Event event, User user) throws InvalidValueExcepti
                               .build();
 }
 
-public EventParticipleTime to(Event event, Participant participant) throws InvalidValueException {
+public EventParticipleTime to(Event event, Guest guest) throws InvalidValueException {
     return EventParticipleTime.builder()
                               .event(event)
-                              .participant(participant)
+                              .guest(guest)
                               .ableDayOfWeeks(new SetDayOfWeekConverter().convertToEntityAttribute(ableDayOfWeeks))
                               .participleTimes(new SetParticipleTimeConverter().convertToEntityAttribute(participleTimes))
                               .build();

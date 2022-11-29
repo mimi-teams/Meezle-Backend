@@ -49,21 +49,21 @@ private Event event;
 private User user;
 
 @Comment("참여자의 정보(user)")
-@ManyToOne(targetEntity = Participant.class, fetch = FetchType.LAZY)
-@JoinColumn(name = "participant_id")
-private Participant participant;
+@ManyToOne(targetEntity = Guest.class, fetch = FetchType.LAZY)
+@JoinColumn(name = "guest_id")
+private Guest guest;
 
 protected EventParticipleTime() {
 }
 
 @Builder
 public EventParticipleTime(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleTime> participleTimes, Event event,
-                           User user, Participant participant) {
+                           User user, Guest guest) {
     this.ableDayOfWeeks  = ableDayOfWeeks;
     this.participleTimes = participleTimes;
     this.event           = event;
     this.user            = user;
-    this.participant     = participant;
+    this.guest           = guest;
 }
 
 public EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleTime> participleTimes) {
@@ -76,7 +76,7 @@ public EventParticipleTime update(Set<DayOfWeek> ableDayOfWeeks, Set<ParticipleT
 public String toString() {
     final var formatter = new Formatter();
     return formatter.format("EventParticipleTimeEntity[ableDayOfWeeks=%s, participleTimes=%s, event=%s, user=%s, " +
-                            "participant=%s]"
-            , this.ableDayOfWeeks, this.participleTimes, this.event, this.user, this.participant).toString();
+                            "guest=%s]"
+            , this.ableDayOfWeeks, this.participleTimes, this.event, this.user, this.guest).toString();
 }
 }

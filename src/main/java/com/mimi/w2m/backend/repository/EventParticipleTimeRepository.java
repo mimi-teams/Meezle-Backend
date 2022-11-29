@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.repository;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipleTime;
-import com.mimi.w2m.backend.domain.Participant;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,8 +28,8 @@ List<EventParticipleTime> findAllByEntityAtEvent(
 List<EventParticipleTime> findAllByEvent(
         @Param("event") Event event);
 
-@Query("SELECT t FROM EventParticipleTime t WHERE t.participant = :participant and t.event = :event")
+@Query("SELECT t FROM EventParticipleTime t WHERE t.guest = :guest and t.event = :event")
 List<EventParticipleTime> findAllByEntityAtEvent(
-        @Param("participant") Participant participant,
+        @Param("guest") Guest guest,
         @Param("event") Event event);
 }
