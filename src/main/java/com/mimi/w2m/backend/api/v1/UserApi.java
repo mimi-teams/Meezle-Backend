@@ -36,85 +36,92 @@ import java.util.Set;
 @RequestMapping(path = "/users")
 @RestController
 public class UserApi extends BaseGenericApi<UserService> {
-private final Logger                     logger = LogManager.getLogger(UserApi.class);
-private final EventService               eventService;
-private final GuestService               guestService;
-private final EventParticipleTimeService eventParticipleTimeService;
+    private final Logger                     logger = LogManager.getLogger(UserApi.class);
+    private final EventService               eventService;
+    private final GuestService               guestService;
+    private final EventParticipleTimeService eventParticipleTimeService;
 
-public UserApi(UserService service, AuthService authService, HttpSession httpSession, EventService eventService,
-               GuestService guestService, EventParticipleTimeService timeService) {
-    super(service, authService, httpSession);
-    this.eventService          = eventService;
-    this.guestService          = guestService;
-    eventParticipleTimeService = timeService;
-}
-
-public ApiResponse<UserResponseDto> get(
-        @PathVariable("id") Long id) {
-    final var user = service.getUser(id);
-    return ApiResponse.ofSuccess(UserResponseDto.of(user));
-}
-
-public ApiResponse<UserResponseDto> patch(
-        @PathVariable("id") Long id,
-        @RequestBody UserRequestDto dto) {
-    authService.isValidLogin(id, Role.USER, httpSession);
-    final var user = service.updateUser(id, dto.getName(), dto.getEmail());
-    return ApiResponse.ofSuccess(null);
-}
-
-@Operation(method = "DELETE", description = "[인증] USER 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
-public ResponseEntity<?> delete(
-        @PathVariable("id") Long id) {
-    authService.isValidLogin(id, Role.USER, httpSession);
-    final var associatedEvents = eventService.getEventsCreatedByUser(id);
-    associatedEvents.forEach(event -> {
-        eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(event.getId()));
-        guestService.deleteAll(guestService.getAllInEvent(event.getId()));
-    });
-    eventService.deleteAll(associatedEvents);
-
-    authService.logout(httpSession);
-    service.deleteUserReal(id);
-    final var headers = new HttpHeaders();
-    headers.setLocation(URI.create("/"));
-    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-}
-
-@Operation(method = "GET", description = "[인증] Email 로 이용자 가져오기")
-@GetMapping(path = "")
-public ApiResponse<UserResponseDto> getByEmail(
-        @RequestParam String email) {
-    final var user = service.getUserByEmail(email);
-    return ApiResponse.ofSuccess(UserResponseDto.of(user));
-}
-
-@Operation(method = "GET", description = "[인증X] Oauth Login(platform = google or kakao). 신규 사용자의 경우 새로 등록된다")
-@GetMapping(path = "/login")
-public ResponseEntity<?> loginWithOauth2(
-        @RequestParam String platform) {
-    final var validPlatforms = Set.of("kakao", "google");
-    final var headers        = new HttpHeaders();
-    if(validPlatforms.contains(platform)) {
-        headers.setLocation(URI.create("/oauth2/authorization/" + platform));
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-    } else {
-        return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.INVALID_VALUE, null)));
+    public UserApi(UserService service, AuthService authService, HttpSession httpSession, EventService eventService,
+                   GuestService guestService, EventParticipleTimeService timeService) {
+        super(service, authService, httpSession);
+        this.eventService          = eventService;
+        this.guestService          = guestService;
+        eventParticipleTimeService = timeService;
     }
-}
 
-@Operation(method = "GET", description = "[인증] User logout 처리")
-@GetMapping(path = "/logout")
-public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-    final var auth = SecurityContextHolder.getContext().getAuthentication();
-    if(Objects.nonNull(auth)) {
+    @Operation(method = "GET", description = "[인증] ID의 USER 가져오기(인가 X)")
+    @GetMapping(path = "/{id}")
+    public UserResponseDto get(
+            @PathVariable("id") Long id) {
+        final var user = service.getUser(id);
+//        return ApiResponse.ofSuccess(UserResponseDto.of(user));
+        return UserResponseDto.of(user);
+    }
+
+    @Operation(method = "PATCH", description = "[인증] ID의 정보 수정하기(본인만 가능)")
+    @PatchMapping(path = "/{id}")
+    public ApiResponse<UserResponseDto> patch(
+            @PathVariable("id") Long id,
+            @RequestBody UserRequestDto dto) {
+        authService.isValidLogin(id, Role.USER, httpSession);
+        final var user = service.updateUser(id, dto.getName(), dto.getEmail());
+        return ApiResponse.ofSuccess(null);
+    }
+
+    @Operation(method = "DELETE", description = "[인증] USER 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable("id") Long id) {
+        authService.isValidLogin(id, Role.USER, httpSession);
+        final var associatedEvents = eventService.getEventsCreatedByUser(id);
+        associatedEvents.forEach(event -> {
+            eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(event.getId()));
+            guestService.deleteAll(guestService.getAllInEvent(event.getId()));
+        });
+        eventService.deleteAll(associatedEvents);
+
         authService.logout(httpSession);
-        new SecurityContextLogoutHandler().logout(request, response, auth);
-    } else {
-        logger.warn("Not login");
+        service.deleteUserReal(id);
+        final var headers = new HttpHeaders();
+        headers.setLocation(URI.create("/"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
-    final var headers = new HttpHeaders();
-    headers.setLocation(URI.create("/"));
-    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-}
+
+    @Operation(method = "GET", description = "[인증] Email 로 이용자 가져오기(인가 X)")
+    @GetMapping(path = "")
+    public ApiResponse<UserResponseDto> getByEmail(
+            @RequestParam String email) {
+        final var user = service.getUserByEmail(email);
+        return ApiResponse.ofSuccess(UserResponseDto.of(user));
+    }
+
+    @Operation(method = "GET", description = "[인증X] Login(platform = google or kakao). 신규 사용자의 경우 새로 등록")
+    @GetMapping(path = "/login")
+    public ResponseEntity<?> loginWithOauth2(
+            @RequestParam String platform) {
+        final var validPlatforms = Set.of("kakao", "google");
+        final var headers        = new HttpHeaders();
+        if(validPlatforms.contains(platform)) {
+            headers.setLocation(URI.create("/oauth2/authorization/" + platform));
+            return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+        } else {
+            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.INVALID_VALUE, null)));
+        }
+    }
+
+    @Operation(method = "GET", description = "[인증] User logout 처리")
+    @GetMapping(path = "/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        final var auth = SecurityContextHolder.getContext()
+                                              .getAuthentication();
+        if(Objects.nonNull(auth)) {
+            authService.logout(httpSession);
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        } else {
+            logger.warn("Not login");
+        }
+        final var headers = new HttpHeaders();
+        headers.setLocation(URI.create("/"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    }
 }
