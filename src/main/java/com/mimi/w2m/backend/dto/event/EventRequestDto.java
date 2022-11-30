@@ -30,12 +30,9 @@ public class EventRequestDto implements Serializable {
     @Schema(description = "참여자가 입력 가능한 요일")
     private Set<DayOfWeek> possibleRangeOfDays;
 
-    @Schema(implementation = ParticipleTime.class)
     private ParticipleTime possibleRangeOfTimes;
 
     private ColorDto color;
-
-    private test a;
 
     @Schema(type = "String", maxLength = 1000, description = "이벤트 세부 설명", nullable = true)
     private String description;
