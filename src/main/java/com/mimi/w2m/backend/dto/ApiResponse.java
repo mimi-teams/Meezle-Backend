@@ -15,31 +15,31 @@ import java.io.Serializable;
 @Getter
 public class ApiResponse<T> implements Serializable {
 
-@Schema private final ApiResultCode code;
+    private final ApiResultCode code;
 
-/**
- * `null`또는 `blank`인 경우 `code`에 `defaultMessage`가 대체한다.
- */
-@Schema private final @Nullable String message;
-@Schema private final           T      data;
+    /**
+     * `null`또는 `blank`인 경우 `code`에 `defaultMessage`가 대체한다.
+     */
+    private final @Nullable String message;
+    private final           T      data;
 
-public ApiResponse(ApiResultCode code, String message, T data) {
-    this.code    = code;
-    this.message = message;
-    this.data    = data;
-}
+    public ApiResponse(ApiResultCode code, String message, T data) {
+        this.code    = code;
+        this.message = message;
+        this.data    = data;
+    }
 
-public static <T> ApiResponse<T> ofSuccess(T data) {
-    return new ApiResponse<>(ApiResultCode.SUCCESS, "", data);
-}
+    public static <T> ApiResponse<T> ofSuccess(T data) {
+        return new ApiResponse<>(ApiResultCode.SUCCESS, "", data);
+    }
 
-@SuppressWarnings("unused")
-public static <T> ApiResponse<T> of(ApiResultCode code, T data) {
-    return new ApiResponse<>(code, code.defaultMessage, data);
-}
+    @SuppressWarnings("unused")
+    public static <T> ApiResponse<T> of(ApiResultCode code, T data) {
+        return new ApiResponse<>(code, code.defaultMessage, data);
+    }
 
-@SuppressWarnings("unused")
-public static <T> ApiResponse<T> of(ApiResultCode code, String message, T data) {
-    return new ApiResponse<>(code, message, data);
-}
+    @SuppressWarnings("unused")
+    public static <T> ApiResponse<T> of(ApiResultCode code, String message, T data) {
+        return new ApiResponse<>(code, message, data);
+    }
 }

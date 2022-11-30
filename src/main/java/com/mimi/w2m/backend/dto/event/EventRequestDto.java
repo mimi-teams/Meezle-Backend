@@ -2,14 +2,15 @@ package com.mimi.w2m.backend.dto.event;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.Set;
 
 /**
  * EventRequestDto
@@ -20,39 +21,40 @@ import java.util.Objects;
  **/
 // TODO: 2022/11/27 설정 가능한 제한 시간 설정 
 @Getter
-@Schema(description = "Event를 생성할 때, 전달하는 정보")
+@Schema(description = "이벤트 정보", requiredProperties = {"title", "color", "possibleRangeOfDays", "possibleRangeOfTimes"})
 public class EventRequestDto implements Serializable {
+    @Schema(type = "String", minLength = 1, maxLength = 200, description = "이벤트 이름")
+    private String         title;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime  dDay;
+    @Schema(description = "참여자가 입력 가능한 요일")
+    private Set<DayOfWeek> possibleRangeOfDays;
 
-private String        title;
-@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-@Schema(description = "종료일")
-private LocalDateTime dDay;
+    private ParticipleTime possibleRangeOfTimes;
 
-@Schema(description = "Event 색상 정보")
-private ColorDto color;
+    private ColorDto color;
 
-@Schema(description = "1000자까지 허용")
-private String description;
+    @Schema(type = "String", maxLength = 1000, description = "이벤트 세부 설명", nullable = true)
+    private String description;
 
-@Builder
-public EventRequestDto(String title, LocalDateTime dDay, ColorDto color, String description) {
-    this.title       = title;
-    this.dDay        = Objects.nonNull(dDay) ? dDay : LocalDateTime.of(2099, 12, 31, 23, 59);
-    this.color       = color;
-    this.description = description;
-}
+    public EventRequestDto(String title, LocalDateTime dDay, ColorDto color, String description) {
+        this.title       = title;
+        this.dDay        = dDay;
+        this.color       = color;
+        this.description = description;
+    }
 
-protected EventRequestDto() {
-}
+    protected EventRequestDto() {
+    }
 
-public Event to(User user) {
-    return Event.builder()
-                .title(title)
-                .user(user)
-                .dDay(dDay)
-                .color(color.to())
-                .description(description)
-                .build();
-}
+    public Event to(User user) {
+        return Event.builder()
+                    .title(title)
+                    .user(user)
+                    .dDay(dDay)
+                    .color(color.to())
+                    .description(description)
+                    .build();
+    }
 
 }

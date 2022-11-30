@@ -30,74 +30,75 @@ import java.net.URI;
 @RequestMapping(path = "/guests")
 @RestController
 public class GuestApi extends BaseGenericApi<GuestService> {
-private final Logger                     logger = LogManager.getLogger(GuestApi.class);
-private final EventParticipleTimeService eventParticipleTimeService;
+    private final Logger                     logger = LogManager.getLogger(GuestApi.class);
+    private final EventParticipleTimeService eventParticipleTimeService;
 
-public GuestApi(GuestService service, AuthService authService, HttpSession httpSession,
-                EventParticipleTimeService timeService) {
-    super(service, authService, httpSession);
-    eventParticipleTimeService = timeService;
-}
+    public GuestApi(GuestService service, AuthService authService, HttpSession httpSession,
+                    EventParticipleTimeService timeService) {
+        super(service, authService, httpSession);
+        eventParticipleTimeService = timeService;
+    }
 
-@Operation(method = "GET", description = "[인증] ID의 GUEST 가져오기(이벤트 참여자만 가능)")
-@GetMapping(path = "/{id}")
-public ApiResponse<GuestResponseDto> get(
-        @PathVariable("id") Long id) {
-    final var loginInfo = authService.getCurrentLogin(httpSession);
-    final var guest     = service.get(id);
-    authService.isInEvent(loginInfo, guest.getEvent().getId());
-    return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
-}
+    @Operation(method = "GET", description = "[인증] ID의 GUEST 가져오기(이벤트 참여자만 가능)")
+    @GetMapping(path = "/{id}")
+    public ApiResponse<GuestResponseDto> get(
+            @PathVariable("id") Long id) {
+        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var guest     = service.get(id);
+        authService.isInEvent(loginInfo, guest.getEvent()
+                                              .getId());
+        return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
+    }
 
-@Deprecated
-@Operation(method = "PATCH", description = "[인증] ID의 정보 수정하기(본인만 가능)")
-@PatchMapping(path = "/{id}")
-public ApiResponse<GuestResponseDto> patch(
-        @PathVariable("id") Long id,
-        @RequestBody GuestRequestDto requestDto) {
-    authService.isValidLogin(id, Role.GUEST, httpSession);
-    final var guest = service.update(id, requestDto);
-    return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
-}
+    @Deprecated
+    @Operation(method = "PATCH", description = "[인증] GUEST 수정하기(본인만 가능)")
+    @PatchMapping(path = "/{id}")
+    public ApiResponse<GuestResponseDto> patch(
+            @PathVariable("id") Long id,
+            @RequestBody GuestRequestDto requestDto) {
+        authService.isValidLogin(id, Role.GUEST, httpSession);
+        final var guest = service.update(id, requestDto);
+        return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
+    }
 
-/**
- * 연관된 모든 요소 삭제. 일단 Event 가 삭제될 때, Guest 정보가 삭제되는 것으로만 만든다
- *
- * @author teddy
- * @since 2022/11/27
- **/
-@Deprecated
-@Operation(method = "DELETE", description = "[인증] PARTICIPANT 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
-@DeleteMapping(path = "/{id}")
-public ResponseEntity<?> delete(Long id) {
-    authService.isValidLogin(id, Role.GUEST, httpSession);
-    final var guest = service.get(id);
-    eventParticipleTimeService.deleteAll(eventParticipleTimeService
-                                                 .getEventParticipleTimes(guest.getEvent().getId(), id,
-                                                                          Role.GUEST));
-    authService.logout(httpSession);
-    service.delete(guest);
-    final var headers = new HttpHeaders();
-    headers.setLocation(URI.create("/"));
-    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-}
+    /**
+     * 연관된 모든 요소 삭제. 일단 Event 가 삭제될 때, Guest 정보가 삭제되는 것으로만 만든다
+     *
+     * @author teddy
+     * @since 2022/11/27
+     **/
+    @Deprecated
+    @Operation(method = "DELETE", description = "[인증] PARTICIPANT 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> delete(Long id) {
+        authService.isValidLogin(id, Role.GUEST, httpSession);
+        final var guest = service.get(id);
+        eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(guest.getEvent()
+                                                                                                     .getId(), id,
+                                                                                                Role.GUEST));
+        authService.logout(httpSession);
+        service.delete(guest);
+        final var headers = new HttpHeaders();
+        headers.setLocation(URI.create("/"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    }
 
-@Operation(method = "GET", description = "[인증X] Guest Login(name & password)")
-@GetMapping(path = "/login")
-public ResponseEntity<?> login(
-        @RequestBody GuestRequestDto requestDto) {
-    service.login(requestDto);
-    final var headers = new HttpHeaders();
-    headers.setLocation(URI.create("/"));
-    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-}
+    @Operation(method = "GET", description = "[인증X] Guest Login(name & password)")
+    @GetMapping(path = "/login")
+    public ResponseEntity<?> login(
+            @RequestBody GuestRequestDto requestDto) {
+        service.login(requestDto);
+        final var headers = new HttpHeaders();
+        headers.setLocation(URI.create("/"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    }
 
-@Operation(method = "GET", description = "[인증] Guest logout 처리")
-@GetMapping(path = "/logout")
-public ResponseEntity<?> logout() {
-    authService.logout(httpSession);
-    final var headers = new HttpHeaders();
-    headers.setLocation(URI.create("/"));
-    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-}
+    @Operation(method = "GET", description = "[인증] Guest logout 처리")
+    @GetMapping(path = "/logout")
+    public ResponseEntity<?> logout() {
+        authService.logout(httpSession);
+        final var headers = new HttpHeaders();
+        headers.setLocation(URI.create("/"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    }
 }
