@@ -17,13 +17,13 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 2022/11/19
  **/
-@Schema(description = "참여 가능한 시간", requiredProperties = {"beginTime", "endTime"})
+@Schema(description = "참여 가능한 시간")
 public final class ParticipleTime {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-//    @Schema(type = "String", description = "시작 시간", pattern = "^\\d" + "{2}:\\d{2}:\\d{2}\\.\\d{3}$")
+    @Schema(type = "String", description = "시작 시간", pattern = "^\\d" + "{2}:\\d{2}:\\d{2}\\.\\d{3}$")
     private final LocalTime beginTime;
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-//    @Schema(type = "String", description = "종료 시간", pattern = "^\\d" + "{2}:\\d{2}:\\d{2}\\.\\d{3}$")
+    @Schema(type = "String", description = "종료 시간", pattern = "^\\d" + "{2}:\\d{2}:\\d{2}\\.\\d{3}$")
     private final LocalTime endTime;
     Long id;
 
