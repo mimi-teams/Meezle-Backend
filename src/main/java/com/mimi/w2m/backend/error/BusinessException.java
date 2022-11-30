@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.error;
 
-import com.mimi.w2m.backend.dto.ApiResultCode;
+import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
 
 /**
  * 비지니스 로직에 최상위 Exception 으로 모든 예외를 처리하고 싶으면 이 클래스를 체크하면 된다.

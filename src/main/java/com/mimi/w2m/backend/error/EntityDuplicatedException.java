@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.error;
 
-import com.mimi.w2m.backend.dto.ApiResultCode;
+import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
 
 public class EntityDuplicatedException extends BusinessException {
 public EntityDuplicatedException(String message) {

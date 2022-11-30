@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.error;
 
-import com.mimi.w2m.backend.dto.ApiResultCode;
+import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
 
 /**
  * `Entity`를 못 찾은 경우 사용

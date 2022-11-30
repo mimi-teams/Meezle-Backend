@@ -1,9 +1,9 @@
 package com.mimi.w2m.backend.repository;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Guest;
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.ParticipleTime;
+import com.mimi.w2m.backend.type.common.ParticipleTime;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.domain.Guest;
+import com.mimi.w2m.backend.type.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

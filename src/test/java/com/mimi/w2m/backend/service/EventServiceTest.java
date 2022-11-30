@@ -1,15 +1,15 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.EventParticipleTime;
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.ParticipleTime;
-import com.mimi.w2m.backend.dto.event.ColorDto;
-import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.dto.participle.EventParticipleTimeRequestDto;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventRepository;
+import com.mimi.w2m.backend.type.common.ParticipleTime;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.domain.EventParticipant;
+import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.dto.event.ColorDto;
+import com.mimi.w2m.backend.type.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.DisplayName;
@@ -42,9 +42,9 @@ import static org.mockito.Mockito.times;
  **/
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
-private final        Logger                     logger = LogManager.getLogger(EventServiceTest.class);
-@Mock private        EventParticipleTimeService eventParticipleTimeService;
-@Mock private        EventRepository            eventRepository;
+private final Logger                  logger = LogManager.getLogger(EventServiceTest.class);
+@Mock private EventParticipantService eventParticipantService;
+@Mock private EventRepository         eventRepository;
 @Mock private        UserService                userService;
 @InjectMocks private EventService               eventService;
 
@@ -124,7 +124,7 @@ void modifyEvent() {
     then(eventRepository).should(times(2)).findById(anyLong());
 }
 
-@DisplayName("EventParticipleTime 의 공통 부분 계산")
+@DisplayName("EventParticipant 의 공통 부분 계산")
 @Test
 void calculateSharedTime() {
     //given
@@ -140,19 +140,19 @@ void calculateSharedTime() {
                               .color(Color.BLACK)
                               .build();
     final var eventId = 1L;
-    final var participleTime1 = EventParticipleTime
+    final var participleTime1 = EventParticipant
                                         .builder()
                                         .event(event)
                                         .ableDayOfWeeks(Set.of(DayOfWeek.values()))
                                         .participleTimes(Set.of(ParticipleTime.of("00:00:00-12:00:00")))
                                         .build();
-    final var participleTime2 = EventParticipleTime
+    final var participleTime2 = EventParticipant
                                         .builder()
                                         .event(event)
                                         .ableDayOfWeeks(Set.of(DayOfWeek.MONDAY, DayOfWeek.SUNDAY))
                                         .participleTimes(Set.of(ParticipleTime.of("01:00:00-03:00:00")))
                                         .build();
-    final var participleTime3 = EventParticipleTime
+    final var participleTime3 = EventParticipant
                                         .builder()
                                         .event(event)
                                         .ableDayOfWeeks(Set.of(DayOfWeek.MONDAY))
@@ -162,9 +162,9 @@ void calculateSharedTime() {
     final var validParticipleTimes = ParticipleTime.of("02:00:00-03:00:00");
 
     given(eventRepository.findById(eventId)).willReturn(Optional.of(event));
-    given(eventParticipleTimeService.getEventParticipleTimes(eventId)).willReturn(List.of(participleTime1,
-                                                                                          participleTime2,
-                                                                                          participleTime3));
+    given(eventParticipantService.getAllParticipantInfo(eventId)).willReturn(List.of(participleTime1,
+                                                                                     participleTime2,
+                                                                                     participleTime3));
     //when
     final var expectedEvent = eventService.calculateSharedTime(eventId);
 
@@ -173,7 +173,7 @@ void calculateSharedTime() {
     assertThat(expectedEvent.getParticipleTime()).isEqualTo(validParticipleTimes);
 
     then(eventRepository).should(times(1)).findById(anyLong());
-    then(eventParticipleTimeService).should(times(1)).getEventParticipleTimes(anyLong());
+    then(eventParticipantService).should(times(1)).getAllParticipantInfo(anyLong());
 }
 
 @DisplayName("DayOfWeek 와 ParticipleTime 을 직접 설정")
@@ -193,13 +193,13 @@ void setEventTimeDirectly() {
                               .color(Color.BLACK)
                               .build();
     final var eventId = 1L;
-    final var validRequestDto = new EventParticipleTimeRequestDto("MONDAY,THURSDAY,", "00:00:00-11:11:11");
+    final var validRequestDto = new EventParticipantRequestDto("MONDAY,THURSDAY,", "00:00:00-11:11:11");
     final var validDayOfWeeks = Set.of(DayOfWeek.MONDAY, DayOfWeek.THURSDAY);
     final var validParticipleTime = ParticipleTime.of("00:00:00-11:11:11");
-    final var invalidRequestDtoByInvalidDayOfWeek = new EventParticipleTimeRequestDto("Monday,", "00:00:00-11:11:11");
-    final var invalidRequestDtoByInvalidParticipleTimes1 = new EventParticipleTimeRequestDto("MONDAY,", "11:11:11-00" +
-                                                                                                        ":00:00");
-    final var invalidRequestDtoByInvalidParticipleTimes2 = new EventParticipleTimeRequestDto("MONDAY,",
+    final var invalidRequestDtoByInvalidDayOfWeek = new EventParticipantRequestDto("Monday,", "00:00:00-11:11:11");
+    final var invalidRequestDtoByInvalidParticipleTimes1 = new EventParticipantRequestDto("MONDAY,", "11:11:11-00" +
+                                                                                                     ":00:00");
+    final var invalidRequestDtoByInvalidParticipleTimes2 = new EventParticipantRequestDto("MONDAY,",
                                                                                              "00:00:00-01:00:00," +
                                                                                              "01:00:00-02:00:00");
     given(eventRepository.findById(eventId)).willReturn(Optional.of(event));

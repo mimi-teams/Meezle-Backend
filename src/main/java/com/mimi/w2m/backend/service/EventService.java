@@ -1,13 +1,12 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.converter.SetDayOfWeekConverter;
-import com.mimi.w2m.backend.domain.converter.SetParticipleTimeConverter;
-import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.dto.participle.EventParticipleTimeRequestDto;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventRepository;
+import com.mimi.w2m.backend.type.converter.db.ListParticipleTimeConverter;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,19 +57,19 @@ public Event modifyEvent(Long eventId, EventRequestDto requestDto) throws Entity
 }
 
 /**
- * Host 가 직접 event 의 시간을 정한다(EventParticipleTimeRequestDto 의 형식으로 보내고, 시간이 겹치는지 여부 등을 확인하지 않는다 Controller 에서 requestDto
+ * Host 가 직접 event 의 시간을 정한다(EventParticipantRequestDto 의 형식으로 보내고, 시간이 겹치는지 여부 등을 확인하지 않는다 Controller 에서 requestDto
  * 의 ownerId가 userSession 에 저장된 Id와 동일하고, event 를 생성한 사람인지 확인해야 한다
  *
  * @author teddy
  * @since 2022/11/21
  **/
 @Transactional
-public Event setEventTimeDirectly(Long eventId, EventParticipleTimeRequestDto requestDto) throws EntityNotFoundException,
-                                                                                                 InvalidValueException {
+public Event setEventTimeDirectly(Long eventId, EventParticipantRequestDto requestDto) throws EntityNotFoundException,
+                                                                                              InvalidValueException {
     final var event = getEvent(eventId);
-    final var dayOfWeeks = new SetDayOfWeekConverter()
+    final var dayOfWeeks = new ListDayOfWeekConverter()
                                    .convertToEntityAttribute(requestDto.getAbleDayOfWeeks());
-    final var participleTime = new SetParticipleTimeConverter()
+    final var participleTime = new ListParticipleTimeConverter()
                                        .convertToEntityAttribute(requestDto.getParticipleTimes());
     if(participleTime.size() != 1) {
         throw new InvalidValueException("참여 시간은 유일해야 합니다 : " + participleTime, "참여 시간은 유일해야 합니다");

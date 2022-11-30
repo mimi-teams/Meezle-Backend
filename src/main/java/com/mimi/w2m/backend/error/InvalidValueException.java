@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.error;
 
-import com.mimi.w2m.backend.dto.ApiResultCode;
+import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
 
 /**
  * 잘못된 값으로 요청된 경우 사용

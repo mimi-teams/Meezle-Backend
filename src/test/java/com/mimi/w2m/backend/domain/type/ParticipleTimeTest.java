@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.domain.type;
 
 import com.mimi.w2m.backend.error.InvalidValueException;
+import com.mimi.w2m.backend.type.common.ParticipleTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

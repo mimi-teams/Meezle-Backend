@@ -1,12 +1,12 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.security.LoginInfo;
-import com.mimi.w2m.backend.dto.security.OAuthAttributes;
 import com.mimi.w2m.backend.error.EntityDuplicatedException;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.repository.UserRepository;
+import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.dto.security.LoginInfo;
+import com.mimi.w2m.backend.type.dto.security.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

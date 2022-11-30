@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.domain.converter;
 
-import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.converter.db.RoleConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

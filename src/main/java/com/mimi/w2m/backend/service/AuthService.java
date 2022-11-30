@@ -1,9 +1,9 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.UnauthorizedException;
+import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.dto.security.LoginInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +68,7 @@ public void isHost(LoginInfo loginInfo, Long eventId) throws UnauthorizedExcepti
     }
     final var event = eventService.getEvent(eventId);
     final var user  = userService.getUser(loginInfo.loginId());
-    if(!event.getUser().equals(user)) {
+    if(!event.getHost().equals(user)) {
         throw new UnauthorizedException("유효하지 않은 호스트 : userId=" + loginInfo.loginId() + ", eventId=" + eventId, "유효하지" +
                                                                                                                 " 않은 " +
                                                                                                                 "호스트");

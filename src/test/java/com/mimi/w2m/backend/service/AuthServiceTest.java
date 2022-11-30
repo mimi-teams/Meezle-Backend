@@ -1,12 +1,12 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Guest;
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.error.UnauthorizedException;
+import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.domain.Guest;
+import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.dto.security.LoginInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

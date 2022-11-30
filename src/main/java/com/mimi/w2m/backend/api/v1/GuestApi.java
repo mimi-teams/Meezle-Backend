@@ -1,12 +1,12 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.ApiResponse;
-import com.mimi.w2m.backend.dto.guest.GuestRequestDto;
-import com.mimi.w2m.backend.dto.guest.GuestResponseDto;
 import com.mimi.w2m.backend.service.AuthService;
-import com.mimi.w2m.backend.service.EventParticipleTimeService;
+import com.mimi.w2m.backend.service.EventParticipantService;
 import com.mimi.w2m.backend.service.GuestService;
+import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.dto.guest.GuestRequestDto;
+import com.mimi.w2m.backend.type.dto.guest.GuestResponseDto;
+import com.mimi.w2m.backend.type.dto.response.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -30,35 +30,35 @@ import java.net.URI;
 @RequestMapping(path = "/guests")
 @RestController
 public class GuestApi extends BaseGenericApi<GuestService> {
-    private final Logger                     logger = LogManager.getLogger(GuestApi.class);
-    private final EventParticipleTimeService eventParticipleTimeService;
+    private final Logger                  logger = LogManager.getLogger(GuestApi.class);
+    private final EventParticipantService eventParticipantService;
 
     public GuestApi(GuestService service, AuthService authService, HttpSession httpSession,
-                    EventParticipleTimeService timeService) {
+                    EventParticipantService timeService) {
         super(service, authService, httpSession);
-        eventParticipleTimeService = timeService;
+        eventParticipantService = timeService;
     }
 
     @Operation(method = "GET", description = "[인증] ID의 GUEST 가져오기(이벤트 참여자만 가능)")
     @GetMapping(path = "/{id}")
-    public ApiResponse<GuestResponseDto> get(
+    public ApiCallResponse<GuestResponseDto> get(
             @PathVariable("id") Long id) {
         final var loginInfo = authService.getCurrentLogin(httpSession);
         final var guest     = service.get(id);
         authService.isInEvent(loginInfo, guest.getEvent()
                                               .getId());
-        return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
+        return ApiCallResponse.ofSuccess(GuestResponseDto.of(guest));
     }
 
     @Deprecated
     @Operation(method = "PATCH", description = "[인증] GUEST 수정하기(본인만 가능)")
     @PatchMapping(path = "/{id}")
-    public ApiResponse<GuestResponseDto> patch(
+    public ApiCallResponse<GuestResponseDto> patch(
             @PathVariable("id") Long id,
             @RequestBody GuestRequestDto requestDto) {
         authService.isValidLogin(id, Role.GUEST, httpSession);
         final var guest = service.update(id, requestDto);
-        return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
+        return ApiCallResponse.ofSuccess(GuestResponseDto.of(guest));
     }
 
     /**
@@ -73,9 +73,9 @@ public class GuestApi extends BaseGenericApi<GuestService> {
     public ResponseEntity<?> delete(Long id) {
         authService.isValidLogin(id, Role.GUEST, httpSession);
         final var guest = service.get(id);
-        eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(guest.getEvent()
-                                                                                                     .getId(), id,
-                                                                                                Role.GUEST));
+        eventParticipantService.deleteAll(eventParticipantService.getAllParticipantInfo(guest.getEvent()
+                                                                                             .getId(), id,
+                                                                                        Role.GUEST));
         authService.logout(httpSession);
         service.delete(guest);
         final var headers = new HttpHeaders();

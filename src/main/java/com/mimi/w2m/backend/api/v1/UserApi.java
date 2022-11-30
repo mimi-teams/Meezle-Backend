@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.ApiResponse;
-import com.mimi.w2m.backend.dto.ApiResultCode;
-import com.mimi.w2m.backend.dto.user.UserRequestDto;
-import com.mimi.w2m.backend.dto.user.UserResponseDto;
 import com.mimi.w2m.backend.service.*;
+import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.dto.response.ApiCallResponse;
+import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
+import com.mimi.w2m.backend.type.dto.user.UserRequestDto;
+import com.mimi.w2m.backend.type.dto.user.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -38,15 +38,15 @@ import java.util.Set;
 public class UserApi extends BaseGenericApi<UserService> {
     private final Logger                     logger = LogManager.getLogger(UserApi.class);
     private final EventService               eventService;
-    private final GuestService               guestService;
-    private final EventParticipleTimeService eventParticipleTimeService;
+    private final GuestService            guestService;
+    private final EventParticipantService eventParticipantService;
 
     public UserApi(UserService service, AuthService authService, HttpSession httpSession, EventService eventService,
-                   GuestService guestService, EventParticipleTimeService timeService) {
+                   GuestService guestService, EventParticipantService timeService) {
         super(service, authService, httpSession);
-        this.eventService          = eventService;
-        this.guestService          = guestService;
-        eventParticipleTimeService = timeService;
+        this.eventService       = eventService;
+        this.guestService       = guestService;
+        eventParticipantService = timeService;
     }
 
     @Operation(method = "GET", description = "[인증] ID의 USER 가져오기(인가 X)")
@@ -54,18 +54,18 @@ public class UserApi extends BaseGenericApi<UserService> {
     public UserResponseDto get(
             @PathVariable("id") Long id) {
         final var user = service.getUser(id);
-//        return ApiResponse.ofSuccess(UserResponseDto.of(user));
+//        return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
         return UserResponseDto.of(user);
     }
 
     @Operation(method = "PATCH", description = "[인증] ID의 정보 수정하기(본인만 가능)")
     @PatchMapping(path = "/{id}")
-    public ApiResponse<UserResponseDto> patch(
+    public ApiCallResponse<UserResponseDto> patch(
             @PathVariable("id") Long id,
             @RequestBody UserRequestDto dto) {
         authService.isValidLogin(id, Role.USER, httpSession);
         final var user = service.updateUser(id, dto.getName(), dto.getEmail());
-        return ApiResponse.ofSuccess(null);
+        return ApiCallResponse.ofSuccess(null);
     }
 
     @Operation(method = "DELETE", description = "[인증] USER 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
@@ -75,7 +75,7 @@ public class UserApi extends BaseGenericApi<UserService> {
         authService.isValidLogin(id, Role.USER, httpSession);
         final var associatedEvents = eventService.getEventsCreatedByUser(id);
         associatedEvents.forEach(event -> {
-            eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(event.getId()));
+            eventParticipantService.deleteAll(eventParticipantService.getAllParticipantInfo(event.getId()));
             guestService.deleteAll(guestService.getAllInEvent(event.getId()));
         });
         eventService.deleteAll(associatedEvents);
@@ -89,10 +89,10 @@ public class UserApi extends BaseGenericApi<UserService> {
 
     @Operation(method = "GET", description = "[인증] Email 로 이용자 가져오기(인가 X)")
     @GetMapping(path = "")
-    public ApiResponse<UserResponseDto> getByEmail(
+    public ApiCallResponse<UserResponseDto> getByEmail(
             @RequestParam String email) {
         final var user = service.getUserByEmail(email);
-        return ApiResponse.ofSuccess(UserResponseDto.of(user));
+        return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
     }
 
     @Operation(method = "GET", description = "[인증X] Login(platform = google or kakao). 신규 사용자의 경우 새로 등록")
@@ -105,7 +105,7 @@ public class UserApi extends BaseGenericApi<UserService> {
             headers.setLocation(URI.create("/oauth2/authorization/" + platform));
             return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
         } else {
-            return ResponseEntity.of(Optional.of(ApiResponse.of(ApiResultCode.INVALID_VALUE, null)));
+            return ResponseEntity.of(Optional.of(ApiCallResponse.of(ApiResultCode.INVALID_VALUE, null)));
         }
     }
 
