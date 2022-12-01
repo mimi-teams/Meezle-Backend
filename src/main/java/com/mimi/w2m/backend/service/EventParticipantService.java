@@ -95,20 +95,7 @@ public class EventParticipantService {
 
         participants.forEach(p -> {
             final var ableDaysAndTimesMap = converter.convertToMap(p.getAbleDaysAndTimes());
-            if(verify(selectableDaysAndTimesMap, ableDaysAndTimesMap)) {
-                ableDaysAndTimesMap.forEach((d, t) -> {
-                    if(selectedDaysAndTimesMap.containsKey(d)) {
-                        // 해당 요일에 가능한 누군가 있다면, 선택될 수 있다.
-                        final var selectedTimeRange = selectedDaysAndTimesMap.get(d);
-                        final var updatedTimeRange  = findSharedRange(t, selectedTimeRange);
-                        selectedDaysAndTimesMap.put(d, updatedTimeRange);
-                    } else if(selectedDaysAndTimesMap.isEmpty()) {
-                        // 처음에는 그냥 넣을 수 있다
-                        selectedDaysAndTimesMap.put(d, t);
-                    }
-                    // 처음이 아니거나, 앞서 해당 요일을 선택한 참여자가 없다면, 전원 일치가 불가능하므로 무시한다
-                });
-            } else {
+            if(!verify(selectableDaysAndTimesMap, ableDaysAndTimesMap)) {
                 final var msg = formatter.format(
                                                  "[EventParticipantService] Out Of Selectable Range(event=%d, " +
                                                  "participant=%d)", eventId,
@@ -116,9 +103,20 @@ public class EventParticipantService {
                                          .toString();
                 throw new InvalidValueException(msg);
             }
+            ableDaysAndTimesMap.forEach((d, t) -> {
+                if(selectedDaysAndTimesMap.containsKey(d)) {
+                    // 해당 요일에 가능한 누군가 있다면, 선택될 수 있다.
+                    final var selectedTimeRange = selectedDaysAndTimesMap.get(d);
+                    final var updatedTimeRange  = findSharedRange(t, selectedTimeRange);
+                    selectedDaysAndTimesMap.put(d, updatedTimeRange);
+                } else if(selectedDaysAndTimesMap.isEmpty()) {
+                    // 처음에는 그냥 넣을 수 있다
+                    selectedDaysAndTimesMap.put(d, t);
+                }
+                // 처음이 아니거나, 앞서 해당 요일을 선택한 참여자가 없다면, 전원 일치가 불가능하므로 무시한다
+            });
         });
-        final var selectedDaysAndTimes = converter.convertToSet(selectedDaysAndTimesMap);
-        event.setSelectedDaysAndTimes(selectedDaysAndTimes);
+        event.setSelectedDaysAndTimes(converter.convertToSet(selectedDaysAndTimesMap));
         return event;
     }
 
@@ -142,10 +140,79 @@ public class EventParticipantService {
     }
 
     private boolean verify(Map<DayOfWeek, Set<TimeRange>> selectable, Map<DayOfWeek, Set<TimeRange>> selected) {
-        return false;
+        for(var day : selected.keySet()) {
+            if(!selectable.containsKey(day)) {
+                return false;
+            }
+            final var selectableTimeRanges = selectable.get(day);
+
+            final var selectedTimeRanges = selected.get(day);
+            for(var selectedRange : selectedTimeRanges) {
+                var isIncluded = false;
+                for(var selectableRange : selectableTimeRanges) {
+                    final var intersectedRange = TimeRange.Operator.intersection(selectedRange, selectableRange)
+                                                                   .getLeft();
+                    if(!Objects.equals(intersectedRange, selectedRange)) {
+                        isIncluded = true;
+                        break;
+                    }
+                }
+                if(!isIncluded) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
     }
 
-    private Set<TimeRange> findSharedRange(Set<TimeRange> first, Set<TimeRange> second) {
-        return null;
+    private Set<TimeRange> findSharedRange(Set<TimeRange> firstRanges, Set<TimeRange> secondRanges) {
+        final var out = new HashSet<TimeRange>();
+        final var orderedFirstRanges = firstRanges.stream()
+                                                  .sorted()
+                                                  .toList();
+        final var orderedSecondRanges = secondRanges.stream()
+                                                    .sorted()
+                                                    .toList();
+        // Union Each
+        final var unionOrderedFirstRanges  = unionRanges(orderedFirstRanges);
+        final var unionOrderedSecondRanges = unionRanges(orderedSecondRanges);
+
+        // Intersect Each
+        return intersectRanges(unionOrderedFirstRanges, unionOrderedSecondRanges);
+    }
+
+    private List<TimeRange> unionRanges(List<TimeRange> orderedRanges) {
+        final var unionOrderedRanges = new LinkedList<TimeRange>();
+
+        orderedRanges.forEach(range -> {
+            if(unionOrderedRanges.isEmpty()) {
+                unionOrderedRanges.addLast(range);
+            } else {
+                final var last  = unionOrderedRanges.removeLast();
+                final var union = TimeRange.Operator.union(range, last);
+                unionOrderedRanges.addLast(union.getLeft());
+                if(!Objects.equals(union.getRight(), TimeRange.Operator.EMPTY)) {
+                    unionOrderedRanges.addLast(union.getRight());
+                }
+            }
+        });
+        return unionOrderedRanges;
+    }
+
+    private Set<TimeRange> intersectRanges(List<TimeRange> firstRanges, List<TimeRange> secondRanges) {
+        final var intersectionRanges = new HashSet<TimeRange>();
+        for(var first : firstRanges) {
+            for(var second : secondRanges) {
+                final var intersection = TimeRange.Operator.intersection(first, second);
+                if(!Objects.equals(intersection.getLeft(), TimeRange.Operator.EMPTY)) {
+                    intersectionRanges.add(intersection.getLeft());
+                }
+                if(!Objects.equals(intersection.getRight(), TimeRange.Operator.EMPTY)) {
+                    intersectionRanges.add(intersection.getRight());
+                }
+            }
+        }
+        return intersectionRanges;
     }
 }
