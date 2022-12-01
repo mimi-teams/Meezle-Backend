@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.api;
 
-import com.mimi.w2m.backend.error.EntityDuplicatedException;
-import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.InvalidValueException;
-import com.mimi.w2m.backend.error.UnauthorizedException;
-import com.mimi.w2m.backend.type.dto.response.ApiCallResponse;
-import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
+import com.mimi.w2m.backend.type.response.ApiCallResponse;
+import com.mimi.w2m.backend.type.response.ApiResultCode;
+import com.mimi.w2m.backend.type.response.exception.EntityDuplicatedException;
+import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.type.response.exception.IllegalAccessException;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,14 +46,14 @@ protected ApiCallResponse<?> handleEntityNotFoundException(EntityNotFoundExcepti
 protected ApiCallResponse<?> handleInvalidValueException(InvalidValueException e) {
     final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
     logger.warn(log);
-    return ApiCallResponse.of(ApiResultCode.INVALID_VALUE, e.messageToClient, null);
+    return ApiCallResponse.of(ApiResultCode.BAD_REQUEST, e.messageToClient, null);
 }
 
-@org.springframework.web.bind.annotation.ExceptionHandler({UnauthorizedException.class})
-protected ApiCallResponse<?> handleUnauthorizedException(UnauthorizedException e) {
+@org.springframework.web.bind.annotation.ExceptionHandler({IllegalAccessException.class})
+protected ApiCallResponse<?> handleUnauthorizedException(IllegalAccessException e) {
     final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
     logger.warn(log);
-    return ApiCallResponse.of(ApiResultCode.UNAUTHORIZED, e.messageToClient, null);
+    return ApiCallResponse.of(ApiResultCode.ILLEGAL_ACCESS, e.messageToClient, null);
 }
 
 @org.springframework.web.bind.annotation.ExceptionHandler({Exception.class})

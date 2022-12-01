@@ -1,15 +1,15 @@
 package com.mimi.w2m.backend.type.domain;
 
 import com.mimi.w2m.backend.type.common.ParticipleTime;
-import com.mimi.w2m.backend.type.converter.db.ListParticipleTimeConverter;
+import com.mimi.w2m.backend.type.converter.db.SetParticipleTimeConverter;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * EventParticipableTime
@@ -24,9 +24,9 @@ import java.util.Objects;
                                                         @UniqueConstraint(columnNames = {"event_id", "guest_id"})})
 public class EventParticipant {
     @Comment("참여 가능한 시간")
-    @Convert(converter = ListParticipleTimeConverter.class)
+    @Convert(converter = SetParticipleTimeConverter.class)
     @Column(name = "able_days_and_times")
-    List<ParticipleTime> ableDaysAndTimes;
+    Set<ParticipleTime> ableDaysAndTimes;
     @Id
     @Column(name = "event_participant_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,14 +50,14 @@ public class EventParticipant {
     }
 
     @Builder
-    public EventParticipant(List<ParticipleTime> ableDaysAndTimes, Event event, User user, Guest guest) {
+    public EventParticipant(Set<ParticipleTime> ableDaysAndTimes, Event event, User user, Guest guest) {
         this.ableDaysAndTimes = ableDaysAndTimes;
         this.event            = event;
         this.user             = user;
         this.guest            = guest;
     }
 
-    public EventParticipant update(List<ParticipleTime> ableDaysAndTimes) {
+    public EventParticipant update(Set<ParticipleTime> ableDaysAndTimes) {
         this.ableDaysAndTimes = ableDaysAndTimes;
         return this;
     }

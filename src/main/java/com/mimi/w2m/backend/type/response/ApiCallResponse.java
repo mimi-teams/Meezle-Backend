@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.type.dto.response;
+package com.mimi.w2m.backend.type.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 
 @Schema(title = "ApiCallResponse", description = "API 에 응답에 일관성을 유지하기 위해서 존재한다.",
-        requiredProperties = {"code", "message"})
+        requiredProperties = {"code", "message", "data"})
 @Getter
 public class ApiCallResponse<T> implements Serializable {
 
@@ -26,25 +26,26 @@ public class ApiCallResponse<T> implements Serializable {
     /**
      * `null`또는 `blank`인 경우 `code`에 `defaultMessage`가 대체한다.
      */
+    @Schema(type = "String", title = "응답에 대한 상태 메시지")
     @NotNull
     private final String message;
     @Valid
     @Nullable
     private final T      data;
 
-    public ApiCallResponse(ApiResultCode code, String message, T data) {
+    private ApiCallResponse(ApiResultCode code, String message, T data) {
         this.code    = code;
-        this.message = Objects.nonNull(message) ? message : code.defaultMessage;
+        this.message = (Objects.isNull(message) || message.isEmpty()) ? code.defaultMessage : message;
         this.data    = data;
     }
 
     public static <T> ApiCallResponse<T> ofSuccess(T data) {
-        return new ApiCallResponse<>(ApiResultCode.SUCCESS, "", data);
+        return new ApiCallResponse<>(ApiResultCode.SUCCESS, null, data);
     }
 
     @SuppressWarnings("unused")
     public static <T> ApiCallResponse<T> of(ApiResultCode code, T data) {
-        return new ApiCallResponse<>(code, code.defaultMessage, data);
+        return new ApiCallResponse<>(code, null, data);
     }
 
     @SuppressWarnings("unused")

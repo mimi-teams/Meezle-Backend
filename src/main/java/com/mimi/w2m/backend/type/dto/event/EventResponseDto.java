@@ -14,7 +14,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 /**
  * EventResponseDto
@@ -46,16 +46,16 @@ public class EventResponseDto implements Serializable {
             example = "2022-12-01T00:00:00")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @Nullable
-    private LocalDateTime        dDay;
+    private LocalDateTime       dDay;
     @Schema(title = "참여자들이 선택 가능한 시간", description = "이벤트 참여자들이 선택할 수 있는 시간의 범위를 반환")
     @Nullable
     @Valid
-    private List<ParticipleTime> selectableParticipleTimes;
+    private Set<ParticipleTime> selectableParticipleTimes;
 
     @Schema(title = "이벤트의 선택된 시간", description = "이벤트의 선택된 시간의 범위를 반환")
     @Nullable
     @Valid
-    private List<ParticipleTime> selectedParticipleTimes;
+    private Set<ParticipleTime> selectedParticipleTimes;
 
     @Valid
     private ColorDto color;
@@ -70,8 +70,8 @@ public class EventResponseDto implements Serializable {
     @Builder
     public EventResponseDto(Long id, Long hostId, String title,
                             @Nullable LocalDateTime dDay,
-                            @Nullable List<ParticipleTime> selectableParticipleTimes,
-                            @Nullable List<ParticipleTime> selectedParticipleTimes, ColorDto color,
+                            @Nullable Set<ParticipleTime> selectableParticipleTimes,
+                            @Nullable Set<ParticipleTime> selectedParticipleTimes, ColorDto color,
                             @Nullable String description) {
         this.id                        = id;
         this.hostId                    = hostId;

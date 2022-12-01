@@ -6,7 +6,7 @@ import com.mimi.w2m.backend.service.GuestService;
 import com.mimi.w2m.backend.type.common.Role;
 import com.mimi.w2m.backend.type.dto.guest.GuestRequestDto;
 import com.mimi.w2m.backend.type.dto.guest.GuestResponseDto;
-import com.mimi.w2m.backend.type.dto.response.ApiCallResponse;
+import com.mimi.w2m.backend.type.response.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +43,7 @@ public class GuestApi extends BaseGenericApi<GuestService> {
     @GetMapping(path = "/{id}")
     public ApiCallResponse<GuestResponseDto> get(
             @PathVariable("id") Long id) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         final var guest     = service.get(id);
         authService.isInEvent(loginInfo, guest.getEvent()
                                               .getId());

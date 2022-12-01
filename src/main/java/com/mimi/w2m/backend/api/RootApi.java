@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.api;
 
-import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.type.common.Role;
-import com.mimi.w2m.backend.type.dto.response.ApiCallResponse;
 import com.mimi.w2m.backend.type.dto.security.LoginInfo;
 import com.mimi.w2m.backend.type.dto.security.SessionInfoResponseDto;
+import com.mimi.w2m.backend.type.response.ApiCallResponse;
+import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

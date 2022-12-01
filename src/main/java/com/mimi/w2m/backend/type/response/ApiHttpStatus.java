@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.type.dto.response;
+package com.mimi.w2m.backend.type.response;
 
 /**
  * 우리 서비스에서 사용 가능한 HTTP Status를 규정한다. <br>
@@ -12,16 +12,16 @@ public enum ApiHttpStatus {
     OK(200),
 
     BAD_REQUEST(400),
-    UNAUTHORIZED(401),
+    ILLEGAL_ACCESS(401),
     NOT_FOUND(404),
     DUPLICATED(405),
 
     ERROR(500),
     ;
 
-public final int httpStatus;
+    public final int httpStatus;
 
-ApiHttpStatus(int httpStatus) {
-    this.httpStatus = httpStatus;
-}
+    ApiHttpStatus(int httpStatus) {
+        this.httpStatus = httpStatus;
+    }
 }

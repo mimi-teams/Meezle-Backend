@@ -6,13 +6,14 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.mimi.w2m.backend.error.InvalidValueException;
-import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mimi.w2m.backend.type.response.ApiResultCode;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * @author yeh35
@@ -21,29 +22,41 @@ import java.io.IOException;
 
 @JsonComponent
 public class ApiResultCodeJsonConverter {
+    private final static Logger logger = LogManager.getLogger(ApiResultCodeJsonConverter.class.getName());
 
-private static final Logger logger = LoggerFactory.getLogger(ApiResultCodeJsonConverter.class);
-
-public static class Serializer extends JsonSerializer<ApiResultCode> {
-    @Override
-    public void serialize(ApiResultCode value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeString(String.valueOf(value.code));
-    }
-}
-
-public static class Deserializer extends JsonDeserializer<ApiResultCode> {
-
-    @Override
-    public ApiResultCode deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        final var valueAsString = p.getValueAsString();
-        try {
-            final var code = Integer.parseInt(valueAsString);
-            return ApiResultCode.ofCode(code);
-        } catch(NumberFormatException e) {
-            logger.error("숫자 변환 실패", e);
-            throw new InvalidValueException(String.format("ApiResult CODE가 숫자가 아닙니다. : %s", valueAsString));
+    public static class Serializer extends JsonSerializer<ApiResultCode> {
+        @Override
+        public void serialize(ApiResultCode value, JsonGenerator gen, SerializerProvider serializers)
+        throws InvalidValueException {
+            try {
+                gen.writeString(String.valueOf(value.code));
+            } catch(IOException e) {
+                final var formatter = new Formatter();
+                final var msg = formatter.format("Serialize Failed")
+                                         .toString();
+                logger.error(msg);
+                logger.error(e.getCause());
+                throw new InvalidValueException(msg);
+            }
         }
     }
-}
+
+    public static class Deserializer extends JsonDeserializer<ApiResultCode> {
+        @Override
+        public ApiResultCode deserialize(JsonParser p, DeserializationContext ctxt) throws InvalidValueException {
+            try {
+                final var valueAsString = p.getValueAsString();
+                final var code          = Integer.parseInt(valueAsString);
+                return ApiResultCode.ofCode(code);
+            } catch(Exception e) {
+                final var formatter = new Formatter();
+                final var msg = formatter.format("Deserialize Failed")
+                                         .toString();
+                logger.error(msg);
+                logger.error(e.getCause());
+                throw new InvalidValueException(msg);
+            }
+        }
+    }
 
 }

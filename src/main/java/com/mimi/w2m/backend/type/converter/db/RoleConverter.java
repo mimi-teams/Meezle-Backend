@@ -1,9 +1,11 @@
 package com.mimi.w2m.backend.type.converter.db;
 
 import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.util.Formatter;
 
 /**
  * RoleConverter
@@ -15,19 +17,22 @@ import javax.persistence.Converter;
 @Converter
 public class RoleConverter implements AttributeConverter<Role, String> {
 
-@Override
-public String convertToDatabaseColumn(Role attribute) {
-    return attribute.getKey();
-}
-
-@Override
-public Role convertToEntityAttribute(String dbData) {
-    if(dbData.equals(Role.GUEST.getKey())) {
-        return Role.GUEST;
-    } else if(dbData.equals(Role.USER.getKey())) {
-        return Role.USER;
-    } else {
-        return Role.NONE;
+    @Override
+    public String convertToDatabaseColumn(Role attribute) {
+        return attribute.getKey();
     }
-}
+
+    @Override
+    public Role convertToEntityAttribute(String dbData) throws InvalidValueException {
+        if(dbData.equals(Role.GUEST.getKey())) {
+            return Role.GUEST;
+        } else if(dbData.equals(Role.USER.getKey())) {
+            return Role.USER;
+        } else {
+            final var formatter = new Formatter();
+            final var msg = formatter.format("Invalid Role String : %s", dbData)
+                                     .toString();
+            throw new InvalidValueException(msg);
+        }
+    }
 }

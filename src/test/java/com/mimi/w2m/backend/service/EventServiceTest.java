@@ -1,7 +1,5 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.type.common.ParticipleTime;
 import com.mimi.w2m.backend.type.domain.Event;
@@ -10,6 +8,8 @@ import com.mimi.w2m.backend.type.domain.User;
 import com.mimi.w2m.backend.type.dto.event.ColorDto;
 import com.mimi.w2m.backend.type.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
+import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.DisplayName;
@@ -64,8 +64,8 @@ void createEvent() {
                                         .dDay(null)
                                         .color(ColorDto.of(Color.RED))
                                         .build();
-    given(userService.getUser(validUserId)).willReturn(user);
-    given(userService.getUser(invalidUserId)).willThrow(EntityNotFoundException.class);
+    given(userService.get(validUserId)).willReturn(user);
+    given(userService.get(invalidUserId)).willThrow(EntityNotFoundException.class);
     given(eventRepository.save(any(Event.class))).willAnswer(invoc -> invoc.getArgument(0));
 
     //when
@@ -76,7 +76,7 @@ void createEvent() {
     //then
     assertThat(expectedEvent.toString()).isEqualTo(requestDto.to(user).toString());
 
-    then(userService).should(times(2)).getUser(anyLong());
+    then(userService).should(times(2)).get(anyLong());
     then(eventRepository).should(times(1)).save(any(Event.class));
 
     logger.error(expectedEvent);
@@ -204,12 +204,12 @@ void setEventTimeDirectly() {
                                                                                              "01:00:00-02:00:00");
     given(eventRepository.findById(eventId)).willReturn(Optional.of(event));
     //when
-    final var expectedEvent = eventService.setEventTimeDirectly(eventId, validRequestDto);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidDayOfWeek))
+    final var expectedEvent = eventService.modifySelectedDaysAndTimesDirectly(eventId, validRequestDto);
+    assertThatThrownBy(() -> eventService.modifySelectedDaysAndTimesDirectly(eventId, invalidRequestDtoByInvalidDayOfWeek))
             .isInstanceOf(InvalidValueException.class);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes1))
+    assertThatThrownBy(() -> eventService.modifySelectedDaysAndTimesDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes1))
             .isInstanceOf(InvalidValueException.class);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes2))
+    assertThatThrownBy(() -> eventService.modifySelectedDaysAndTimesDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes2))
             .isInstanceOf(InvalidValueException.class);
 
     //then
@@ -239,7 +239,7 @@ void deleteEvent() {
 
     //when
     final var beforeDeleted = LocalDateTime.now();
-    final var expectedEvent = eventService.deleteEventNotReal(eventId);
+    final var expectedEvent = eventService.deleteNotReal(eventId);
     final var afterDeleted = LocalDateTime.now();
 
     //then
@@ -270,17 +270,17 @@ void getEventByTitleValid() {
                                .build();
     final var event2Id = 1L;
     given(eventRepository.findById(event2Id)).willReturn(Optional.of(event2));
-    given(eventRepository.findByTitle("event")).willReturn(List.of(event1, event2));
+    given(eventRepository.findAllByTitle("event")).willReturn(List.of(event1, event2));
 
     //when
-    eventService.deleteEventNotReal(event2Id);
-    final var expectedEvents = eventService.getEventByTitle("event");
+    eventService.deleteNotReal(event2Id);
+    final var expectedEvents = eventService.getAllByTitle("event");
 
     //then
     assertThat(expectedEvents).asList().containsExactly(event1);
 
     then(eventRepository).should(times(1)).findById(anyLong());
-    then(eventRepository).should(times(1)).findByTitle(anyString());
+    then(eventRepository).should(times(1)).findAllByTitle(anyString());
 }
 
 @Test
@@ -307,17 +307,17 @@ void getEventByTitleInvalid() {
     final var event2Id = 1L;
     given(eventRepository.findById(event1Id)).willReturn(Optional.of(event1));
     given(eventRepository.findById(event2Id)).willReturn(Optional.of(event2));
-    given(eventRepository.findByTitle("event")).willReturn(List.of(event1, event2));
+    given(eventRepository.findAllByTitle("event")).willReturn(List.of(event1, event2));
 
     //when
-    eventService.deleteEventNotReal(event1Id);
-    eventService.deleteEventNotReal(event2Id);
-    assertThatThrownBy(() -> eventService.getEventByTitle("event"))
+    eventService.deleteNotReal(event1Id);
+    eventService.deleteNotReal(event2Id);
+    assertThatThrownBy(() -> eventService.getAllByTitle("event"))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
     then(eventRepository).should(times(2)).findById(anyLong());
-    then(eventRepository).should(times(1)).findByTitle(anyString());
+    then(eventRepository).should(times(1)).findAllByTitle(anyString());
 }
 
 @Test
@@ -347,20 +347,20 @@ void getEventsCreatedByUser() {
                                .user(user)
                                .color(Color.BLACK)
                                .build();
-    given(userService.getUser(userId)).willReturn(user);
-    given(userService.getUser(invalidUserId)).willReturn(invalidUser);
-    given(eventRepository.findAllByUser(user)).willReturn(List.of(event1, event2));
-    given(eventRepository.findAllByUser(invalidUser)).willReturn(List.of());
+    given(userService.get(userId)).willReturn(user);
+    given(userService.get(invalidUserId)).willReturn(invalidUser);
+    given(eventRepository.findAllByHost(user)).willReturn(List.of(event1, event2));
+    given(eventRepository.findAllByHost(invalidUser)).willReturn(List.of());
 
     //when
-    final var expectedEvents = eventService.getEventsCreatedByUser(userId);
-    assertThatThrownBy(() -> eventService.getEventsCreatedByUser(invalidUserId))
+    final var expectedEvents = eventService.getAllByHost(userId);
+    assertThatThrownBy(() -> eventService.getAllByHost(invalidUserId))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
     assertThat(expectedEvents).asList().containsExactly(event1, event2);
 
-    then(userService).should(times(2)).getUser(anyLong());
-    then(eventRepository).should(times(2)).findAllByUser(any(User.class));
+    then(userService).should(times(2)).get(anyLong());
+    then(eventRepository).should(times(2)).findAllByHost(any(User.class));
 }
 }

@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * EventParticipantResponseDto
@@ -33,11 +33,11 @@ public class EventParticipantResponseDto implements Serializable {
     @Schema(title = "참여자가 선택한 시간", description = "참여자가 선택한 시간 정보를 받음(null = 모든 선택 가능한 시간이 가능하다고 가정)")
     @Nullable
     @Valid
-    private List<ParticipleTime> ableDaysAndTimes;
+    private Set<ParticipleTime> ableDaysAndTimes;
 
     @Builder
     public EventParticipantResponseDto(Long eventId,
-                                       @Nullable List<ParticipleTime> ableDaysAndTimes) {
+                                       @Nullable Set<ParticipleTime> ableDaysAndTimes) {
         this.eventId          = eventId;
         this.ableDaysAndTimes = ableDaysAndTimes;
     }

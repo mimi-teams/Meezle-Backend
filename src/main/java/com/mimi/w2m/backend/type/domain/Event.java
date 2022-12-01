@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.type.domain;
 
 import com.mimi.w2m.backend.type.common.ParticipleTime;
-import com.mimi.w2m.backend.type.converter.db.ListParticipleTimeConverter;
+import com.mimi.w2m.backend.type.converter.db.SetParticipleTimeConverter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +12,8 @@ import org.hibernate.annotations.Comment;
 import javax.persistence.*;
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Event
@@ -47,15 +47,15 @@ public class Event extends BaseTimeEntity {
     private LocalDateTime dDay;
 
     @Comment("선택 가능한 시간(Default : 모든 요일 & 모든 시간)")
-    @Convert(converter = ListParticipleTimeConverter.class)
+    @Convert(converter = SetParticipleTimeConverter.class)
     @Column(name = "selectable_days_and_times", nullable = false)
-    private List<ParticipleTime> selectableDaysAndTimes;
+    private Set<ParticipleTime> selectableDaysAndTimes;
 
     @Comment("선택된 시간(Default : null)")
     @Setter
-    @Convert(converter = ListParticipleTimeConverter.class)
+    @Convert(converter = SetParticipleTimeConverter.class)
     @Column(name = "selected_days_and_times")
-    private List<ParticipleTime> selectedDaysAndTimes;
+    private Set<ParticipleTime> selectedDaysAndTimes;
 
     @Comment("이벤트의 대표 색상. Backend에서 설정해 Front에 전달한다(브라우저마다 동일하게 보이게 만들려고!)")
     @Column(name = "color", nullable = false)
@@ -74,7 +74,7 @@ public class Event extends BaseTimeEntity {
     }
 
     @Builder
-    public Event(String title, LocalDateTime dDay, List<ParticipleTime> selectableDaysAndTimes, Color color,
+    public Event(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, Color color,
                  String description, User host) {
         this.title                  = title;
         this.dDay                   = dDay;
@@ -84,7 +84,7 @@ public class Event extends BaseTimeEntity {
         this.host                   = host;
     }
 
-    public Event update(String title, LocalDateTime dDay, List<ParticipleTime> selectableDaysAndTimes, Color color,
+    public Event update(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, Color color,
                         String description) {
         this.title                  = title;
         this.dDay                   = dDay;
@@ -114,5 +114,10 @@ public class Event extends BaseTimeEntity {
                "deletedAt = " + getDeletedAt() + ", " + "dDay = " + dDay + ", " + "selectableDaysAndTimes = " +
                getSelectableDaysAndTimes() + ", " + "selectedDaysAndTimes = " + getSelectedDaysAndTimes() + ", " +
                "color = " + getColor() + ", " + "description = " + getDescription() + ")";
+    }
+
+    public Event delete() {
+        deletedAt = LocalDateTime.now();
+        return this;
     }
 }

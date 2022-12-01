@@ -1,7 +1,5 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.type.common.ParticipleTime;
@@ -10,6 +8,8 @@ import com.mimi.w2m.backend.type.domain.Event;
 import com.mimi.w2m.backend.type.domain.EventParticipant;
 import com.mimi.w2m.backend.type.domain.Guest;
 import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -138,8 +138,8 @@ private final        Logger                        logger = LogManager.getLogger
 //    then(participantService).should(times(1)).getGuest(anyLong());
 //    then(eventParticipantRepository).should(times(2)).save(any(EventParticipant.class));
 //
-//    logger.error(expectedUserParticipleTime);
-//    logger.error(expectedParticipantParticipleTime);
+//    logger.exception(expectedUserParticipleTime);
+//    logger.exception(expectedParticipantParticipleTime);
 //}
 
 @Test
@@ -234,8 +234,8 @@ void getEventParticipleTimesByEventAndOwnerId() {
                                         .build();
     given(eventRepository.findById(validEventId)).willReturn(Optional.of(validEvent));
     given(eventRepository.findById(invalidEventId)).willReturn(Optional.empty());
-    given(userService.getUser(validUserId)).willReturn(user);
-    given(userService.getUser(invalidUserId)).willThrow(EntityNotFoundException.class);
+    given(userService.get(validUserId)).willReturn(user);
+    given(userService.get(invalidUserId)).willThrow(EntityNotFoundException.class);
     given(guestService.get(validParticipantId)).willReturn(participant);
     given(guestService.get(invalidParticipantId)).willThrow(EntityNotFoundException.class);
     given(eventParticipantRepository.findByGuestInEvent(user, validEvent)).willReturn(List.of(participleTime1));
@@ -262,7 +262,7 @@ void getEventParticipleTimesByEventAndOwnerId() {
     assertThat(expectedParticipleTimesByParticipant).asList().containsExactly(participleTime2);
 
     then(eventRepository).should(times(6)).findById(anyLong());
-    then(userService).should(times(2)).getUser(anyLong());
+    then(userService).should(times(2)).get(anyLong());
     then(guestService).should(times(2)).get(anyLong());
     then(eventParticipantRepository).should(times(1))
                                     .findByGuestInEvent(any(User.class), any(Event.class));

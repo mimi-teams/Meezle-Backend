@@ -2,10 +2,10 @@ package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.service.*;
 import com.mimi.w2m.backend.type.common.Role;
-import com.mimi.w2m.backend.type.dto.response.ApiCallResponse;
-import com.mimi.w2m.backend.type.dto.response.ApiResultCode;
 import com.mimi.w2m.backend.type.dto.user.UserRequestDto;
 import com.mimi.w2m.backend.type.dto.user.UserResponseDto;
+import com.mimi.w2m.backend.type.response.ApiCallResponse;
+import com.mimi.w2m.backend.type.response.ApiResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -53,7 +53,7 @@ public class UserApi extends BaseGenericApi<UserService> {
     @GetMapping(path = "/{id}")
     public UserResponseDto get(
             @PathVariable("id") Long id) {
-        final var user = service.getUser(id);
+        final var user = service.get(id);
 //        return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
         return UserResponseDto.of(user);
     }
@@ -64,7 +64,7 @@ public class UserApi extends BaseGenericApi<UserService> {
             @PathVariable("id") Long id,
             @RequestBody UserRequestDto dto) {
         authService.isValidLogin(id, Role.USER, httpSession);
-        final var user = service.updateUser(id, dto.getName(), dto.getEmail());
+        final var user = service.update(id, dto.getName(), dto.getEmail());
         return ApiCallResponse.ofSuccess(null);
     }
 
@@ -73,7 +73,7 @@ public class UserApi extends BaseGenericApi<UserService> {
     public ResponseEntity<?> delete(
             @PathVariable("id") Long id) {
         authService.isValidLogin(id, Role.USER, httpSession);
-        final var associatedEvents = eventService.getEventsCreatedByUser(id);
+        final var associatedEvents = eventService.getAllByHost(id);
         associatedEvents.forEach(event -> {
             eventParticipantService.deleteAll(eventParticipantService.getAllParticipantInfo(event.getId()));
             guestService.deleteAll(guestService.getAllInEvent(event.getId()));
@@ -81,7 +81,7 @@ public class UserApi extends BaseGenericApi<UserService> {
         eventService.deleteAll(associatedEvents);
 
         authService.logout(httpSession);
-        service.deleteUserReal(id);
+        service.deleteReal(id);
         final var headers = new HttpHeaders();
         headers.setLocation(URI.create("/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
@@ -91,7 +91,7 @@ public class UserApi extends BaseGenericApi<UserService> {
     @GetMapping(path = "")
     public ApiCallResponse<UserResponseDto> getByEmail(
             @RequestParam String email) {
-        final var user = service.getUserByEmail(email);
+        final var user = service.getByEmail(email);
         return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
     }
 
@@ -105,7 +105,7 @@ public class UserApi extends BaseGenericApi<UserService> {
             headers.setLocation(URI.create("/oauth2/authorization/" + platform));
             return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
         } else {
-            return ResponseEntity.of(Optional.of(ApiCallResponse.of(ApiResultCode.INVALID_VALUE, null)));
+            return ResponseEntity.of(Optional.of(ApiCallResponse.of(ApiResultCode.BAD_REQUEST, null)));
         }
     }
 

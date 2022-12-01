@@ -82,7 +82,7 @@ void findByName() {
 @Test
 void findAllByEvent() {
     //given
-    final var event                = eventRepository.findByTitle("event").get(0);
+    final var event                = eventRepository.findAllByTitle("event").get(0);
     final var expectedParticipant1 = guestRepository.findByName("participant1").get();
     final var expectedParticipant2 = guestRepository.findByName("participant2").get();
 

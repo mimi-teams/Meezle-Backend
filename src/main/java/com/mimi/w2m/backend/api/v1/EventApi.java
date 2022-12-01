@@ -1,7 +1,5 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.error.InvalidValueException;
-import com.mimi.w2m.backend.error.UnauthorizedException;
 import com.mimi.w2m.backend.service.*;
 import com.mimi.w2m.backend.type.common.Role;
 import com.mimi.w2m.backend.type.dto.event.EventRequestDto;
@@ -9,8 +7,10 @@ import com.mimi.w2m.backend.type.dto.event.EventResponseDto;
 import com.mimi.w2m.backend.type.dto.guest.GuestResponseDto;
 import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.type.dto.participant.EventParticipantResponseDto;
-import com.mimi.w2m.backend.type.dto.response.ApiCallResponse;
 import com.mimi.w2m.backend.type.dto.user.UserResponseDto;
+import com.mimi.w2m.backend.type.response.ApiCallResponse;
+import com.mimi.w2m.backend.type.response.exception.IllegalAccessException;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
@@ -53,9 +53,9 @@ public class EventApi extends BaseGenericApi<EventService> {
     @GetMapping(path = "/{id}")
     public ApiCallResponse<EventResponseDto> get(
             @PathVariable("id") Long id) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isInEvent(loginInfo, id);
-        final var event = service.getEvent(id);
+        final var event = service.get(id);
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
     }
 
@@ -63,10 +63,10 @@ public class EventApi extends BaseGenericApi<EventService> {
     @PostMapping(path = "")
     public ApiCallResponse<EventResponseDto> post(
             @RequestBody EventRequestDto requestDto) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         if(!Objects.equals(loginInfo.role(), Role.USER)) {
-            throw new UnauthorizedException("Role=" + loginInfo.role() + " 는 이벤트를 생성할 수 없습니다",
-                                            "가입된 이용자만 이벤트를 생성할 수 있습니다");
+            throw new IllegalAccessException("Role=" + loginInfo.role() + " 는 이벤트를 생성할 수 없습니다",
+                                             "가입된 이용자만 이벤트를 생성할 수 있습니다");
         }
         final var event = service.createEvent(loginInfo.loginId(), requestDto);
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
@@ -77,7 +77,7 @@ public class EventApi extends BaseGenericApi<EventService> {
     public ApiCallResponse<EventResponseDto> patch(
             @PathVariable("id") Long id,
             @RequestBody EventRequestDto requestDto) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isHost(loginInfo, id);
         final var event = service.modifyEvent(id, requestDto);
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
@@ -93,12 +93,12 @@ public class EventApi extends BaseGenericApi<EventService> {
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> delete(
             @PathVariable("id") Long id) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isHost(loginInfo, id);
 
         eventParticipantService.deleteAll(eventParticipantService.getAllParticipantInfo(id));
         guestService.deleteAll(guestService.getAllInEvent(id));
-        service.deleteEventReal(id);
+        service.deleteReal(id);
 
         final var headers = new HttpHeaders();
         headers.setLocation(URI.create("/"));
@@ -110,7 +110,7 @@ public class EventApi extends BaseGenericApi<EventService> {
     @GetMapping(path = "/{id}/participants")
     public ApiCallResponse<List<GuestResponseDto>> getParticipants(
             @PathVariable("id") Long id) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isInEvent(loginInfo, id);
         final var participants = guestService.getAllInEvent(id);
         final var resDto = participants.stream()
@@ -129,9 +129,9 @@ public class EventApi extends BaseGenericApi<EventService> {
     @GetMapping(path = "/{id}/host")
     public ApiCallResponse<UserResponseDto> getHost(
             @PathVariable("id") Long id) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isInEvent(loginInfo, id);
-        final var event = service.getEvent(id);
+        final var event = service.get(id);
         return ApiCallResponse.ofSuccess(UserResponseDto.of(event.getHost()));
     }
 
@@ -148,14 +148,14 @@ public class EventApi extends BaseGenericApi<EventService> {
             @PathVariable("id") Long id,
             @RequestParam String mode,
             @RequestBody EventParticipantRequestDto requestDto) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+        final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isHost(loginInfo, id);
 
         if(Objects.equals(mode, "merge")) {
             final var event = eventParticipantService.calculateSharedTime(id);
             return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
         } else if(Objects.equals(mode, "set")) {
-            final var event = service.setEventTimeDirectly(id, requestDto);
+            final var event = service.modifySelectedDaysAndTimesDirectly(id, requestDto);
             return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
         } else {
             throw new InvalidValueException("잘못된 모드 : " + mode,
@@ -174,7 +174,7 @@ public class EventApi extends BaseGenericApi<EventService> {
     public ApiCallResponse<EventParticipantResponseDto> putParticipleTime(
             @PathVariable("id") Long id,
             @RequestBody EventParticipantRequestDto requestDto) {
-        final var info = authService.getCurrentLogin(httpSession);
+        final var info = authService.getLoginInfo(httpSession);
         authService.isInEvent(info, id);
         final var participleTime = eventParticipantService.createOrUpdate(id, requestDto, info.loginId(),
                                                                           info.role());

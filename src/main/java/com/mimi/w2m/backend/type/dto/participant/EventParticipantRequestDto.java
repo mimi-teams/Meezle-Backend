@@ -1,11 +1,11 @@
 package com.mimi.w2m.backend.type.dto.participant;
 
-import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.type.common.ParticipleTime;
 import com.mimi.w2m.backend.type.domain.Event;
 import com.mimi.w2m.backend.type.domain.EventParticipant;
 import com.mimi.w2m.backend.type.domain.Guest;
 import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * EventParticipantRequestDto
@@ -36,11 +36,11 @@ public class EventParticipantRequestDto implements Serializable {
     @Schema(title = "참여자가 선택한 시간", description = "참여자가 선택한 시간 정보를 받음(null = 모든 선택 가능한 시간이 가능하다고 가정)")
     @Nullable
     @Valid
-    private List<ParticipleTime> ableDaysAndTimes;
+    private Set<ParticipleTime> ableDaysAndTimes;
 
     @Builder
     public EventParticipantRequestDto(Long eventId,
-                                      @Nullable List<ParticipleTime> ableDaysAndTimes) {
+                                      @Nullable Set<ParticipleTime> ableDaysAndTimes) {
         this.eventId          = eventId;
         this.ableDaysAndTimes = ableDaysAndTimes;
     }

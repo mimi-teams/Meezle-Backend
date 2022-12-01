@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.domain.converter;
 
 import com.mimi.w2m.backend.type.common.ParticipleTime;
-import com.mimi.w2m.backend.type.converter.db.ListParticipleTimeConverter;
+import com.mimi.w2m.backend.type.converter.db.SetParticipleTimeConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
  * @since 2022/11/24
  **/
 class ListParticipleTimeJsonConverterTest {
-private final ListParticipleTimeConverter converter = new ListParticipleTimeConverter();
+private final SetParticipleTimeConverter converter = new SetParticipleTimeConverter();
 
 @DisplayName("SetParticipleTime TYPE -> SetParticipleTime STR 변환")
 @Test

@@ -56,6 +56,16 @@ public class User extends BaseTimeEntity {
         return this;
     }
 
+    public User updateName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public User updateEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
     @Override
     public int hashCode() {
         return getClass().hashCode();
@@ -74,5 +84,10 @@ public class User extends BaseTimeEntity {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "role = " + getRole() + ", " + "name = " +
                getName() + ", " + "email = " + getEmail() + ", " + "deletedAt = " + getDeletedAt() + ")";
+    }
+
+    public User delete() {
+        this.deletedAt = LocalDateTime.now();
+        return this;
     }
 }

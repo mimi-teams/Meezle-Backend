@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.type.dto.response;
+package com.mimi.w2m.backend.type.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -16,16 +16,12 @@ import java.util.Arrays;
         requiredProperties = {"code", "httpStatus", "defaultMessage"})
 public enum ApiResultCode {
 
-    SUCCESS(1, ApiHttpStatus.OK, "처리 완료"),
-    SERVER_ERROR(2, ApiHttpStatus.ERROR, "알 수 없는 서버 에러"),
-    ENTITY_NOT_FOUND(3, ApiHttpStatus.NOT_FOUND, "해당 Entity 를 찾을 수 없음"),
-
-    INVALID_VALUE(4, ApiHttpStatus.BAD_REQUEST, "잘못된 값으로 요청"),
-    UNAUTHORIZED(5, ApiHttpStatus.UNAUTHORIZED, "잘못된 접근입니다."),
-    EVENT_NOT_FOUND(7, ApiHttpStatus.NOT_FOUND, "이벤트가 존재하지 않습니다."),
-    ENTITY_DUPLICATED(8, ApiHttpStatus.DUPLICATED, "해당 Entity 가 이미 존재함"),
-    UNUSED_API(9, ApiHttpStatus.BAD_REQUEST, "사용하지 않는 API 입니다"),
-
+    SUCCESS(1, ApiHttpStatus.OK, "요청이 정상적으로 처리되었습니다"),
+    ILLEGAL_ACCESS(2, ApiHttpStatus.ILLEGAL_ACCESS, "허가되지 않은 접근입니다"),
+    ENTITY_NOT_FOUND(3, ApiHttpStatus.NOT_FOUND, "찾으려는 대상이 존재하지 않습니다"),
+    ENTITY_DUPLICATED(4, ApiHttpStatus.DUPLICATED, "대상이 이미 존재합니다"),
+    BAD_REQUEST(5, ApiHttpStatus.BAD_REQUEST, "잘못된 형식의 요청입니다"),
+    SERVER_ERROR(6, ApiHttpStatus.ERROR, "서버 에러가 발생했습니다"),
     ;
 
     /**

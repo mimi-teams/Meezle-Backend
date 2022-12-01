@@ -79,7 +79,7 @@ void setUp() {
 @Test
 void find() {
     //given
-    final var expectedEvent       = eventRepository.findByTitle("event").get(0);
+    final var expectedEvent       = eventRepository.findAllByTitle("event").get(0);
     final var expectedUser        = userRepository.findByName("user").get(0);
     final var expectedParticipant = guestRepository.findByName("participant").get();
 
@@ -102,7 +102,7 @@ void update() {
     final var updatedDayOfWeeks      = Set.of(DayOfWeek.values());
     final var updatedParticipleTimes = Set.of(ParticipleTime.of("00:00:00-12:12:12"));
 
-    final var expectedEvent = eventRepository.findByTitle("event").get(0);
+    final var expectedEvent = eventRepository.findAllByTitle("event").get(0);
     final var expectedUser  = userRepository.findByName("user").get(0);
     final var expectedParticipleTime = eventParticipantRepository.findByGuestInEvent(expectedUser,
                                                                                      expectedEvent).get(0);

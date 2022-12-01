@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 public enum Role {
     USER("ROLE_USER", "사용자"),
     GUEST("ROLE_GUEST", "참여자"),
-    NONE("ROLE_NONE", "불완전한 이용자"),
     ;
     private final String key;
     private final String name;
