@@ -68,6 +68,7 @@ public class EventRequestDto implements Serializable {
     public Event to(User user) {
         return Event.builder()
                     .title(title)
+                    .host(user)
                     .selectableDaysAndTimes(selectableParticipleTimes)
                     .dDay(dDay)
                     .color(color.to())

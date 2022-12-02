@@ -4,6 +4,7 @@ import com.mimi.w2m.backend.type.common.ParticipleTime;
 import com.mimi.w2m.backend.type.domain.EventParticipant;
 import com.mimi.w2m.backend.type.dto.guest.GuestResponseDto;
 import com.mimi.w2m.backend.type.dto.user.UserResponseDto;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -61,13 +63,23 @@ public class EventParticipantResponseDto implements Serializable {
         this.ableDaysAndTimes = ableDaysAndTimes;
     }
 
-    public static EventParticipantResponseDto of(EventParticipant entity) {
-        return EventParticipantResponseDto.builder()
-                                          .eventId(entity.getEvent()
-                                                         .getId())
-                                          .user(UserResponseDto.of(entity.getUser()))
-                                          .guest(GuestResponseDto.of(entity.getGuest()))
-                                          .ableDaysAndTimes(entity.getAbleDaysAndTimes())
-                                          .build();
+    public static EventParticipantResponseDto of(EventParticipant entity) throws InvalidValueException {
+        if(Objects.nonNull(entity.getUser())) {
+            return EventParticipantResponseDto.builder()
+                                              .eventId(entity.getEvent()
+                                                             .getId())
+                                              .user(UserResponseDto.of(entity.getUser()))
+                                              .ableDaysAndTimes(entity.getAbleDaysAndTimes())
+                                              .build();
+        } else if(Objects.nonNull(entity.getGuest())) {
+            return EventParticipantResponseDto.builder()
+                                              .eventId(entity.getEvent()
+                                                             .getId())
+                                              .guest(GuestResponseDto.of(entity.getGuest()))
+                                              .ableDaysAndTimes(entity.getAbleDaysAndTimes())
+                                              .build();
+        } else {
+            throw new InvalidValueException("[EventParticipantResponseDto] Invalid Entity: id=" + entity.getId());
+        }
     }
 }
