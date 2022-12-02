@@ -7,6 +7,7 @@ import com.mimi.w2m.backend.type.converter.db.SetParticipleTimeConverter;
 import com.mimi.w2m.backend.type.domain.Event;
 import com.mimi.w2m.backend.type.domain.EventParticipant;
 import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
+import com.mimi.w2m.backend.type.response.exception.EntityDuplicatedException;
 import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +40,55 @@ public class EventParticipantService {
      * @since 2022-11-01
      */
     @Transactional
-    public EventParticipant create(Long roleId, Role role, EventParticipantRequestDto requestDto)
-    throws InvalidValueException, EntityNotFoundException {
-        return switch(role) {
-            case USER -> eventParticipantRepository.save(
-                    requestDto.to(eventService.get(requestDto.getEventId()), userService.get(roleId)));
-            case GUEST -> eventParticipantRepository.save(
-                    requestDto.to(eventService.get(requestDto.getEventId()), guestService.get(roleId)));
+    public EventParticipant create(EventParticipantRequestDto requestDto)
+    throws InvalidValueException, EntityNotFoundException, EntityDuplicatedException {
+        final var formatter = new Formatter();
+        final var event     = eventService.get(requestDto.getEventId());
+        return switch(requestDto.getOwnerType()) {
+            case USER -> {
+                final var user  = userService.get(requestDto.getOwnerId());
+                final var other = eventParticipantRepository.findByUserInEvent(user, event);
+                if(other.isPresent()) {
+                    final var msg = formatter.format(
+                                                     "[EventParticipantService] Entity Duplicated(event=%d, id=%d, " + "role=%s)", event.getId(),
+                                                     user.getId(), Role.USER.getKey())
+                                             .toString();
+                    throw new EntityDuplicatedException(msg);
+                } else {
+                    yield eventParticipantRepository.save(requestDto.to(event, user));
+                }
+            }
+            case GUEST -> {
+                final var msg = formatter.format("[EventParticipantService] Invalid Request(event=%d, role=%s)",
+                                                 event.getId(), Role.GUEST.getKey())
+                                         .toString();
+                throw new InvalidValueException(msg);
+            }
         };
+    }
+
+    /**
+     * 참여자 정보 수정
+     *
+     * @author teddy
+     * @since 2022/12/02
+     **/
+    @Transactional
+    public EventParticipant modify(Long id, EventParticipantRequestDto requestDto) throws EntityNotFoundException {
+        final var participant = get(id);
+        return participant.update(requestDto.getAbleDaysAndTimes());
+    }
+
+    public EventParticipant get(Long id) throws EntityNotFoundException {
+        final var participant = eventParticipantRepository.findById(id);
+        if(participant.isPresent()) {
+            return participant.get();
+        } else {
+            final var formatter = new Formatter();
+            final var msg = formatter.format("[EventParticipantService] Entity Not Found(id=%d)", id)
+                                     .toString();
+            throw new EntityNotFoundException(msg);
+        }
     }
 
     /**

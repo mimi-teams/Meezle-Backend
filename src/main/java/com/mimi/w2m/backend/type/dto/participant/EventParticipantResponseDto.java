@@ -2,6 +2,8 @@ package com.mimi.w2m.backend.type.dto.participant;
 
 import com.mimi.w2m.backend.type.common.ParticipleTime;
 import com.mimi.w2m.backend.type.domain.EventParticipant;
+import com.mimi.w2m.backend.type.dto.guest.GuestResponseDto;
+import com.mimi.w2m.backend.type.dto.user.UserResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,25 +32,41 @@ public class EventParticipantResponseDto implements Serializable {
     @PositiveOrZero
     private Long eventId;
 
+    @Schema(title = "참여자의 정보(User)")
+    @Valid
+    @Nullable
+    private UserResponseDto user;
+
+    @Schema(title = "참여자의 정보(guest)")
+    @Valid
+    @Nullable
+    private GuestResponseDto guest;
+
     @Schema(title = "참여자가 선택한 시간", description = "참여자가 선택한 시간 정보를 받음(null = 모든 선택 가능한 시간이 가능하다고 가정)")
     @Nullable
     @Valid
     private Set<ParticipleTime> ableDaysAndTimes;
 
-    @Builder
-    public EventParticipantResponseDto(Long eventId,
-                                       @Nullable Set<ParticipleTime> ableDaysAndTimes) {
-        this.eventId          = eventId;
-        this.ableDaysAndTimes = ableDaysAndTimes;
+    protected EventParticipantResponseDto() {
     }
 
-    protected EventParticipantResponseDto() {
+    @Builder
+    public EventParticipantResponseDto(Long eventId,
+                                       @Nullable UserResponseDto user,
+                                       @Nullable GuestResponseDto guest,
+                                       @Nullable Set<ParticipleTime> ableDaysAndTimes) {
+        this.eventId          = eventId;
+        this.user             = user;
+        this.guest            = guest;
+        this.ableDaysAndTimes = ableDaysAndTimes;
     }
 
     public static EventParticipantResponseDto of(EventParticipant entity) {
         return EventParticipantResponseDto.builder()
                                           .eventId(entity.getEvent()
                                                          .getId())
+                                          .user(UserResponseDto.of(entity.getUser()))
+                                          .guest(GuestResponseDto.of(entity.getGuest()))
                                           .ableDaysAndTimes(entity.getAbleDaysAndTimes())
                                           .build();
     }

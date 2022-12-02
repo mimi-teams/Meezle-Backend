@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
@@ -19,7 +20,6 @@ import java.util.Objects;
 @Getter
 public class ApiCallResponse<T> implements Serializable {
 
-    @Valid
     @NotNull
     private final ApiResultCode code;
 
@@ -51,5 +51,9 @@ public class ApiCallResponse<T> implements Serializable {
     @SuppressWarnings("unused")
     public static <T> ApiCallResponse<T> of(ApiResultCode code, String message, T data) {
         return new ApiCallResponse<>(code, message, data);
+    }
+
+    public static Class<?> getGenericClass(Type genericType) {
+        return null;
     }
 }

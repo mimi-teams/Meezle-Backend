@@ -33,7 +33,7 @@ public class UserResponseDto implements Serializable {
     @Size(max = 20)
     @NotNull
     private String name;
-    @Schema(type = "String", description = "사용자 이메일", format = "email")
+    @Schema(type = "String", description = "사용자 이메일", pattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
     @Email
     @NotNull
     private String email;
