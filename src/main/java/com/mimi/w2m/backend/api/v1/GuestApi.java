@@ -1,22 +1,31 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.dto.ApiResponse;
-import com.mimi.w2m.backend.dto.guest.GuestRequestDto;
-import com.mimi.w2m.backend.dto.guest.GuestResponseDto;
 import com.mimi.w2m.backend.service.AuthService;
-import com.mimi.w2m.backend.service.EventParticipleTimeService;
+import com.mimi.w2m.backend.service.EventParticipantService;
 import com.mimi.w2m.backend.service.GuestService;
+import com.mimi.w2m.backend.type.common.Role;
+import com.mimi.w2m.backend.type.dto.guest.GuestRequestDto;
+import com.mimi.w2m.backend.type.dto.guest.GuestResponseDto;
+import com.mimi.w2m.backend.type.response.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.net.URI;
 
 /**
@@ -27,73 +36,72 @@ import java.net.URI;
  * @since 2022/11/27
  **/
 @Tag(name = "Guest Api", description = "Guest 와 관련된 Api 관리")
+@Validated
 @RequestMapping(path = "/guests")
 @RestController
 public class GuestApi extends BaseGenericApi<GuestService> {
-    private final Logger                     logger = LogManager.getLogger(GuestApi.class);
-    private final EventParticipleTimeService eventParticipleTimeService;
+    private final Logger                  logger = LogManager.getLogger(GuestApi.class.getName());
+    private final EventParticipantService eventParticipantService;
 
     public GuestApi(GuestService service, AuthService authService, HttpSession httpSession,
-                    EventParticipleTimeService timeService) {
+                    EventParticipantService timeService) {
         super(service, authService, httpSession);
-        eventParticipleTimeService = timeService;
+        eventParticipantService = timeService;
     }
 
-    @Operation(method = "GET", description = "[인증] ID의 GUEST 가져오기(이벤트 참여자만 가능)")
+    @Operation(method = "GET", summary = "임시 이용자 정보 반환",
+               description = "[로그인 O, 인가 O] ID 에 해당하는 이용자 정보를 반환한다. 이용자가 속한 이벤트의 참여자만 이용할 수 있다",
+               responses = {@ApiResponse(useReturnTypeSchema = true)})
     @GetMapping(path = "/{id}")
-    public ApiResponse<GuestResponseDto> get(
-            @PathVariable("id") Long id) {
-        final var loginInfo = authService.getCurrentLogin(httpSession);
+    public @Valid ApiCallResponse<GuestResponseDto> get(
+            @Parameter(name = "id", description = "이용자가 로그인할 때 제공된 ID", in = ParameterIn.PATH, required = true)
+            @PositiveOrZero @NotNull
+            @PathVariable("id")
+            Long id) {
+        final var loginInfo = authService.getLoginInfo(httpSession);
         final var guest     = service.get(id);
         authService.isInEvent(loginInfo, guest.getEvent()
                                               .getId());
-        return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
+        return ApiCallResponse.ofSuccess(GuestResponseDto.of(guest));
     }
 
-    @Deprecated
-    @Operation(method = "PATCH", description = "[인증] GUEST 수정하기(본인만 가능)")
+    @Operation(method = "PATCH", summary = "임시 이용자 정보 수정",
+               description = "[로그인 O, 인가 O] ID에 해당하는 이용자 정보를 수정한다. 업데이트 가능한 값은 name & password 이고 event 는 변경할 수 없다. " +
+                             "현재 로그인한 이용자와 같아야 하며, 반환되는 정보는 없다", responses = {@ApiResponse(useReturnTypeSchema = true)})
     @PatchMapping(path = "/{id}")
-    public ApiResponse<GuestResponseDto> patch(
-            @PathVariable("id") Long id,
-            @RequestBody GuestRequestDto requestDto) {
-        authService.isValidLogin(id, Role.GUEST, httpSession);
+    public @Valid ApiCallResponse<GuestResponseDto> patch(
+            @Parameter(name = "id", description = "이용자가 로그인할 때 제공된 ID", in = ParameterIn.PATH, required = true)
+            @PositiveOrZero @NotNull @Valid
+            @PathVariable("id")
+            Long id, @Valid
+            @RequestBody
+            GuestRequestDto requestDto) {
+        final var loginInfo = authService.getLoginInfo(httpSession);
+        authService.isValidLogin(loginInfo, id, Role.GUEST);
         final var guest = service.update(id, requestDto);
-        return ApiResponse.ofSuccess(GuestResponseDto.of(guest));
+        return ApiCallResponse.ofSuccess(null);
     }
 
-    /**
-     * 연관된 모든 요소 삭제. 일단 Event 가 삭제될 때, Guest 정보가 삭제되는 것으로만 만든다
-     *
-     * @author teddy
-     * @since 2022/11/27
-     **/
-    @Deprecated
-    @Operation(method = "DELETE", description = "[인증] PARTICIPANT 삭제(연관된 모든 정보 삭제 후, '/'로 Redirect")
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(Long id) {
-        authService.isValidLogin(id, Role.GUEST, httpSession);
-        final var guest = service.get(id);
-        eventParticipleTimeService.deleteAll(eventParticipleTimeService.getEventParticipleTimes(guest.getEvent()
-                                                                                                     .getId(), id,
-                                                                                                Role.GUEST));
-        authService.logout(httpSession);
-        service.delete(guest);
-        final var headers = new HttpHeaders();
-        headers.setLocation(URI.create("/"));
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-    }
-
-    @Operation(method = "GET", description = "[인증X] Guest Login(name & password)")
+    @Operation(method = "GET", summary = "임시 이용자의 name & password 를 이용한 로그인",
+               description = "[로그인 X] name 과 password 를 이용해 로그인한다. 로그인된 이용자가 있다면 로그아웃을 수행한다. 이벤트에 해당 name 이 없는 경우 새롭게" +
+                             " 생성되며, 한 이벤트에서 name 은 유일하게 존재한다. 로그인 후, '/'로 Redirect 된다", responses = {
+            @ApiResponse(description = "'/'로 Redirect",
+                         content = {@Content(schema = @Schema(description = "GET '/'"))})})
     @GetMapping(path = "/login")
-    public ResponseEntity<?> login(
-            @RequestBody GuestRequestDto requestDto) {
+    public ResponseEntity<?> login(@Valid
+                                   @RequestBody
+                                   GuestRequestDto requestDto) {
+        authService.logout(httpSession);
         service.login(requestDto);
         final var headers = new HttpHeaders();
         headers.setLocation(URI.create("/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
-    @Operation(method = "GET", description = "[인증] Guest logout 처리")
+    @Operation(method = "GET", summary = "임시 이용자의 로그아웃",
+               description = "[로그인 O, 인가 X] 임시 이용자의 로그아웃을 처리한다. 로그아웃 후, '/'로 Redirect 된다", responses = {
+            @ApiResponse(description = "'/'로 Redirect",
+                         content = {@Content(schema = @Schema(description = "GET '/'"))})})
     @GetMapping(path = "/logout")
     public ResponseEntity<?> logout() {
         authService.logout(httpSession);

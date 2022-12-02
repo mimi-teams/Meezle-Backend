@@ -1,10 +1,10 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.dto.security.OAuthAttributes;
-import com.mimi.w2m.backend.error.EntityDuplicatedException;
-import com.mimi.w2m.backend.error.EntityNotFoundException;
 import com.mimi.w2m.backend.repository.UserRepository;
+import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.dto.security.OAuthAttributes;
+import com.mimi.w2m.backend.type.response.exception.EntityDuplicatedException;
+import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
@@ -132,7 +132,7 @@ void getUserValid() {
     given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
     //when
-    final var expectedUser = userService.getUser(user.getId());
+    final var expectedUser = userService.get(user.getId());
 
     //then
     assertThat(expectedUser.toString()).isEqualTo(user.toString());
@@ -146,7 +146,7 @@ void getUserInValid() {
     given(userRepository.findById(anyLong())).willReturn(Optional.empty());
 
     //when
-    assertThatThrownBy(() -> userService.getUser(0L)).isInstanceOf(EntityNotFoundException.class);
+    assertThatThrownBy(() -> userService.get(0L)).isInstanceOf(EntityNotFoundException.class);
 
     //then
     then(userRepository).should(times(1)).findById(any());
@@ -166,8 +166,8 @@ void removeUser() {
     given(userRepository.findById(invalidUserId)).willReturn(Optional.empty());
 
     //when
-    userService.deleteUserReal(validUserId);
-    assertThatThrownBy(() -> userService.deleteUserReal(invalidUserId)).isInstanceOf(EntityNotFoundException.class);
+    userService.deleteReal(validUserId);
+    assertThatThrownBy(() -> userService.deleteReal(invalidUserId)).isInstanceOf(EntityNotFoundException.class);
 
     //then
     then(userRepository).should(times(2)).findById(anyLong());
@@ -193,9 +193,9 @@ void updateUser() {
     given(userRepository.findByEmail(duplicatedEmail)).willReturn(Optional.of(user));
 
     //when
-    final var expectedUser = userService.updateUser(user.getId(), updatedName, updatedEmail);
-    assertThatThrownBy(() -> userService.updateUser(notExistUserId, updatedName, updatedEmail)).isInstanceOf(EntityNotFoundException.class);
-    assertThatThrownBy(() -> userService.updateUser(user.getId(), updatedName, duplicatedEmail)).isInstanceOf(EntityDuplicatedException.class);
+    final var expectedUser = userService.update(user.getId(), updatedName, updatedEmail);
+    assertThatThrownBy(() -> userService.update(notExistUserId, updatedName, updatedEmail)).isInstanceOf(EntityNotFoundException.class);
+    assertThatThrownBy(() -> userService.update(user.getId(), updatedName, duplicatedEmail)).isInstanceOf(EntityDuplicatedException.class);
 
     //then
     assertThat(expectedUser.toString()).isEqualTo(user.toString());

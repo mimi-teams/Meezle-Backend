@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 @RequestMapping(path = "/meezle/api/v1")
 public abstract class BaseGenericApi<SV> {
-protected final SV          service;
-protected final AuthService authService;
-protected final HttpSession httpSession;
+    protected final SV          service;
+    protected final AuthService authService;
+    protected final HttpSession httpSession;
 }

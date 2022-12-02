@@ -1,15 +1,15 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.EventParticipleTime;
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.ParticipleTime;
-import com.mimi.w2m.backend.dto.event.ColorDto;
-import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.dto.participle.EventParticipleTimeRequestDto;
-import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventRepository;
+import com.mimi.w2m.backend.type.common.ParticipleTime;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.domain.EventParticipant;
+import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.dto.event.ColorDto;
+import com.mimi.w2m.backend.type.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
+import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.DisplayName;
@@ -42,9 +42,9 @@ import static org.mockito.Mockito.times;
  **/
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
-private final        Logger                     logger = LogManager.getLogger(EventServiceTest.class);
-@Mock private        EventParticipleTimeService eventParticipleTimeService;
-@Mock private        EventRepository            eventRepository;
+private final Logger                  logger = LogManager.getLogger(EventServiceTest.class);
+@Mock private EventParticipantService eventParticipantService;
+@Mock private EventRepository         eventRepository;
 @Mock private        UserService                userService;
 @InjectMocks private EventService               eventService;
 
@@ -64,8 +64,8 @@ void createEvent() {
                                         .dDay(null)
                                         .color(ColorDto.of(Color.RED))
                                         .build();
-    given(userService.getUser(validUserId)).willReturn(user);
-    given(userService.getUser(invalidUserId)).willThrow(EntityNotFoundException.class);
+    given(userService.get(validUserId)).willReturn(user);
+    given(userService.get(invalidUserId)).willThrow(EntityNotFoundException.class);
     given(eventRepository.save(any(Event.class))).willAnswer(invoc -> invoc.getArgument(0));
 
     //when
@@ -76,7 +76,7 @@ void createEvent() {
     //then
     assertThat(expectedEvent.toString()).isEqualTo(requestDto.to(user).toString());
 
-    then(userService).should(times(2)).getUser(anyLong());
+    then(userService).should(times(2)).get(anyLong());
     then(eventRepository).should(times(1)).save(any(Event.class));
 
     logger.error(expectedEvent);
@@ -124,7 +124,7 @@ void modifyEvent() {
     then(eventRepository).should(times(2)).findById(anyLong());
 }
 
-@DisplayName("EventParticipleTime 의 공통 부분 계산")
+@DisplayName("EventParticipant 의 공통 부분 계산")
 @Test
 void calculateSharedTime() {
     //given
@@ -140,19 +140,19 @@ void calculateSharedTime() {
                               .color(Color.BLACK)
                               .build();
     final var eventId = 1L;
-    final var participleTime1 = EventParticipleTime
+    final var participleTime1 = EventParticipant
                                         .builder()
                                         .event(event)
                                         .ableDayOfWeeks(Set.of(DayOfWeek.values()))
                                         .participleTimes(Set.of(ParticipleTime.of("00:00:00-12:00:00")))
                                         .build();
-    final var participleTime2 = EventParticipleTime
+    final var participleTime2 = EventParticipant
                                         .builder()
                                         .event(event)
                                         .ableDayOfWeeks(Set.of(DayOfWeek.MONDAY, DayOfWeek.SUNDAY))
                                         .participleTimes(Set.of(ParticipleTime.of("01:00:00-03:00:00")))
                                         .build();
-    final var participleTime3 = EventParticipleTime
+    final var participleTime3 = EventParticipant
                                         .builder()
                                         .event(event)
                                         .ableDayOfWeeks(Set.of(DayOfWeek.MONDAY))
@@ -162,9 +162,9 @@ void calculateSharedTime() {
     final var validParticipleTimes = ParticipleTime.of("02:00:00-03:00:00");
 
     given(eventRepository.findById(eventId)).willReturn(Optional.of(event));
-    given(eventParticipleTimeService.getEventParticipleTimes(eventId)).willReturn(List.of(participleTime1,
-                                                                                          participleTime2,
-                                                                                          participleTime3));
+    given(eventParticipantService.getAllParticipantInfo(eventId)).willReturn(List.of(participleTime1,
+                                                                                     participleTime2,
+                                                                                     participleTime3));
     //when
     final var expectedEvent = eventService.calculateSharedTime(eventId);
 
@@ -173,7 +173,7 @@ void calculateSharedTime() {
     assertThat(expectedEvent.getParticipleTime()).isEqualTo(validParticipleTimes);
 
     then(eventRepository).should(times(1)).findById(anyLong());
-    then(eventParticipleTimeService).should(times(1)).getEventParticipleTimes(anyLong());
+    then(eventParticipantService).should(times(1)).getAllParticipantInfo(anyLong());
 }
 
 @DisplayName("DayOfWeek 와 ParticipleTime 을 직접 설정")
@@ -193,23 +193,23 @@ void setEventTimeDirectly() {
                               .color(Color.BLACK)
                               .build();
     final var eventId = 1L;
-    final var validRequestDto = new EventParticipleTimeRequestDto("MONDAY,THURSDAY,", "00:00:00-11:11:11");
+    final var validRequestDto = new EventParticipantRequestDto("MONDAY,THURSDAY,", "00:00:00-11:11:11");
     final var validDayOfWeeks = Set.of(DayOfWeek.MONDAY, DayOfWeek.THURSDAY);
     final var validParticipleTime = ParticipleTime.of("00:00:00-11:11:11");
-    final var invalidRequestDtoByInvalidDayOfWeek = new EventParticipleTimeRequestDto("Monday,", "00:00:00-11:11:11");
-    final var invalidRequestDtoByInvalidParticipleTimes1 = new EventParticipleTimeRequestDto("MONDAY,", "11:11:11-00" +
-                                                                                                        ":00:00");
-    final var invalidRequestDtoByInvalidParticipleTimes2 = new EventParticipleTimeRequestDto("MONDAY,",
+    final var invalidRequestDtoByInvalidDayOfWeek = new EventParticipantRequestDto("Monday,", "00:00:00-11:11:11");
+    final var invalidRequestDtoByInvalidParticipleTimes1 = new EventParticipantRequestDto("MONDAY,", "11:11:11-00" +
+                                                                                                     ":00:00");
+    final var invalidRequestDtoByInvalidParticipleTimes2 = new EventParticipantRequestDto("MONDAY,",
                                                                                              "00:00:00-01:00:00," +
                                                                                              "01:00:00-02:00:00");
     given(eventRepository.findById(eventId)).willReturn(Optional.of(event));
     //when
-    final var expectedEvent = eventService.setEventTimeDirectly(eventId, validRequestDto);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidDayOfWeek))
+    final var expectedEvent = eventService.modifySelectedDaysAndTimesDirectly(eventId, validRequestDto);
+    assertThatThrownBy(() -> eventService.modifySelectedDaysAndTimesDirectly(eventId, invalidRequestDtoByInvalidDayOfWeek))
             .isInstanceOf(InvalidValueException.class);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes1))
+    assertThatThrownBy(() -> eventService.modifySelectedDaysAndTimesDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes1))
             .isInstanceOf(InvalidValueException.class);
-    assertThatThrownBy(() -> eventService.setEventTimeDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes2))
+    assertThatThrownBy(() -> eventService.modifySelectedDaysAndTimesDirectly(eventId, invalidRequestDtoByInvalidParticipleTimes2))
             .isInstanceOf(InvalidValueException.class);
 
     //then
@@ -239,7 +239,7 @@ void deleteEvent() {
 
     //when
     final var beforeDeleted = LocalDateTime.now();
-    final var expectedEvent = eventService.deleteEventNotReal(eventId);
+    final var expectedEvent = eventService.deleteNotReal(eventId);
     final var afterDeleted = LocalDateTime.now();
 
     //then
@@ -270,17 +270,17 @@ void getEventByTitleValid() {
                                .build();
     final var event2Id = 1L;
     given(eventRepository.findById(event2Id)).willReturn(Optional.of(event2));
-    given(eventRepository.findByTitle("event")).willReturn(List.of(event1, event2));
+    given(eventRepository.findAllByTitle("event")).willReturn(List.of(event1, event2));
 
     //when
-    eventService.deleteEventNotReal(event2Id);
-    final var expectedEvents = eventService.getEventByTitle("event");
+    eventService.deleteNotReal(event2Id);
+    final var expectedEvents = eventService.getAllByTitle("event");
 
     //then
     assertThat(expectedEvents).asList().containsExactly(event1);
 
     then(eventRepository).should(times(1)).findById(anyLong());
-    then(eventRepository).should(times(1)).findByTitle(anyString());
+    then(eventRepository).should(times(1)).findAllByTitle(anyString());
 }
 
 @Test
@@ -307,17 +307,17 @@ void getEventByTitleInvalid() {
     final var event2Id = 1L;
     given(eventRepository.findById(event1Id)).willReturn(Optional.of(event1));
     given(eventRepository.findById(event2Id)).willReturn(Optional.of(event2));
-    given(eventRepository.findByTitle("event")).willReturn(List.of(event1, event2));
+    given(eventRepository.findAllByTitle("event")).willReturn(List.of(event1, event2));
 
     //when
-    eventService.deleteEventNotReal(event1Id);
-    eventService.deleteEventNotReal(event2Id);
-    assertThatThrownBy(() -> eventService.getEventByTitle("event"))
+    eventService.deleteNotReal(event1Id);
+    eventService.deleteNotReal(event2Id);
+    assertThatThrownBy(() -> eventService.getAllByTitle("event"))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
     then(eventRepository).should(times(2)).findById(anyLong());
-    then(eventRepository).should(times(1)).findByTitle(anyString());
+    then(eventRepository).should(times(1)).findAllByTitle(anyString());
 }
 
 @Test
@@ -347,20 +347,20 @@ void getEventsCreatedByUser() {
                                .user(user)
                                .color(Color.BLACK)
                                .build();
-    given(userService.getUser(userId)).willReturn(user);
-    given(userService.getUser(invalidUserId)).willReturn(invalidUser);
-    given(eventRepository.findAllByUser(user)).willReturn(List.of(event1, event2));
-    given(eventRepository.findAllByUser(invalidUser)).willReturn(List.of());
+    given(userService.get(userId)).willReturn(user);
+    given(userService.get(invalidUserId)).willReturn(invalidUser);
+    given(eventRepository.findAllByHost(user)).willReturn(List.of(event1, event2));
+    given(eventRepository.findAllByHost(invalidUser)).willReturn(List.of());
 
     //when
-    final var expectedEvents = eventService.getEventsCreatedByUser(userId);
-    assertThatThrownBy(() -> eventService.getEventsCreatedByUser(invalidUserId))
+    final var expectedEvents = eventService.getAllByHost(userId);
+    assertThatThrownBy(() -> eventService.getAllByHost(invalidUserId))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then
     assertThat(expectedEvents).asList().containsExactly(event1, event2);
 
-    then(userService).should(times(2)).getUser(anyLong());
-    then(eventRepository).should(times(2)).findAllByUser(any(User.class));
+    then(userService).should(times(2)).get(anyLong());
+    then(eventRepository).should(times(2)).findAllByHost(any(User.class));
 }
 }

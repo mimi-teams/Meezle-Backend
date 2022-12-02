@@ -1,6 +1,12 @@
 spring:
   profiles:
     include: oauth
+    # 404 Error 를 직접 처리하기 위한 설정
+  web:
+    resources:
+      add-mappings: false
+  mvc:
+    throw-exception-if-no-handler-found: true
 
 springdoc.use-fqn: true  #Swagger에서 Schema를 Class Full Name으로 하기 위한 설정
 
@@ -11,3 +17,4 @@ server:
     include-stacktrace: never
     whitelabel:
       enabled: false
+

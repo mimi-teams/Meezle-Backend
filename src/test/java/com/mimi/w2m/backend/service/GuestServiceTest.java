@@ -1,14 +1,14 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Guest;
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.dto.guest.GuestRequestDto;
-import com.mimi.w2m.backend.error.EntityDuplicatedException;
-import com.mimi.w2m.backend.error.EntityNotFoundException;
-import com.mimi.w2m.backend.error.InvalidValueException;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.GuestRepository;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.domain.Guest;
+import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.type.dto.guest.GuestRequestDto;
+import com.mimi.w2m.backend.type.response.exception.EntityDuplicatedException;
+import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -266,8 +266,8 @@ void removeParticipant() {
     given(guestRepository.findById(invalidParticipantId)).willReturn(Optional.empty());
 
     //when
-    guestService.remove(validParticipantId);
-    assertThatThrownBy(() -> guestService.remove(invalidParticipantId))
+    guestService.delete(validParticipantId);
+    assertThatThrownBy(() -> guestService.delete(invalidParticipantId))
             .isInstanceOf(EntityNotFoundException.class);
 
     //then

@@ -1,8 +1,8 @@
 package com.mimi.w2m.backend.repository;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.ParticipleTime;
+import com.mimi.w2m.backend.type.common.ParticipleTime;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,7 +63,7 @@ void findByTitle() {
     final var expectedTitle = "event1";
 
     //when
-    final var givenEvent = eventRepository.findByTitle(expectedTitle);
+    final var givenEvent = eventRepository.findAllByTitle(expectedTitle);
 
     //then
     assertThat(givenEvent.size()).isEqualTo(1);
@@ -74,11 +74,11 @@ void findByTitle() {
 void findAllByUser() {
     //given
     final var user           = userRepository.findByName("user").get(0);
-    final var expectedEvent1 = eventRepository.findByTitle("event1").get(0);
-    final var expectedEvent2 = eventRepository.findByTitle("event2").get(0);
+    final var expectedEvent1 = eventRepository.findAllByTitle("event1").get(0);
+    final var expectedEvent2 = eventRepository.findAllByTitle("event2").get(0);
 
     //when
-    final var givenEvents = eventRepository.findAllByUser(user);
+    final var givenEvents = eventRepository.findAllByHost(user);
 
     //then
     assertThat(givenEvents).asList().containsExactly(expectedEvent1, expectedEvent2);
@@ -95,13 +95,13 @@ void update() {
     final var updatedDayOfWeeks     = Set.of(DayOfWeek.values());
     final var updatedParticipleTime = ParticipleTime.of("00:00:00-11:11:11");
 
-    final var expectedEvent = eventRepository.findByTitle("event1").get(0);
+    final var expectedEvent = eventRepository.findAllByTitle("event1").get(0);
 
     //when
     expectedEvent.update(updatedTitle, updatedDescription, updatedColor, updatedDDay);
     expectedEvent.update(updatedDayOfWeeks, updatedParticipleTime);
 
-    final var givenEvent = eventRepository.findByTitle("updatedTitle").get(0);
+    final var givenEvent = eventRepository.findAllByTitle("updatedTitle").get(0);
 
     //then
     assertThat(expectedEvent).isEqualTo(givenEvent);
@@ -110,7 +110,7 @@ void update() {
 @DisplayName("Event 삭제(DeletedDate 설정)")
 @Test
 void delete() {
-    final var event         = eventRepository.findByTitle("event1").get(0);
+    final var event         = eventRepository.findAllByTitle("event1").get(0);
     final var beforeDeleted = LocalDateTime.now();
 
     //when

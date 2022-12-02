@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.repository;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Guest;
+import com.mimi.w2m.backend.type.domain.Event;
+import com.mimi.w2m.backend.type.domain.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
