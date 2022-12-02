@@ -46,27 +46,33 @@ import java.util.Objects;
 @RequestMapping(path = "/users")
 @RestController
 public class UserApi extends BaseGenericApi<UserService> {
-    private final Logger       logger = LoggerFactory.getLogger(UserApi.class.getName());
-    private final EventService eventService;
+    private final Logger                  logger = LoggerFactory.getLogger(UserApi.class.getName());
+    private final EventService            eventService;
     private final GuestService            guestService;
     private final EventParticipantService eventParticipantService;
 
-    public UserApi(UserService service, AuthService authService, HttpSession httpSession, EventService eventService,
-                   GuestService guestService, EventParticipantService timeService) {
+    public UserApi(
+            UserService service,
+            AuthService authService,
+            HttpSession httpSession,
+            EventService eventService,
+            GuestService guestService,
+            EventParticipantService timeService
+    ) {
         super(service, authService, httpSession);
-        this.eventService       = eventService;
-        this.guestService       = guestService;
-        eventParticipantService = timeService;
+        this.eventService            = eventService;
+        this.guestService            = guestService;
+        this.eventParticipantService = timeService;
     }
 
     @Operation(method = "GET", summary = "이용자 정보 반환", description = "[로그인 O, 인가 X] ID에 해당하는 이용자 정보를 반환한다",
-               responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @GetMapping(path = "/{id}")
+               responses = {@ApiResponse(useReturnTypeSchema = true)}) @GetMapping(path = "/{id}")
     public @Valid ApiCallResponse<UserResponseDto> get(
             @Parameter(name = "id", description = "이용자가 로그인할 때 제공된 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid
             @PathVariable("id")
-            Long id) {
+            Long id
+    ) {
         authService.getLoginInfo(httpSession);
         final var user = service.get(id);
         return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
@@ -74,15 +80,16 @@ public class UserApi extends BaseGenericApi<UserService> {
 
     @Operation(method = "PATCH", summary = "본인 정보 수정",
                description = "[로그인 O, 인가 O] ID에 해당하는 이용자의 정보를 수정한다. 현재 로그인한 이용자와 같아야 하며, 반환되는 정보는 없다",
-               responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @PatchMapping(path = "/{id}")
+               responses = {@ApiResponse(useReturnTypeSchema = true)}) @PatchMapping(path = "/{id}")
     public @Valid ApiCallResponse<UserResponseDto> patch(
             @Parameter(name = "id", description = "이용자가 로그인할 때 제공된 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid
             @PathVariable("id")
-            Long id, @Valid
+            Long id,
+            @Valid
             @RequestBody
-            UserRequestDto requestDto) {
+            UserRequestDto requestDto
+    ) {
         final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isValidLogin(loginInfo, id, Role.USER);
         final var user = service.update(id, requestDto);
@@ -94,12 +101,12 @@ public class UserApi extends BaseGenericApi<UserService> {
                              "삭제 후, Logout 되고 '/' 로 Redirect 된다", responses = {
             @ApiResponse(description = "'/'로 Redirect",
                          content = {@Content(schema = @Schema(description = "GET '/'"))})})
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(
+    @DeleteMapping(path = "/{id}") public ResponseEntity<?> delete(
             @Parameter(name = "id", description = "이용자가 로그인할 때 제공된 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid
             @PathVariable("id")
-            Long id) {
+            Long id
+    ) {
         final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isValidLogin(loginInfo, id, Role.USER);
 
@@ -118,14 +125,14 @@ public class UserApi extends BaseGenericApi<UserService> {
     }
 
     @Operation(method = "GET", summary = "이메일에 해당하는 이용자 정보 반환", description = "[로그인 O, 인가 X] Email에 해당하는 이용자를 반환한다",
-               responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @GetMapping(path = "")
+               responses = {@ApiResponse(useReturnTypeSchema = true)}) @GetMapping(path = "")
     public @Valid ApiCallResponse<UserResponseDto> getByEmail(
             @Parameter(name = "email", description = "검색에 사용하는 email", in = ParameterIn.QUERY, required = true,
                        schema = @Schema(pattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"))
             @Email @NotNull @Valid
             @RequestParam
-            String email) {
+            String email
+    ) {
         final var loginInfo = authService.getLoginInfo(httpSession);
         final var user      = service.getByEmail(email);
         return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
@@ -135,13 +142,13 @@ public class UserApi extends BaseGenericApi<UserService> {
                description = "[로그인 X] Google 이나 Kakao 계정을 이용해 로그인한다. 로그인된 이용자가 있다면 로그아웃을 수행한다. 가입된 Email 이 없는 경우, " +
                              "이용자를 새로 등록한다. 로그인 후, '/'로 Redirect 된다", responses = {
             @ApiResponse(description = "'/'로 Redirect",
-                         content = {@Content(schema = @Schema(description = "GET '/'"))})})
-    @GetMapping(path = "/login")
+                         content = {@Content(schema = @Schema(description = "GET '/'"))})}) @GetMapping(path = "/login")
     public ResponseEntity<?> loginWithOauth2(
             @Parameter(name = "platform", description = "로그인할 계정의 플랫폼", in = ParameterIn.QUERY, required = true)
             @NotNull @Pattern(regexp = "^(kakao|google)$") @Valid
             @RequestParam
-            String platform) {
+            String platform
+    ) {
         authService.logout(httpSession);
         final var headers = new HttpHeaders();
         headers.setLocation(URI.create("/oauth2/authorization/" + platform));
@@ -155,8 +162,8 @@ public class UserApi extends BaseGenericApi<UserService> {
     @GetMapping(path = "/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         final var loginInfo = authService.getLoginInfo(httpSession);
-        final var auth = SecurityContextHolder.getContext()
-                                              .getAuthentication();
+        final var auth      = SecurityContextHolder.getContext()
+                                                   .getAuthentication();
         if(Objects.nonNull(auth)) {
             authService.logout(httpSession);
             new SecurityContextLogoutHandler().logout(request, response, auth);
