@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.mimi.w2m.backend.type.common.ParticipleTime;
 import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.Formatter;
 
 @JsonComponent
 public class ParticipleTimeJsonConverter {
-    private final static Logger logger = LogManager.getLogger(ParticipleTime.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(ParticipleTime.class.getName());
 
     public static class Serializer extends JsonSerializer<ParticipleTime> {
         @Override
@@ -27,7 +27,6 @@ public class ParticipleTimeJsonConverter {
                 final var msg = formatter.format("Serialize Failed")
                                          .toString();
                 logger.error(msg);
-                logger.error(e.getCause());
                 throw new InvalidValueException(msg);
             }
         }
@@ -45,7 +44,6 @@ public class ParticipleTimeJsonConverter {
                 final var msg = formatter.format("Deserialize Failed")
                                          .toString();
                 logger.error(msg);
-                logger.error(e.getCause());
                 throw new InvalidValueException(msg);
             }
         }

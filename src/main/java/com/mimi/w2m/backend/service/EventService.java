@@ -9,8 +9,8 @@ import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +32,7 @@ public class EventService {
     private final UserService                userService;
     private final EventRepository            eventRepository;
     private final EventParticipantRepository eventParticipantRepository;
-    private final Logger                     logger = LogManager.getLogger(EventService.class.getName());
+    private final Logger                     logger = LoggerFactory.getLogger(EventService.class.getName());
 
     /**
      * 이벤트 생성(Host 는 EventParticipant 에 추가된다)
