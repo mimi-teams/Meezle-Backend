@@ -41,49 +41,54 @@ public class ExceptionApi extends ResponseEntityExceptionHandler {
     @ExceptionHandler({EntityDuplicatedException.class})
     protected ApiCallResponse<Void> handleEntityDuplicatedException(EntityDuplicatedException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message)
-                                 .toString(); logger.warn(log); return ApiCallResponse.of(
-                ApiResultCode.ENTITY_DUPLICATED, e.messageToClient, null);
+                                 .toString();
+        logger.warn(log);
+        return ApiCallResponse.of(ApiResultCode.ENTITY_DUPLICATED, e.messageToClient, null);
     }
 
     @ApiResponse(description = "요청된 정보가 없을 때, 반환된다", useReturnTypeSchema = true)
     @ExceptionHandler({EntityNotFoundException.class})
     protected ApiCallResponse<Void> handleEntityNotFoundException(EntityNotFoundException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message)
-                                 .toString(); logger.warn(log); return ApiCallResponse.of(
-                ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
+                                 .toString();
+        logger.warn(log);
+        return ApiCallResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
     }
 
     @ApiResponse(description = "잘못된 값으로 요청할 때, 반환된다", useReturnTypeSchema = true)
     @ExceptionHandler({InvalidValueException.class})
     protected ApiCallResponse<Void> handleInvalidValueException(InvalidValueException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message)
-                                 .toString(); logger.warn(log); return ApiCallResponse.of(ApiResultCode.BAD_REQUEST,
-                                                                                          e.messageToClient, null);
+                                 .toString();
+        logger.warn(log);
+        return ApiCallResponse.of(ApiResultCode.BAD_REQUEST, e.messageToClient, null);
     }
 
     @ApiResponse(description = "권한 없는 이용자가 요청할 때, 반환된다", useReturnTypeSchema = true)
     @ExceptionHandler({IllegalAccessException.class})
     protected ApiCallResponse<Void> handleUnauthorizedException(IllegalAccessException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message)
-                                 .toString(); logger.warn(log); return ApiCallResponse.of(ApiResultCode.ILLEGAL_ACCESS,
-                                                                                          e.messageToClient, null);
+                                 .toString();
+        logger.warn(log);
+        return ApiCallResponse.of(ApiResultCode.ILLEGAL_ACCESS, e.messageToClient, null);
     }
 
     @ApiResponse(description = "Validation 이 실패할 때, 반환된다", useReturnTypeSchema = true)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ConstraintViolationException.class})
     protected ApiCallResponse<Void> handleMethodArgumentNotValid(ConstraintViolationException e) {
-        logger.warn("400 Exception occurs. " + e.getMessage()); return ApiCallResponse.of(ApiResultCode.BAD_REQUEST,
-                                                                                          null);
+        logger.warn("400 Exception occurs. " + e.getMessage());
+        return ApiCallResponse.of(ApiResultCode.BAD_REQUEST, null);
     }
 
     @ApiResponse(description = "요청한 URI 가 없을 때, 반환된다", useReturnTypeSchema = true)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
-                                                                   HttpStatus status, WebRequest request) {
-        logger.warn("404 Exception occurs. URI=" + ex.getRequestURL()); return ResponseEntity.of(
-                Optional.of(ApiCallResponse.of(ApiResultCode.BAD_REQUEST, null)));
+    protected ResponseEntity<Object> handleNoHandlerFoundException(
+            NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request
+    ) {
+        logger.warn("404 Exception occurs. URI=" + ex.getRequestURL());
+        return ResponseEntity.of(Optional.of(ApiCallResponse.of(ApiResultCode.BAD_REQUEST, null)));
     }
 
     @ApiResponse(description = "서버 내부의 문제일 때, 반환된다", useReturnTypeSchema = true)

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Tag(name = "Root('/') Api", description = "로그인이나 로그아웃 수행 시, Redirect 되는 URI. 현재 로그인한 이용자 정보를 담고 있다")
@@ -25,8 +26,11 @@ public class RootApi {
                description = "[로그인 X] 로그인 정보를 반환한다. 정보가 없다면 EntityNotFoundHandler 가 수행된다",
                responses = {@ApiResponse(useReturnTypeSchema = true)})
     @GetMapping(path = "")
-    public ApiCallResponse<SessionInfoResponseDto> get() {
-        final var loginInfo = authService.getLoginInfo(httpSession);
+    public ApiCallResponse<SessionInfoResponseDto> get(
+            HttpServletRequest request
+            ) {
+
+        final var loginInfo = authService.getLoginInfo(request.getSession());
         return ApiCallResponse.ofSuccess(SessionInfoResponseDto.of(loginInfo));
     }
 }
