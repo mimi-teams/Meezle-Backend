@@ -5,7 +5,6 @@ import com.mimi.w2m.backend.type.converter.db.SetParticipleTimeConverter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.logging.log4j.util.Strings;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
@@ -80,7 +79,7 @@ public class Event extends BaseTimeEntity {
         this.dDay                   = dDay;
         this.selectableDaysAndTimes = selectableDaysAndTimes;
         this.color                  = color;
-        this.description            = Objects.nonNull(description) ? description : Strings.EMPTY;
+        this.description            = Objects.nonNull(description) ? description : "";
         this.host                   = host;
     }
 
@@ -90,7 +89,7 @@ public class Event extends BaseTimeEntity {
         this.dDay                   = dDay;
         this.selectableDaysAndTimes = selectableDaysAndTimes;
         this.color                  = color;
-        this.description            = Objects.nonNull(description) ? description : Strings.EMPTY;
+        this.description            = Objects.nonNull(description) ? description : "";
         return this;
     }
 

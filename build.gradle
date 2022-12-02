@@ -12,21 +12,13 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    all {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    }
-}
-
 dependencies {
 
     // Spring MVC
     implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Spring Data
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-
 
     // DB Connector
     runtimeOnly "mysql:mysql-connector-java"
@@ -36,27 +28,28 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     // Test
-    implementation 'org.springframework.boot:spring-boot-starter-test:3.0.0'
-    implementation 'org.springframework.security:spring-security-test:5.7.5'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.security:spring-security-test'
 
     // Security
-    implementation 'org.springframework.security:spring-security-core:5.7.5'
-    implementation 'org.springframework.security:spring-security-web:5.7.5'
+//    implementation 'org.springframework.security:spring-security-core:5.7.5'
+//    implementation 'org.springframework.security:spring-security-web:5.7.5'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // Authentication
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     // Session
-    implementation 'org.springframework.session:spring-session-jdbc:3.0.0'
+    implementation 'org.springframework.session:spring-session-jdbc'
 
     //Open-API (Swagger)
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
 
     //Logger
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2:3.0.0'
+//    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
     // Validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation:3.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named("test") {
@@ -66,5 +59,5 @@ tasks.named("test") {
 // Activate Test profile
 tasks.test {
     systemProperty 'spring.profiles.active', 'test'
-//	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
+//	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LoggerFactory'
 }

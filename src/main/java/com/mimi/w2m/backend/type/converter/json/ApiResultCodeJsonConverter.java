@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mimi.w2m.backend.type.response.ApiResultCode;
 import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.Formatter;
 
 @JsonComponent
 public class ApiResultCodeJsonConverter {
-    private final static Logger logger = LogManager.getLogger(ApiResultCodeJsonConverter.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(ApiResultCodeJsonConverter.class.getName());
 
     public static class Serializer extends JsonSerializer<ApiResultCode> {
         @Override
@@ -35,7 +35,6 @@ public class ApiResultCodeJsonConverter {
                 final var msg = formatter.format("Serialize Failed")
                                          .toString();
                 logger.error(msg);
-                logger.error(e.getCause());
                 throw new InvalidValueException(msg);
             }
         }
@@ -53,7 +52,6 @@ public class ApiResultCodeJsonConverter {
                 final var msg = formatter.format("Deserialize Failed")
                                          .toString();
                 logger.error(msg);
-                logger.error(e.getCause());
                 throw new InvalidValueException(msg);
             }
         }

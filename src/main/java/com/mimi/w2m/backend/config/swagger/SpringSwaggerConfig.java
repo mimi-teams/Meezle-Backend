@@ -2,8 +2,8 @@ package com.mimi.w2m.backend.config.swagger;
 
 import io.swagger.v3.oas.models.media.DateTimeSchema;
 import io.swagger.v3.oas.models.media.StringSchema;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ import java.util.Objects;
  **/
 @Configuration
 public class SpringSwaggerConfig {
-    private final Logger logger = LogManager.getLogger(SpringSwaggerConfig.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(SpringSwaggerConfig.class.getName());
 
     @Bean
     public OpenApiCustomiser openApiCustomiser() {

@@ -13,8 +13,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +46,8 @@ import java.util.Objects;
 @RequestMapping(path = "/users")
 @RestController
 public class UserApi extends BaseGenericApi<UserService> {
-    private final Logger                  logger = LogManager.getLogger(UserApi.class.getName());
-    private final EventService            eventService;
+    private final Logger       logger = LoggerFactory.getLogger(UserApi.class.getName());
+    private final EventService eventService;
     private final GuestService            guestService;
     private final EventParticipantService eventParticipantService;
 

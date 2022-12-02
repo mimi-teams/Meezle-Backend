@@ -14,8 +14,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,13 +40,12 @@ import java.net.URI;
 @RequestMapping(path = "/guests")
 @RestController
 public class GuestApi extends BaseGenericApi<GuestService> {
-    private final Logger                  logger = LogManager.getLogger(GuestApi.class.getName());
+    private final Logger                  logger = LoggerFactory.getLogger(GuestApi.class.getName());
     private final EventParticipantService eventParticipantService;
 
     public GuestApi(GuestService service, AuthService authService, HttpSession httpSession,
                     EventParticipantService timeService) {
-        super(service, authService, httpSession);
-        eventParticipantService = timeService;
+        super(service, authService, httpSession); eventParticipantService = timeService;
     }
 
     @Operation(method = "GET", summary = "임시 이용자 정보 반환",
@@ -58,11 +57,9 @@ public class GuestApi extends BaseGenericApi<GuestService> {
             @PositiveOrZero @NotNull
             @PathVariable("id")
             Long id) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        final var guest     = service.get(id);
+        final var loginInfo = authService.getLoginInfo(httpSession); final var guest = service.get(id);
         authService.isInEvent(loginInfo, guest.getEvent()
-                                              .getId());
-        return ApiCallResponse.ofSuccess(GuestResponseDto.of(guest));
+                                              .getId()); return ApiCallResponse.ofSuccess(GuestResponseDto.of(guest));
     }
 
     @Operation(method = "PATCH", summary = "임시 이용자 정보 수정",
@@ -76,10 +73,9 @@ public class GuestApi extends BaseGenericApi<GuestService> {
             Long id, @Valid
             @RequestBody
             GuestRequestDto requestDto) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isValidLogin(loginInfo, id, Role.GUEST);
-        final var guest = service.update(id, requestDto);
-        return ApiCallResponse.ofSuccess(null);
+        final var loginInfo = authService.getLoginInfo(httpSession); authService.isValidLogin(loginInfo, id,
+                                                                                              Role.GUEST);
+        final var guest = service.update(id, requestDto); return ApiCallResponse.ofSuccess(null);
     }
 
     @Operation(method = "GET", summary = "임시 이용자의 name & password 를 이용한 로그인",
@@ -91,11 +87,8 @@ public class GuestApi extends BaseGenericApi<GuestService> {
     public ResponseEntity<?> login(@Valid
                                    @RequestBody
                                    GuestRequestDto requestDto) {
-        authService.logout(httpSession);
-        service.login(requestDto);
-        final var headers = new HttpHeaders();
-        headers.setLocation(URI.create("/"));
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+        authService.logout(httpSession); service.login(requestDto); final var headers = new HttpHeaders();
+        headers.setLocation(URI.create("/")); return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
     @Operation(method = "GET", summary = "임시 이용자의 로그아웃",
@@ -104,9 +97,7 @@ public class GuestApi extends BaseGenericApi<GuestService> {
                          content = {@Content(schema = @Schema(description = "GET '/'"))})})
     @GetMapping(path = "/logout")
     public ResponseEntity<?> logout() {
-        authService.logout(httpSession);
-        final var headers = new HttpHeaders();
-        headers.setLocation(URI.create("/"));
+        authService.logout(httpSession); final var headers = new HttpHeaders(); headers.setLocation(URI.create("/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 }

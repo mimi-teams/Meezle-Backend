@@ -16,7 +16,6 @@ class ColorDtoTest {
         assertEquals(Integer.parseInt("FF", 16), colorDto.getRed());
         assertEquals(Integer.parseInt("EE", 16), colorDto.getBlue());
         assertEquals(Integer.parseInt("CC", 16), colorDto.getGreen());
-        assertEquals(Integer.parseInt("11", 16), colorDto.getAlpha());
         assertEquals(colorString, colorDto.toString());
     }
 

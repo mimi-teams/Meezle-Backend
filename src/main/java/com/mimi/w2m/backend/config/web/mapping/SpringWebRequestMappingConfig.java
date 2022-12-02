@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.config.web.mapping;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
@@ -28,7 +28,7 @@ public class SpringWebRequestMappingConfig extends DelegatingWebMvcConfiguration
  * @since 2022/11/26
  **/
 class CustomRequestMappingHandler extends RequestMappingHandlerMapping {
-    private final Logger logger = LogManager.getLogger(CustomRequestMappingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(CustomRequestMappingHandler.class);
 
     @Override
     protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {

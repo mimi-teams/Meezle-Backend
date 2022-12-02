@@ -8,8 +8,8 @@ import com.mimi.w2m.backend.type.dto.security.OAuthAttributes;
 import com.mimi.w2m.backend.type.dto.user.UserRequestDto;
 import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -38,7 +38,7 @@ import java.util.Objects;
 public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final HttpSession    httpSession;
     private final UserRepository userRepository;
-    private final Logger         logger = LogManager.getLogger(UserService.class.getName());
+    private final Logger         logger = LoggerFactory.getLogger(UserService.class.getName());
 
     /**
      * OAuth2 를 이용해 Login 을 수행하고, 가입되지 않은 이용자는 가입된다
@@ -49,8 +49,7 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        var delegate   = new DefaultOAuth2UserService();
-        var oauth2User = delegate.loadUser(userRequest);
+        var delegate = new DefaultOAuth2UserService(); var oauth2User = delegate.loadUser(userRequest);
         // Kakao or google
         var registrationId = userRequest.getClientRegistration()
                                         .getRegistrationId();
@@ -58,14 +57,14 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         var userNameAttributeName = userRequest.getClientRegistration()
                                                .getProviderDetails()
                                                .getUserInfoEndpoint()
-                                               .getUserNameAttributeName();
-        var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.getAttributes());
-        var user       = signUpOrLoad(Objects.requireNonNull(attributes));
+                                               .getUserNameAttributeName(); var         attributes = OAuthAttributes.of(
+                registrationId, userNameAttributeName, oauth2User.getAttributes()); var user       = signUpOrLoad(
+                Objects.requireNonNull(attributes));
 
-        httpSession.setAttribute(LoginInfo.key, new LoginInfo(user.getId(), Role.USER));
-        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(user.getRole()
-                                                                                          .getKey())),
-                                     attributes.getAttributes(), attributes.getNameAttributeKey());
+        httpSession.setAttribute(LoginInfo.key, new LoginInfo(user.getId(), Role.USER)); return new DefaultOAuth2User(
+                Collections.singleton(new SimpleGrantedAuthority(user.getRole()
+                                                                     .getKey())), attributes.getAttributes(),
+                attributes.getNameAttributeKey());
     }
 
     /**
@@ -97,8 +96,7 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
      **/
     @Transactional
     public void deleteReal(Long userId) throws EntityNotFoundException {
-        var user = get(userId);
-        userRepository.delete(user);
+        var user = get(userId); userRepository.delete(user);
     }
 
     /**
@@ -108,13 +106,13 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
      * @since 2022-11-01
      */
     public User get(Long id) throws EntityNotFoundException {
-        final var user = userRepository.findById(id);
-        if(user.isPresent()) {
+        final var user = userRepository.findById(id); if(user.isPresent()) {
             return user.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[UserService] Entity Not Found(id=%d)", id)
-                                     .toString();
+            final var formatter = new Formatter(); final var msg = formatter.format(
+                                                                                    "[UserService] Entity Not Found" +
+                                                                                    "(id=%d)", id)
+                                                                            .toString();
             throw new EntityNotFoundException(msg);
         }
     }
@@ -127,18 +125,17 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
      **/
     @Transactional
     public void deleteNotReal(Long userId) throws EntityNotFoundException {
-        var user = get(userId);
-        user.delete();
+        var user = get(userId); user.delete();
     }
 
     public User getByEmail(String email) throws EntityNotFoundException {
-        final var user = userRepository.findByEmail(email);
-        if(user.isPresent()) {
+        final var user = userRepository.findByEmail(email); if(user.isPresent()) {
             return user.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[UserService] Entity Not Found(email=%s)", email)
-                                     .toString();
+            final var formatter = new Formatter(); final var msg = formatter.format(
+                                                                                    "[UserService] Entity Not Found" +
+                                                                                    "(email=%s)", email)
+                                                                            .toString();
             throw new EntityNotFoundException(msg);
         }
     }
@@ -151,9 +148,7 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
      * @since 2022/11/19
      **/
     @Transactional
-    public User update(Long userId, UserRequestDto requestDto)
-    throws EntityNotFoundException {
-        final var user = get(userId);
-        return user.updateName(requestDto.getName());
+    public User update(Long userId, UserRequestDto requestDto) throws EntityNotFoundException {
+        final var user = get(userId); return user.updateName(requestDto.getName());
     }
 }
