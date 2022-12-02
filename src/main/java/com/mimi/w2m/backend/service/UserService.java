@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * UserService
@@ -36,6 +34,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+
     private final HttpSession    httpSession;
     private final UserRepository userRepository;
     private final Logger         logger = LoggerFactory.getLogger(UserService.class.getName());
@@ -46,38 +45,46 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
      * @author teddy
      * @since 2022/12/01
      **/
-    @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        var delegate   = new DefaultOAuth2UserService();
-        var oauth2User = delegate.loadUser(userRequest);
+
+        // OAuth의 리소스 서버로부터 값을 대신 받아와준다.
+        final OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
+
         // Kakao or google
-        var registrationId = userRequest.getClientRegistration()
-                                        .getRegistrationId();
+        final var registrationId = userRequest.getClientRegistration()
+                                              .getRegistrationId();
+
         // kakao : id, google : email. CK or PK를 의미한다(application-oauth.yaml 에 정의됨)
-        var userNameAttributeName = userRequest.getClientRegistration()
-                                               .getProviderDetails()
-                                               .getUserInfoEndpoint()
-                                               .getUserNameAttributeName();
-        var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.getAttributes());
-        var user = signUpOrLoad(Objects.requireNonNull(attributes));
+        final var userNameAttributeName = userRequest.getClientRegistration()
+                                                     .getProviderDetails()
+                                                     .getUserInfoEndpoint()
+                                                     .getUserNameAttributeName();
+
+        final Map<String, Object> userAttributes = oauth2User.getAttributes();
+        final String              name           = String.valueOf(userAttributes.get("name"));
+        final String              email          = String.valueOf(userAttributes.get("email"));
+
+        final var attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.getAttributes());
+
+        // 회원가입 여부 확인
+        final Optional<User> byEmail = getUserByEmail(email);
+        final User           user;
+        if(byEmail.isPresent()) {
+            user = byEmail.get();
+        } else {
+            user = signup(name, email);
+        }
 
         httpSession.setAttribute(LoginInfo.key, new LoginInfo(user.getId(), Role.USER));
+
         return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(user.getRole()
                                                                                           .getKey())),
                                      attributes.getAttributes(), attributes.getNameAttributeKey());
     }
 
-    /**
-     * SignUp or Load 를 수행한다
-     *
-     * @author teddy
-     * @since 2022/12/01
-     **/
-    protected User signUpOrLoad(OAuthAttributes attributes) {
-        var user = userRepository.findByEmail(attributes.getEmail());
-        // Optional.orElse 구문은 Else statement 도 반드시 실행된다
-        return user.orElseGet(() -> signup(attributes.toEntity()));
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     /**
@@ -87,7 +94,12 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
      * @since 2022-11-01
      */
     @Transactional
-    protected User signup(User user) {return userRepository.save(user);}
+    protected User signup(String name, String email) {
+        return userRepository.save(User.builder()
+                                       .name(name)
+                                       .email(email)
+                                       .build());
+    }
 
     /**
      * 가입된 이용자 정보 삭제

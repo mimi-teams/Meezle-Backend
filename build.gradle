@@ -39,8 +39,6 @@ dependencies {
     // Authentication
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-    // Session
-    implementation 'org.springframework.session:spring-session-jdbc'
 
     //Open-API (Swagger)
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
