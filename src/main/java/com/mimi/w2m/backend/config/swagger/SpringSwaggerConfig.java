@@ -20,7 +20,7 @@ import java.util.Objects;
  **/
 @Configuration
 public class SpringSwaggerConfig {
-    private final Logger logger = LogManager.getLogger(SpringSwaggerConfig.class);
+    private final Logger logger = LogManager.getLogger(SpringSwaggerConfig.class.getName());
 
     @Bean
     public OpenApiCustomiser openApiCustomiser() {
