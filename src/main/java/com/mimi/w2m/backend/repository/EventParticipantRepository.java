@@ -1,9 +1,9 @@
 package com.mimi.w2m.backend.repository;
 
-import com.mimi.w2m.backend.type.domain.Event;
-import com.mimi.w2m.backend.type.domain.EventParticipant;
-import com.mimi.w2m.backend.type.domain.Guest;
-import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.EventParticipant;
+import com.mimi.w2m.backend.domain.Guest;
+import com.mimi.w2m.backend.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,14 +23,15 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
     @Query("SELECT t FROM EventParticipant t WHERE t.user = :user and t.event = :event")
     Optional<EventParticipant> findByUserInEvent(
             @Param("user") User user,
-            @Param("event") Event event);
+            @Param("event") Event event
+    );
 
     @Query("SELECT t FROM EventParticipant t WHERE t.event = :event")
-    List<EventParticipant> findAllInEvent(
-            @Param("event") Event event);
+    List<EventParticipant> findAllInEvent(@Param("event") Event event);
 
     @Query("SELECT t FROM EventParticipant t WHERE t.guest = :guest and t.event = :event")
     Optional<EventParticipant> findByGuestInEvent(
             @Param("guest") Guest guest,
-            @Param("event") Event event);
+            @Param("event") Event event
+    );
 }

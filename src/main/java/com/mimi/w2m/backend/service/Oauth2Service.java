@@ -5,8 +5,8 @@ import com.mimi.w2m.backend.client.kakao.KaKaoAuthApiClient;
 import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenRequest;
 import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenResponse;
 import com.mimi.w2m.backend.client.kakao.dto.KakaoUserInfoResponse;
-import com.mimi.w2m.backend.dto.OAuth2TokenInfo;
-import com.mimi.w2m.backend.dto.UserInfo;
+import com.mimi.w2m.backend.dto.auth.OAuth2TokenInfo;
+import com.mimi.w2m.backend.dto.auth.UserInfo;
 import com.mimi.w2m.backend.type.OAuth2PlatformType;
 import com.mimi.w2m.backend.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class Oauth2Service {
     protected String kakaoOauth2RedirectUri;
 
     private final KaKaoAuthApiClient kaKaoAuthApiClient;
-    private final KaKaoApiClient     kaoApiClient;
+    private final KaKaoApiClient kaoApiClient;
 
     /**
      * OAuth2 로그인 URL
@@ -45,19 +45,19 @@ public class Oauth2Service {
      * @since 2022-12-04
      */
     public String getOauthAuthorizationUrl(OAuth2PlatformType platformType) {
-        switch(platformType) {
+        switch (platformType) {
             case KAKAO -> {
                 return new StringBuilder(200).append(kakaoOauth2BaseUrl)
-                                             .append(kakaoOauth2AuthorizationUrl)
-                                             .append("?")
-                                             .append("client_id=")
-                                             .append(kakaoOauth2ClientId)
-                                             .append("&")
-                                             .append("redirect_uri=")
-                                             .append(kakaoOauth2RedirectUri)
-                                             .append("&")
-                                             .append("response_type=code")
-                                             .toString();
+                        .append(kakaoOauth2AuthorizationUrl)
+                        .append("?")
+                        .append("client_id=")
+                        .append(kakaoOauth2ClientId)
+                        .append("&")
+                        .append("redirect_uri=")
+                        .append(kakaoOauth2RedirectUri)
+                        .append("&")
+                        .append("response_type=code")
+                        .toString();
             }
             default -> {
                 assert false : "처리되지 않은 플렛폼입니다.";
@@ -77,7 +77,7 @@ public class Oauth2Service {
             String authorizationCode
     ) {
         final OAuth2TokenInfo tokenInfo = loadToken(platformType, authorizationCode);
-        final UserInfo        userInfo  = loadUserInfo(tokenInfo);
+        final UserInfo userInfo = loadUserInfo(tokenInfo);
         System.out.println(userInfo.getEmail());
     }
 
@@ -91,14 +91,14 @@ public class Oauth2Service {
             OAuth2PlatformType platformType,
             String authorizationCode
     ) {
-        switch(platformType) {
+        switch (platformType) {
             case KAKAO -> {
                 final var tokenRequest = KakaoTokenRequest.builder()
-                                                          .clientId(kakaoOauth2ClientId)
-                                                          .clientSecret(kakaoOauth2ClientSecret)
-                                                          .redirectUri(kakaoOauth2RedirectUri)
-                                                          .code(authorizationCode)
-                                                          .build();
+                        .clientId(kakaoOauth2ClientId)
+                        .clientSecret(kakaoOauth2ClientSecret)
+                        .redirectUri(kakaoOauth2RedirectUri)
+                        .code(authorizationCode)
+                        .build();
 
 
                 KakaoTokenResponse tokenResponse = kaKaoAuthApiClient.getToken(tokenRequest.toMap());
@@ -118,7 +118,7 @@ public class Oauth2Service {
      * @since 2022-12-04
      */
     protected UserInfo loadUserInfo(OAuth2TokenInfo tokenInfo) {
-        switch(tokenInfo.getPlatformType()) {
+        switch (tokenInfo.getPlatformType()) {
             case KAKAO -> {
                 KakaoUserInfoResponse userInfo = kaoApiClient.getUserInfo(HttpUtils.withBearerToken(tokenInfo.getAccessToken()));
                 return UserInfo.of(userInfo);

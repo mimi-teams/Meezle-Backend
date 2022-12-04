@@ -1,9 +1,9 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.dto.OAauth2AuthorizationResponse;
+import com.mimi.w2m.backend.dto.auth.OAauth2AuthorizationResponse;
 import com.mimi.w2m.backend.service.Oauth2Service;
 import com.mimi.w2m.backend.type.OAuth2PlatformType;
-import com.mimi.w2m.backend.type.response.ApiCallResponse;
+import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -29,10 +29,10 @@ public class AuthApi {
     private final Oauth2Service oauth2Service;
 
     @Operation(summary = "OAuth2 이용한 로그인",
-               description = "Google 이나 Kakao 계정을 이용해 로그인한다. 로그인된 이용자가 있다면 로그아웃을 수행한다. 가입된 Email 이 없는 경우, " +
-                             "이용자를 새로 등록한다. 로그인 후, '/'로 Redirect 된다",
-               responses = {@ApiResponse(description = "'/'로 Redirect",
-                                         content = {@Content(schema = @Schema(description = "GET '/'"))})})
+            description = "Google 이나 Kakao 계정을 이용해 로그인한다. 로그인된 이용자가 있다면 로그아웃을 수행한다. 가입된 Email 이 없는 경우, " +
+                    "이용자를 새로 등록한다. 로그인 후, '/'로 Redirect 된다",
+            responses = {@ApiResponse(description = "'/'로 Redirect",
+                    content = {@Content(schema = @Schema(description = "GET '/'"))})})
     @GetMapping(path = "/oauth2/authorization")
     public ApiCallResponse<OAauth2AuthorizationResponse> oauth2Authorization(
             @Parameter(name = "platform", description = "로그인할 계정의 플랫폼", in = ParameterIn.QUERY, required = true)
@@ -40,8 +40,8 @@ public class AuthApi {
     ) {
         final String authorizationUrl = oauth2Service.getOauthAuthorizationUrl(platform);
         final var response = OAauth2AuthorizationResponse.builder()
-                                                         .authorizationUrl(authorizationUrl)
-                                                         .build();
+                .authorizationUrl(authorizationUrl)
+                .build();
         return ApiCallResponse.ofSuccess(response);
     }
 

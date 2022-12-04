@@ -21,7 +21,7 @@ import java.util.Optional;
 @Service
 public class JwtService {
 
-    private final static String ISSUER     = "mezzle";
+    private final static String ISSUER = "mezzle";
     private final static String CLAIM_USER = "userid";
 
     private final Algorithm algorithm;
@@ -42,16 +42,15 @@ public class JwtService {
      */
     public String createToken(long userid) {
         return JWT.create()
-                  .withIssuer(ISSUER)
-                  .withClaim(CLAIM_USER, userid)
-                  .sign(algorithm);
+                .withIssuer(ISSUER)
+                .withClaim(CLAIM_USER, userid)
+                .sign(algorithm);
     }
 
     /**
      * 토큰을 검증해서 토큰 정보를 넘겨준다.
      *
      * @return 토큰이 올바르지 않은 경우 empty
-     *
      * @author yeh35
      * @since 2022-12-04
      */
@@ -60,18 +59,18 @@ public class JwtService {
 
         try {
             JWTVerifier verifier = JWT.require(algorithm)
-                                      // specify an specific claim validations
-                                      .withIssuer(ISSUER)
-                                      // reusable verifier instance
-                                      .build();
+                    // specify an specific claim validations
+                    .withIssuer(ISSUER)
+                    // reusable verifier instance
+                    .build();
 
             decodedJWT = verifier.verify(token);
 
             final var userId = decodedJWT.getClaim(CLAIM_USER)
-                                         .asLong();
+                    .asLong();
 
             return Optional.of(new TokenInfo(userId));
-        } catch(JWTVerificationException exception) {
+        } catch (JWTVerificationException exception) {
             // Invalid signature/claims
             return Optional.empty();
         }
@@ -82,7 +81,9 @@ public class JwtService {
     public static class TokenInfo {
         public final long userId;
 
-        public TokenInfo(long id) {userId = id;}
+        public TokenInfo(long id) {
+            userId = id;
+        }
     }
 
 }

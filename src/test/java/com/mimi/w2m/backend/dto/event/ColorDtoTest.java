@@ -1,6 +1,5 @@
 package com.mimi.w2m.backend.dto.event;
 
-import com.mimi.w2m.backend.type.dto.event.ColorDto;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

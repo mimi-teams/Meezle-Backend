@@ -1,8 +1,8 @@
 package com.mimi.w2m.backend.api;
 
 import com.mimi.w2m.backend.service.AuthService;
-import com.mimi.w2m.backend.type.dto.security.SessionInfoResponseDto;
-import com.mimi.w2m.backend.type.response.ApiCallResponse;
+import com.mimi.w2m.backend.dto.security.SessionInfoResponseDto;
+import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,8 +22,8 @@ public class RootApi {
     private final HttpSession httpSession;
 
     @Operation(method = "GET", summary = "로그인 정보 반환",
-               description = "[로그인 X] 로그인 정보를 반환한다. 정보가 없다면 EntityNotFoundHandler 가 수행된다",
-               responses = {@ApiResponse(useReturnTypeSchema = true)})
+            description = "[로그인 X] 로그인 정보를 반환한다. 정보가 없다면 EntityNotFoundHandler 가 수행된다",
+            responses = {@ApiResponse(useReturnTypeSchema = true)})
     @GetMapping(path = "")
     public ApiCallResponse<SessionInfoResponseDto> get() {
 

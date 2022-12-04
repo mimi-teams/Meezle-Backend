@@ -1,15 +1,15 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.repository.EventParticipantRepository;
-import com.mimi.w2m.backend.type.common.Role;
-import com.mimi.w2m.backend.type.common.TimeRange;
-import com.mimi.w2m.backend.type.converter.db.SetParticipleTimeConverter;
-import com.mimi.w2m.backend.type.domain.Event;
-import com.mimi.w2m.backend.type.domain.EventParticipant;
-import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
-import com.mimi.w2m.backend.type.response.exception.EntityDuplicatedException;
-import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
+import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.common.TimeRange;
+import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.EventParticipant;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
+import com.mimi.w2m.backend.exception.EntityDuplicatedException;
+import com.mimi.w2m.backend.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +28,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventParticipantService {
-    private final UserService                userService;
-    private final GuestService               guestService;
-    private final EventService               eventService;
+    private final UserService userService;
+    private final GuestService guestService;
+    private final EventService eventService;
     private final EventParticipantRepository eventParticipantRepository;
 
     /**
@@ -41,18 +41,18 @@ public class EventParticipantService {
      */
     @Transactional
     public EventParticipant create(EventParticipantRequestDto requestDto)
-    throws InvalidValueException, EntityNotFoundException, EntityDuplicatedException {
+            throws InvalidValueException, EntityNotFoundException, EntityDuplicatedException {
         final var formatter = new Formatter();
-        final var event     = eventService.get(requestDto.getEventId());
-        return switch(requestDto.getOwnerType()) {
+        final var event = eventService.get(requestDto.getEventId());
+        return switch (requestDto.getOwnerType()) {
             case USER -> {
-                final var user  = userService.get(requestDto.getOwnerId());
+                final var user = userService.get(requestDto.getOwnerId());
                 final var other = eventParticipantRepository.findByUserInEvent(user, event);
-                if(other.isPresent()) {
+                if (other.isPresent()) {
                     final var msg = formatter.format(
-                                                     "[EventParticipantService] Entity Duplicated(event=%d, id=%d, " + "role=%s)", event.getId(),
-                                                     user.getId(), Role.USER.getKey())
-                                             .toString();
+                                    "[EventParticipantService] Entity Duplicated(event=%d, id=%d, " + "role=%s)", event.getId(),
+                                    user.getId(), Role.USER.getKey())
+                            .toString();
                     throw new EntityDuplicatedException(msg);
                 } else {
                     yield eventParticipantRepository.save(requestDto.to(event, user));
@@ -60,8 +60,8 @@ public class EventParticipantService {
             }
             case GUEST -> {
                 final var msg = formatter.format("[EventParticipantService] Invalid Request(event=%d, role=%s)",
-                                                 event.getId(), Role.GUEST.getKey())
-                                         .toString();
+                                event.getId(), Role.GUEST.getKey())
+                        .toString();
                 throw new InvalidValueException(msg);
             }
         };
@@ -81,12 +81,12 @@ public class EventParticipantService {
 
     public EventParticipant get(Long id) throws EntityNotFoundException {
         final var participant = eventParticipantRepository.findById(id);
-        if(participant.isPresent()) {
+        if (participant.isPresent()) {
             return participant.get();
         } else {
             final var formatter = new Formatter();
             final var msg = formatter.format("[EventParticipantService] Entity Not Found(id=%d)", id)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         }
     }
@@ -98,17 +98,17 @@ public class EventParticipantService {
      * @since 2022-11-01
      */
     public EventParticipant get(Long eventId, Long roleId, Role role) throws EntityNotFoundException {
-        final var event     = eventService.get(eventId);
+        final var event = eventService.get(eventId);
         final var formatter = new Formatter();
         final var msg = formatter.format("[EventParticipantService] Entity Not Found(event=%d, id=%d, role=%s)",
-                                         eventId, roleId, role)
-                                 .toString();
-        return switch(role) {
+                        eventId, roleId, role)
+                .toString();
+        return switch (role) {
             case USER -> eventParticipantRepository.findByUserInEvent(userService.get(roleId), event)
-                                                   .orElseThrow(() -> new EntityNotFoundException(msg));
+                    .orElseThrow(() -> new EntityNotFoundException(msg));
 
             case GUEST -> eventParticipantRepository.findByGuestInEvent(guestService.get(roleId), event)
-                                                    .orElseThrow(() -> new EntityNotFoundException(msg));
+                    .orElseThrow(() -> new EntityNotFoundException(msg));
 
         };
     }
@@ -127,31 +127,31 @@ public class EventParticipantService {
      **/
     @Transactional
     public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, InvalidValueException {
-        final var formatter    = new Formatter();
-        final var converter    = new SetParticipleTimeConverter();
-        final var event        = eventService.get(eventId);
+        final var formatter = new Formatter();
+        final var converter = new SetParticipleTimeConverter();
+        final var event = eventService.get(eventId);
         final var participants = getAll(eventId);
 
         final var selectableDaysAndTimesMap = converter.convertToMap(event.getSelectableDaysAndTimes());
-        final var selectedDaysAndTimesMap   = new HashMap<DayOfWeek, Set<TimeRange>>();
+        final var selectedDaysAndTimesMap = new HashMap<DayOfWeek, Set<TimeRange>>();
 
         participants.forEach(p -> {
             final var ableDaysAndTimesMap = converter.convertToMap(p.getAbleDaysAndTimes());
-            if(!verify(selectableDaysAndTimesMap, ableDaysAndTimesMap)) {
+            if (!verify(selectableDaysAndTimesMap, ableDaysAndTimesMap)) {
                 final var msg = formatter.format(
-                                                 "[EventParticipantService] Out Of Selectable Range(event=%d, " +
-                                                 "participant=%d)", eventId,
-                                                 p.getId())
-                                         .toString();
+                                "[EventParticipantService] Out Of Selectable Range(event=%d, " +
+                                        "participant=%d)", eventId,
+                                p.getId())
+                        .toString();
                 throw new InvalidValueException(msg);
             }
             ableDaysAndTimesMap.forEach((d, t) -> {
-                if(selectedDaysAndTimesMap.containsKey(d)) {
+                if (selectedDaysAndTimesMap.containsKey(d)) {
                     // 해당 요일에 가능한 누군가 있다면, 선택될 수 있다.
                     final var selectedTimeRange = selectedDaysAndTimesMap.get(d);
-                    final var updatedTimeRange  = findSharedRange(t, selectedTimeRange);
+                    final var updatedTimeRange = findSharedRange(t, selectedTimeRange);
                     selectedDaysAndTimesMap.put(d, updatedTimeRange);
-                } else if(selectedDaysAndTimesMap.isEmpty()) {
+                } else if (selectedDaysAndTimesMap.isEmpty()) {
                     // 처음에는 그냥 넣을 수 있다
                     selectedDaysAndTimesMap.put(d, t);
                 }
@@ -169,12 +169,12 @@ public class EventParticipantService {
      * @since 2022-10-31
      */
     public List<EventParticipant> getAll(Long eventId) throws EntityNotFoundException {
-        final var event        = eventService.get(eventId);
+        final var event = eventService.get(eventId);
         final var participants = eventParticipantRepository.findAllInEvent(event);
-        if(participants.isEmpty()) {
+        if (participants.isEmpty()) {
             final var formatter = new Formatter();
             final var msg = formatter.format("[EventParticipantService] Any Entity Not Found(event=%d)", eventId)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         } else {
             return participants;
@@ -182,24 +182,24 @@ public class EventParticipantService {
     }
 
     private boolean verify(Map<DayOfWeek, Set<TimeRange>> selectable, Map<DayOfWeek, Set<TimeRange>> selected) {
-        for(var day : selected.keySet()) {
-            if(!selectable.containsKey(day)) {
+        for (var day : selected.keySet()) {
+            if (!selectable.containsKey(day)) {
                 return false;
             }
             final var selectableTimeRanges = selectable.get(day);
 
             final var selectedTimeRanges = selected.get(day);
-            for(var selectedRange : selectedTimeRanges) {
+            for (var selectedRange : selectedTimeRanges) {
                 var isIncluded = false;
-                for(var selectableRange : selectableTimeRanges) {
+                for (var selectableRange : selectableTimeRanges) {
                     final var intersectedRange = TimeRange.Operator.intersection(selectedRange, selectableRange)
-                                                         .getFirst();
-                    if(!Objects.equals(intersectedRange, selectedRange)) {
+                            .getFirst();
+                    if (!Objects.equals(intersectedRange, selectedRange)) {
                         isIncluded = true;
                         break;
                     }
                 }
-                if(!isIncluded) {
+                if (!isIncluded) {
                     return false;
                 }
             }
@@ -211,13 +211,13 @@ public class EventParticipantService {
     private Set<TimeRange> findSharedRange(Set<TimeRange> firstRanges, Set<TimeRange> secondRanges) {
         final var out = new HashSet<TimeRange>();
         final var orderedFirstRanges = firstRanges.stream()
-                                                  .sorted()
-                                                  .toList();
+                .sorted()
+                .toList();
         final var orderedSecondRanges = secondRanges.stream()
-                                                    .sorted()
-                                                    .toList();
+                .sorted()
+                .toList();
         // Union Each
-        final var unionOrderedFirstRanges  = unionRanges(orderedFirstRanges);
+        final var unionOrderedFirstRanges = unionRanges(orderedFirstRanges);
         final var unionOrderedSecondRanges = unionRanges(orderedSecondRanges);
 
         // Intersect Each
@@ -228,13 +228,13 @@ public class EventParticipantService {
         final var unionOrderedRanges = new LinkedList<TimeRange>();
 
         orderedRanges.forEach(range -> {
-            if(unionOrderedRanges.isEmpty()) {
+            if (unionOrderedRanges.isEmpty()) {
                 unionOrderedRanges.addLast(range);
             } else {
-                final var last  = unionOrderedRanges.removeLast();
+                final var last = unionOrderedRanges.removeLast();
                 final var union = TimeRange.Operator.union(range, last);
                 unionOrderedRanges.addLast(union.getFirst());
-                if(!Objects.equals(union.getSecond(), TimeRange.Operator.EMPTY)) {
+                if (!Objects.equals(union.getSecond(), TimeRange.Operator.EMPTY)) {
                     unionOrderedRanges.addLast(union.getSecond());
                 }
             }
@@ -244,13 +244,13 @@ public class EventParticipantService {
 
     private Set<TimeRange> intersectRanges(List<TimeRange> firstRanges, List<TimeRange> secondRanges) {
         final var intersectionRanges = new HashSet<TimeRange>();
-        for(var first : firstRanges) {
-            for(var second : secondRanges) {
+        for (var first : firstRanges) {
+            for (var second : secondRanges) {
                 final var intersection = TimeRange.Operator.intersection(first, second);
-                if(!Objects.equals(intersection.getFirst(), TimeRange.Operator.EMPTY)) {
+                if (!Objects.equals(intersection.getFirst(), TimeRange.Operator.EMPTY)) {
                     intersectionRanges.add(intersection.getFirst());
                 }
-                if(!Objects.equals(intersection.getSecond(), TimeRange.Operator.EMPTY)) {
+                if (!Objects.equals(intersection.getSecond(), TimeRange.Operator.EMPTY)) {
                     intersectionRanges.add(intersection.getSecond());
                 }
             }

@@ -8,8 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 public class W2mApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(W2mApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(W2mApplication.class, args);
+    }
 
 }
