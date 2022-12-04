@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    include: oauth
-    # 404 Error 를 직접 처리하기 위한 설정
   web:
     resources:
       add-mappings: false
