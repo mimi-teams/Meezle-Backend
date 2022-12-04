@@ -193,7 +193,7 @@ public class EventParticipantService {
                 var isIncluded = false;
                 for(var selectableRange : selectableTimeRanges) {
                     final var intersectedRange = TimeRange.Operator.intersection(selectedRange, selectableRange)
-                                                                   .getLeft();
+                                                         .getFirst();
                     if(!Objects.equals(intersectedRange, selectedRange)) {
                         isIncluded = true;
                         break;
@@ -233,9 +233,9 @@ public class EventParticipantService {
             } else {
                 final var last  = unionOrderedRanges.removeLast();
                 final var union = TimeRange.Operator.union(range, last);
-                unionOrderedRanges.addLast(union.getLeft());
-                if(!Objects.equals(union.getRight(), TimeRange.Operator.EMPTY)) {
-                    unionOrderedRanges.addLast(union.getRight());
+                unionOrderedRanges.addLast(union.getFirst());
+                if(!Objects.equals(union.getSecond(), TimeRange.Operator.EMPTY)) {
+                    unionOrderedRanges.addLast(union.getSecond());
                 }
             }
         });
@@ -247,11 +247,11 @@ public class EventParticipantService {
         for(var first : firstRanges) {
             for(var second : secondRanges) {
                 final var intersection = TimeRange.Operator.intersection(first, second);
-                if(!Objects.equals(intersection.getLeft(), TimeRange.Operator.EMPTY)) {
-                    intersectionRanges.add(intersection.getLeft());
+                if(!Objects.equals(intersection.getFirst(), TimeRange.Operator.EMPTY)) {
+                    intersectionRanges.add(intersection.getFirst());
                 }
-                if(!Objects.equals(intersection.getRight(), TimeRange.Operator.EMPTY)) {
-                    intersectionRanges.add(intersection.getRight());
+                if(!Objects.equals(intersection.getSecond(), TimeRange.Operator.EMPTY)) {
+                    intersectionRanges.add(intersection.getSecond());
                 }
             }
         }

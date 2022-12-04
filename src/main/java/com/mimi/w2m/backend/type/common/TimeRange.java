@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.type.common;
 
-import com.nimbusds.jose.util.Pair;
+import org.springframework.data.util.Pair;
 
 import java.io.IOException;
 import java.time.LocalTime;
