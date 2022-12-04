@@ -31,20 +31,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.security:spring-security-test'
 
-    // Security
-//    implementation 'org.springframework.security:spring-security-core:5.7.5'
-//    implementation 'org.springframework.security:spring-security-web:5.7.5'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-
     // Authentication
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    //JWT https://github.com/auth0/java-jwt
+    implementation 'com.auth0:java-jwt:4.2.1'
 
     //Open-API (Swagger)
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
-
-    //Logger
-//    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
