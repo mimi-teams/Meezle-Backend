@@ -12,7 +12,8 @@ import java.util.Arrays;
  * @since 2022-11-05
  */
 
-@Schema(title = "API 결과 코드", description = "각 상태에 맞는 코드를 제공한다",
+@Schema(title = "API 결과 코드",
+        description = "각 상태에 맞는 코드를 제공한다",
         requiredProperties = {"code", "httpStatus", "defaultMessage"})
 public enum ApiResultCode {
 
@@ -22,6 +23,11 @@ public enum ApiResultCode {
     ENTITY_DUPLICATED(4, ApiHttpStatus.DUPLICATED, "대상이 이미 존재합니다"),
     BAD_REQUEST(5, ApiHttpStatus.BAD_REQUEST, "잘못된 형식의 요청입니다"),
     SERVER_ERROR(6, ApiHttpStatus.ERROR, "서버 에러가 발생했습니다"),
+
+    /*
+     * 외부 시스템에서 에러가 발생한 경우
+     */
+    BAD_GATEWAY(7, ApiHttpStatus.ERROR, "일시적인 에러가 발생하였습니다.\n잠시 후 다시 시도해주세요!"),
     ;
 
     /**
