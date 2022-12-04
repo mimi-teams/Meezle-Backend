@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 
 @Tag(name = "Auth Api", description = "로그인/회원가입")
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/v1/auth")
+@RequestMapping(path = "/v1/auth")
 @RestController
 public class AuthApi {
 

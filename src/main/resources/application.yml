@@ -8,6 +8,8 @@ spring:
 springdoc.use-fqn: true  #Swagger에서 Schema를 Class Full Name으로 하기 위한 설정
 
 server:
+  servlet:
+    context-path: /api #기본 URL
   error:
     include-exception: false
     include-message: never
