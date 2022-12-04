@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -43,27 +44,18 @@ import java.util.Objects;
  **/
 @Tag(name = "User Api", description = "가입한 이용자와 관련된 API")
 @Validated
-@RequestMapping(path = "/users")
+@RequiredArgsConstructor
+@RequestMapping(path = "/v1/users")
 @RestController
-public class UserApi extends BaseGenericApi<UserService> {
+public class UserApi {
     private final Logger                  logger = LoggerFactory.getLogger(UserApi.class.getName());
     private final EventService            eventService;
     private final GuestService            guestService;
     private final EventParticipantService eventParticipantService;
 
-    public UserApi(
-            UserService service,
-            AuthService authService,
-            HttpSession httpSession,
-            EventService eventService,
-            GuestService guestService,
-            EventParticipantService timeService
-    ) {
-        super(service, authService, httpSession);
-        this.eventService            = eventService;
-        this.guestService            = guestService;
-        this.eventParticipantService = timeService;
-    }
+    private final UserService userService;
+    private final AuthService authService;
+    private final HttpSession httpSession;
 
     @Operation(method = "GET",
                summary = "이용자 정보 반환",
@@ -75,7 +67,7 @@ public class UserApi extends BaseGenericApi<UserService> {
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
     ) {
         authService.getLoginInfo(httpSession);
-        final var user = service.get(id);
+        final var user = userService.get(id);
         return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
     }
 
@@ -86,11 +78,12 @@ public class UserApi extends BaseGenericApi<UserService> {
     @PatchMapping(path = "/{id}")
     public @Valid ApiCallResponse<UserResponseDto> patch(
             @Parameter(name = "id", description = "이용자가 로그인할 때 제공된 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id, @Valid @RequestBody UserRequestDto requestDto
+            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
+            @Valid @RequestBody UserRequestDto requestDto
     ) {
         final var loginInfo = authService.getLoginInfo(httpSession);
         authService.isValidLogin(loginInfo, id, Role.USER);
-        final var user = service.update(id, requestDto);
+        final var user = userService.update(id, requestDto);
         return ApiCallResponse.ofSuccess(null);
     }
 
@@ -116,7 +109,7 @@ public class UserApi extends BaseGenericApi<UserService> {
         eventService.deleteAll(associatedEvents);
 
         authService.logout(httpSession);
-        service.deleteReal(id);
+        userService.deleteReal(id);
         final var headers = new HttpHeaders();
         headers.setLocation(URI.create("/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
@@ -136,7 +129,7 @@ public class UserApi extends BaseGenericApi<UserService> {
             @RequestParam String email
     ) {
         final var loginInfo = authService.getLoginInfo(httpSession);
-        final var user      = service.getByEmail(email);
+        final var user      = userService.getByEmail(email);
         return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
     }
 
@@ -163,7 +156,10 @@ public class UserApi extends BaseGenericApi<UserService> {
                responses = {@ApiResponse(description = "'/'로 Redirect",
                                          content = {@Content(schema = @Schema(description = "GET '/'"))})})
     @GetMapping(path = "/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> logout(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
         final var loginInfo = authService.getLoginInfo(httpSession);
         final var auth = SecurityContextHolder.getContext()
                                               .getAuthentication();
