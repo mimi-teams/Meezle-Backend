@@ -1,9 +1,9 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.dto.OAauth2AuthorizationResponse;
+import com.mimi.w2m.backend.dto.auth.OAauth2AuthorizationResponse;
 import com.mimi.w2m.backend.service.Oauth2Service;
 import com.mimi.w2m.backend.type.OAuth2PlatformType;
-import com.mimi.w2m.backend.type.response.ApiCallResponse;
+import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

@@ -1,9 +1,9 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.repository.UserRepository;
-import com.mimi.w2m.backend.type.domain.User;
-import com.mimi.w2m.backend.type.dto.user.UserRequestDto;
-import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.dto.user.UserRequestDto;
+import com.mimi.w2m.backend.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

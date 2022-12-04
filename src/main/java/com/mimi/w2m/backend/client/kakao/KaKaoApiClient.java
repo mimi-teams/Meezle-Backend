@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.client.kakao;
 
 import com.mimi.w2m.backend.client.kakao.dto.KakaoUserInfoResponse;
-import com.mimi.w2m.backend.type.response.exception.BadGatewayException;
+import com.mimi.w2m.backend.exception.BadGatewayException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;

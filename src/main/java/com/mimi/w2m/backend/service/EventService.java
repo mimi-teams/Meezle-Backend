@@ -2,12 +2,12 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import com.mimi.w2m.backend.repository.EventRepository;
-import com.mimi.w2m.backend.type.domain.Event;
-import com.mimi.w2m.backend.type.domain.EventParticipant;
-import com.mimi.w2m.backend.type.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.type.dto.participant.EventParticipantRequestDto;
-import com.mimi.w2m.backend.type.response.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.type.response.exception.InvalidValueException;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.EventParticipant;
+import com.mimi.w2m.backend.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
+import com.mimi.w2m.backend.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

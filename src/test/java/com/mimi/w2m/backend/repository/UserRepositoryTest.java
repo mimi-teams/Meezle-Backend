@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.repository;
 
-import com.mimi.w2m.backend.type.common.Role;
-import com.mimi.w2m.backend.type.domain.User;
+import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
