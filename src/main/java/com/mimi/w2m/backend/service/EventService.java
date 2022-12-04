@@ -29,10 +29,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventService {
-    private final UserService                userService;
-    private final EventRepository            eventRepository;
+    private final UserService userService;
+    private final EventRepository eventRepository;
     private final EventParticipantRepository eventParticipantRepository;
-    private final Logger                     logger = LoggerFactory.getLogger(EventService.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(EventService.class.getName());
 
     /**
      * 이벤트 생성(Host 는 EventParticipant 에 추가된다)
@@ -42,12 +42,12 @@ public class EventService {
      */
     @Transactional
     public Event createEvent(Long hostId, EventRequestDto requestDto) throws EntityNotFoundException {
-        final var host  = userService.get(hostId);
+        final var host = userService.get(hostId);
         final var event = eventRepository.save(requestDto.to(host));
         final var participant = EventParticipant.builder()
-                                                .event(event)
-                                                .user(host)
-                                                .build();
+                .event(event)
+                .user(host)
+                .build();
         eventParticipantRepository.save(participant);
         return event;
     }
@@ -62,8 +62,8 @@ public class EventService {
     public Event modifyEvent(Long eventId, EventRequestDto requestDto) throws EntityNotFoundException {
         var event = get(eventId);
         return event.update(requestDto.getTitle(), requestDto.getDDay(), requestDto.getSelectableParticipleTimes(),
-                            requestDto.getColor()
-                                      .to(), requestDto.getDescription());
+                requestDto.getColor()
+                        .to(), requestDto.getDescription());
     }
 
     /**
@@ -72,12 +72,12 @@ public class EventService {
      */
     public Event get(Long id) throws EntityNotFoundException {
         final var event = eventRepository.findById(id);
-        if(event.isPresent()) {
+        if (event.isPresent()) {
             return event.get();
         } else {
             final var formatter = new Formatter();
             final var msg = formatter.format("[EventService] Entity Not Found(id=%d)", id)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         }
     }
@@ -90,7 +90,7 @@ public class EventService {
      **/
     @Transactional
     public Event modifySelectedDaysAndTimesDirectly(EventParticipantRequestDto requestDto)
-    throws EntityNotFoundException, InvalidValueException {
+            throws EntityNotFoundException, InvalidValueException {
         final var event = get(requestDto.getEventId());
         event.setSelectedDaysAndTimes(requestDto.getAbleDaysAndTimes());
         return event;
@@ -128,15 +128,15 @@ public class EventService {
      */
     public List<Event> getAllByTitle(String title) throws EntityNotFoundException {
         final var events = eventRepository.findAllByTitle(title)
-                                          .stream()
-                                          .filter(event -> Objects.isNull(event.getDeletedAt()) || event.getDeletedAt()
-                                                                                                        .isAfter(
-                                                                                                                LocalDateTime.now()))
-                                          .toList();
-        if(events.isEmpty()) {
+                .stream()
+                .filter(event -> Objects.isNull(event.getDeletedAt()) || event.getDeletedAt()
+                        .isAfter(
+                                LocalDateTime.now()))
+                .toList();
+        if (events.isEmpty()) {
             final var formatter = new Formatter();
             final var msg = formatter.format("[EventService] Entity Not Found(title=%s)", title)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         } else {
             return events;
@@ -150,12 +150,12 @@ public class EventService {
      * @since 2022/11/21
      **/
     public List<Event> getAllByHost(Long hostId) throws EntityNotFoundException {
-        final var user   = userService.get(hostId);
+        final var user = userService.get(hostId);
         final var events = eventRepository.findAllByHost(user);
-        if(events.isEmpty()) {
+        if (events.isEmpty()) {
             final var formatter = new Formatter();
             final var msg = formatter.format("[EventService] Entity Not Found(host=%d)", hostId)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         } else {
             return events;

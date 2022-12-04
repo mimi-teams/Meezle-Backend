@@ -22,7 +22,7 @@ public class SessionInfoResponseDto implements Serializable {
 
     @Builder
     public SessionInfoResponseDto(Long id, Role role) {
-        this.id   = id;
+        this.id = id;
         this.role = role;
     }
 
@@ -31,8 +31,8 @@ public class SessionInfoResponseDto implements Serializable {
 
     public static SessionInfoResponseDto of(LoginInfo info) {
         return SessionInfoResponseDto.builder()
-                                     .id(info.loginId())
-                                     .role(info.role())
-                                     .build();
+                .id(info.loginId())
+                .role(info.role())
+                .build();
     }
 }

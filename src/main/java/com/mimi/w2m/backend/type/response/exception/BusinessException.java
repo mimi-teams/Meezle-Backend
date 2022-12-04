@@ -29,43 +29,43 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(String message) {
         super(message);
-        this.apiResultCode   = ApiResultCode.SERVER_ERROR;
-        this.message         = message;
+        this.apiResultCode = ApiResultCode.SERVER_ERROR;
+        this.message = message;
         this.messageToClient = apiResultCode.defaultMessage;
     }
 
     public BusinessException(String message, String messageToClient) {
         super(message);
-        this.apiResultCode   = ApiResultCode.SERVER_ERROR;
-        this.message         = message;
+        this.apiResultCode = ApiResultCode.SERVER_ERROR;
+        this.message = message;
         this.messageToClient = messageToClient;
     }
 
     public BusinessException(String message, String messageToClient, Throwable cause) {
         super(message, cause);
-        this.apiResultCode   = ApiResultCode.SERVER_ERROR;
-        this.message         = message;
+        this.apiResultCode = ApiResultCode.SERVER_ERROR;
+        this.message = message;
         this.messageToClient = messageToClient;
     }
 
     protected BusinessException(ApiResultCode apiResultCode, String message) {
         super(message);
-        this.apiResultCode   = apiResultCode;
-        this.message         = message;
+        this.apiResultCode = apiResultCode;
+        this.message = message;
         this.messageToClient = apiResultCode.defaultMessage;
     }
 
     protected BusinessException(ApiResultCode apiResultCode, String message, String messageToClient) {
         super(message);
-        this.apiResultCode   = apiResultCode;
-        this.message         = message;
+        this.apiResultCode = apiResultCode;
+        this.message = message;
         this.messageToClient = messageToClient;
     }
 
     protected BusinessException(ApiResultCode apiResultCode, String message, String messageToClient, Throwable cause) {
         super(message, cause);
-        this.apiResultCode   = apiResultCode;
-        this.message         = message;
+        this.apiResultCode = apiResultCode;
+        this.message = message;
         this.messageToClient = messageToClient;
     }
 }

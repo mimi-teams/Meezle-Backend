@@ -14,10 +14,10 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class SpringWebArgumentResolverConfig implements WebMvcConfigurer {
-private final LoginArgumentResolver loginUserArgumentResolver;
+    private final LoginArgumentResolver loginUserArgumentResolver;
 
-@Override
-public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolverList) {
-    argumentResolverList.add(loginUserArgumentResolver);
-}
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolverList) {
+        argumentResolverList.add(loginUserArgumentResolver);
+    }
 }

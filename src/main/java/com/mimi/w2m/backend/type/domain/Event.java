@@ -75,21 +75,21 @@ public class Event extends BaseTimeEntity {
     @Builder
     public Event(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, Color color,
                  String description, User host) {
-        this.title                  = title;
-        this.dDay                   = dDay;
+        this.title = title;
+        this.dDay = dDay;
         this.selectableDaysAndTimes = selectableDaysAndTimes;
-        this.color                  = color;
-        this.description            = Objects.nonNull(description) ? description : "";
-        this.host                   = host;
+        this.color = color;
+        this.description = Objects.nonNull(description) ? description : "";
+        this.host = host;
     }
 
     public Event update(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, Color color,
                         String description) {
-        this.title                  = title;
-        this.dDay                   = dDay;
+        this.title = title;
+        this.dDay = dDay;
         this.selectableDaysAndTimes = selectableDaysAndTimes;
-        this.color                  = color;
-        this.description            = Objects.nonNull(description) ? description : "";
+        this.color = color;
+        this.description = Objects.nonNull(description) ? description : "";
         return this;
     }
 
@@ -100,8 +100,12 @@ public class Event extends BaseTimeEntity {
 
     @Override
     public boolean equals(Object o) {
-        if(this == o) {return true;}
-        if(o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
         Event event = (Event) o;
         return id != null && Objects.equals(id, event.id);
     }
@@ -109,10 +113,10 @@ public class Event extends BaseTimeEntity {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
-               ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "title = " + getTitle() + ", " +
-               "deletedAt = " + getDeletedAt() + ", " + "dDay = " + dDay + ", " + "selectableDaysAndTimes = " +
-               getSelectableDaysAndTimes() + ", " + "selectedDaysAndTimes = " + getSelectedDaysAndTimes() + ", " +
-               "color = " + getColor() + ", " + "description = " + getDescription() + ")";
+                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "title = " + getTitle() + ", " +
+                "deletedAt = " + getDeletedAt() + ", " + "dDay = " + dDay + ", " + "selectableDaysAndTimes = " +
+                getSelectableDaysAndTimes() + ", " + "selectedDaysAndTimes = " + getSelectedDaysAndTimes() + ", " +
+                "color = " + getColor() + ", " + "description = " + getDescription() + ")";
     }
 
     public Event delete() {

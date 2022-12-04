@@ -8,14 +8,14 @@ import lombok.Getter;
  * 유저 정보
  */
 @Builder
-@Getter 
+@Getter
 public class UserInfo {
 
     private final String email;
 
     public static UserInfo of(KakaoUserInfoResponse info) {
         return UserInfo.builder()
-                       .email(info.getKakaoAccount().getEmail())
-                       .build();
+                .email(info.getKakaoAccount().getEmail())
+                .build();
     }
 }

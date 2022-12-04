@@ -25,25 +25,25 @@ public class User extends BaseTimeEntity {
     @Comment("Authorization 에서의 역할")
     @Convert(converter = RoleConverter.class)
     @Column(name = "role", length = 20, nullable = false, columnDefinition = "VARCHAR(20)")
-    private final Role          role = Role.USER;
+    private final Role role = Role.USER;
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private       Long          id;
+    private Long id;
     @Comment("가입한 사용자 이름(중복O)")
     @Column(name = "name", length = 200, nullable = false)
-    private       String        name;
+    private String name;
     @Comment("가입한 사용자 이메일(oauth login 에 사용(중복X)")
     @Column(name = "email", length = 200, nullable = false, unique = true)
-    private       String        email;
+    private String email;
     @Comment("이용자 삭제일(없으면 null)")
     @Column(name = "deleted_at")
-    private       LocalDateTime deletedAt;
+    private LocalDateTime deletedAt;
 
     @Builder
     public User(String name, String email) {
-        this.name      = name;
-        this.email     = email;
+        this.name = name;
+        this.email = email;
         this.deletedAt = null;
     }
 
@@ -51,7 +51,7 @@ public class User extends BaseTimeEntity {
     }
 
     public User update(String name, String email) {
-        this.name  = name;
+        this.name = name;
         this.email = email;
         return this;
     }
@@ -73,8 +73,12 @@ public class User extends BaseTimeEntity {
 
     @Override
     public boolean equals(Object o) {
-        if(this == o) {return true;}
-        if(o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
         User user = (User) o;
         return email != null && Objects.equals(email, user.email);
     }
@@ -82,8 +86,8 @@ public class User extends BaseTimeEntity {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
-               ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "role = " + getRole() + ", " + "name = " +
-               getName() + ", " + "email = " + getEmail() + ", " + "deletedAt = " + getDeletedAt() + ")";
+                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "role = " + getRole() + ", " + "name = " +
+                getName() + ", " + "email = " + getEmail() + ", " + "deletedAt = " + getDeletedAt() + ")";
     }
 
     public User delete() {

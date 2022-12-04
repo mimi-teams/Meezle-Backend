@@ -17,6 +17,7 @@ public class KakaoUserInfoResponse {
 
     /**
      * 카카오계정 정보
+     *
      * @see <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#kakaoaccount">KakaoAccount</a>
      */
     @Getter

@@ -46,10 +46,10 @@ public class KakaoTokenRequest {
     /**
      * Fegin에서 Object는 Content Type이 application/x-www-form-urlencoded가 될 수 없다.
      *
-     * @since 2022-12-04
      * @author yeh35
+     * @since 2022-12-04
      */
-    public Map<String,?> toMap() {
+    public Map<String, ?> toMap() {
         final var map = new HashMap<String, String>(6);
         map.put("grant_type", grantType);
         map.put("client_id", clientId);

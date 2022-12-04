@@ -34,13 +34,13 @@ public class GuestRequestDto implements Serializable {
     @Schema(type = "Integer", description = "이용자가 속한 Event 의 ID")
     @NotNull
     @PositiveOrZero
-    private Long   eventId;
+    private Long eventId;
 
     @Builder
     public GuestRequestDto(String name, String password, Long eventId) {
-        this.name     = name;
+        this.name = name;
         this.password = password;
-        this.eventId  = eventId;
+        this.eventId = eventId;
     }
 
     protected GuestRequestDto() {
@@ -48,10 +48,10 @@ public class GuestRequestDto implements Serializable {
 
     public Guest to(Event event, String salt, String hashedPw) {
         return Guest.builder()
-                    .name(name)
-                    .salt(salt)
-                    .password(hashedPw)
-                    .event(event)
-                    .build();
+                .name(name)
+                .salt(salt)
+                .password(hashedPw)
+                .event(event)
+                .build();
     }
 }

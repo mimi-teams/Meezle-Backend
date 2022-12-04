@@ -54,26 +54,26 @@ public class EventParticipantRequestDto implements Serializable {
     @Builder
     public EventParticipantRequestDto(Long eventId, Long ownerId, Role ownerType,
                                       @Nullable Set<ParticipleTime> ableDaysAndTimes) {
-        this.eventId          = eventId;
-        this.ownerId          = ownerId;
-        this.ownerType        = ownerType;
+        this.eventId = eventId;
+        this.ownerId = ownerId;
+        this.ownerType = ownerType;
         this.ableDaysAndTimes = ableDaysAndTimes;
     }
 
     public EventParticipant to(Event event, User user) throws InvalidValueException {
         return EventParticipant.builder()
-                               .event(event)
-                               .user(user)
-                               .ableDaysAndTimes(ableDaysAndTimes)
-                               .build();
+                .event(event)
+                .user(user)
+                .ableDaysAndTimes(ableDaysAndTimes)
+                .build();
     }
 
     public EventParticipant to(Event event, Guest guest) throws InvalidValueException {
         return EventParticipant.builder()
-                               .event(event)
-                               .guest(guest)
-                               .ableDaysAndTimes(ableDaysAndTimes)
-                               .build();
+                .event(event)
+                .guest(guest)
+                .ableDaysAndTimes(ableDaysAndTimes)
+                .build();
     }
 
 }

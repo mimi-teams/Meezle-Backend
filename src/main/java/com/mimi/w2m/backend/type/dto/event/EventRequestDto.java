@@ -58,22 +58,22 @@ public class EventRequestDto implements Serializable {
                            @Nullable Set<ParticipleTime> selectableParticipleTimes,
                            @Nullable LocalDateTime dDay, ColorDto color,
                            @Nullable String description) {
-        this.title                     = title;
+        this.title = title;
         this.selectableParticipleTimes = selectableParticipleTimes;
-        this.dDay                      = dDay;
-        this.color                     = color;
-        this.description               = description;
+        this.dDay = dDay;
+        this.color = color;
+        this.description = description;
     }
 
     public Event to(User user) {
         return Event.builder()
-                    .title(title)
-                    .host(user)
-                    .selectableDaysAndTimes(selectableParticipleTimes)
-                    .dDay(dDay)
-                    .color(color.to())
-                    .description(description)
-                    .build();
+                .title(title)
+                .host(user)
+                .selectableDaysAndTimes(selectableParticipleTimes)
+                .dDay(dDay)
+                .color(color.to())
+                .description(description)
+                .build();
     }
 
 }

@@ -21,7 +21,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Table(name = "event_participant", uniqueConstraints = {@UniqueConstraint(columnNames = {"event_id", "user_id"}),
-                                                        @UniqueConstraint(columnNames = {"event_id", "guest_id"})})
+        @UniqueConstraint(columnNames = {"event_id", "guest_id"})})
 public class EventParticipant {
     @Comment("참여 가능한 시간")
     @Convert(converter = SetParticipleTimeConverter.class)
@@ -30,7 +30,7 @@ public class EventParticipant {
     @Id
     @Column(name = "event_participant_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long  id;
+    private Long id;
     @Comment("연관된 event")
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", updatable = false, nullable = false)
@@ -52,9 +52,9 @@ public class EventParticipant {
     @Builder
     public EventParticipant(Set<ParticipleTime> ableDaysAndTimes, Event event, User user, Guest guest) {
         this.ableDaysAndTimes = ableDaysAndTimes;
-        this.event            = event;
-        this.user             = user;
-        this.guest            = guest;
+        this.event = event;
+        this.user = user;
+        this.guest = guest;
     }
 
     public EventParticipant update(Set<ParticipleTime> ableDaysAndTimes) {
@@ -69,8 +69,12 @@ public class EventParticipant {
 
     @Override
     public boolean equals(Object o) {
-        if(this == o) {return true;}
-        if(o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
         EventParticipant that = (EventParticipant) o;
         return id != null && Objects.equals(id, that.id);
     }

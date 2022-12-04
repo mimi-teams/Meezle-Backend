@@ -22,12 +22,12 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTimeEntity {
 
-@CreatedDate
-@Column(updatable = false, nullable = false)
-private LocalDateTime createdDate = LocalDateTime.of(1000, 1, 1, 0, 0, 0);
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdDate = LocalDateTime.of(1000, 1, 1, 0, 0, 0);
 
-@LastModifiedDate
-@Column(nullable = false)
-private LocalDateTime lastModifiedDate = LocalDateTime.of(1000, 1, 1, 0, 0, 0);
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate = LocalDateTime.of(1000, 1, 1, 0, 0, 0);
 
 }

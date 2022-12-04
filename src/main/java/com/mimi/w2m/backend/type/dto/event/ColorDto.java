@@ -36,8 +36,8 @@ public class ColorDto implements Serializable {
 
     @Builder
     public ColorDto(Integer red, Integer blue, Integer green) {
-        this.red   = red;
-        this.blue  = blue;
+        this.red = red;
+        this.blue = blue;
         this.green = green;
     }
 
@@ -45,27 +45,27 @@ public class ColorDto implements Serializable {
     }
 
     public static ColorDto of(String string) {
-        if(!string.matches("^#[0-9a-f]{6}$")) {
+        if (!string.matches("^#[0-9a-f]{6}$")) {
             throw new InvalidValueException("", "올바른 색상정보가 아닙니다");
         }
 
-        final int red   = Integer.parseInt(string.substring(1, 3), 16);
-        final int blue  = Integer.parseInt(string.substring(3, 5), 16);
+        final int red = Integer.parseInt(string.substring(1, 3), 16);
+        final int blue = Integer.parseInt(string.substring(3, 5), 16);
         final int green = Integer.parseInt(string.substring(5, 7), 16);
 
         return ColorDto.builder()
-                       .red(red)
-                       .blue(blue)
-                       .green(green)
-                       .build();
+                .red(red)
+                .blue(blue)
+                .green(green)
+                .build();
     }
 
     public static ColorDto of(Color color) {
         return ColorDto.builder()
-                       .red(color.getRed())
-                       .green(color.getGreen())
-                       .blue(color.getBlue())
-                       .build();
+                .red(color.getRed())
+                .green(color.getGreen())
+                .blue(color.getBlue())
+                .build();
     }
 
     public Color to() {

@@ -23,14 +23,15 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
     @Query("SELECT t FROM EventParticipant t WHERE t.user = :user and t.event = :event")
     Optional<EventParticipant> findByUserInEvent(
             @Param("user") User user,
-            @Param("event") Event event);
+            @Param("event") Event event
+    );
 
     @Query("SELECT t FROM EventParticipant t WHERE t.event = :event")
-    List<EventParticipant> findAllInEvent(
-            @Param("event") Event event);
+    List<EventParticipant> findAllInEvent(@Param("event") Event event);
 
     @Query("SELECT t FROM EventParticipant t WHERE t.guest = :guest and t.event = :event")
     Optional<EventParticipant> findByGuestInEvent(
             @Param("guest") Guest guest,
-            @Param("event") Event event);
+            @Param("event") Event event
+    );
 }

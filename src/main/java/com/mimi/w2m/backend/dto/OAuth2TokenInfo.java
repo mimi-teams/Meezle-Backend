@@ -42,14 +42,14 @@ public class OAuth2TokenInfo {
 
     public static OAuth2TokenInfo of(KakaoTokenResponse tokenResponse) {
         return OAuth2TokenInfo.builder()
-                              .platformType(OAuth2PlatformType.KAKAO)
-                              .accessToken(tokenResponse.getAccessToken())
-                              .accessTokenExpires(LocalDateTime.now()
-                                                               .plusSeconds(tokenResponse.getAccessTokenExpiresIn()))
-                              .refreshToken(tokenResponse.getRefreshToken())
-                              .refreshTokenExpires(LocalDateTime.now()
-                                                                .plusSeconds(tokenResponse.getRefreshTokenExpiresIn()))
-                              .build();
+                .platformType(OAuth2PlatformType.KAKAO)
+                .accessToken(tokenResponse.getAccessToken())
+                .accessTokenExpires(LocalDateTime.now()
+                        .plusSeconds(tokenResponse.getAccessTokenExpiresIn()))
+                .refreshToken(tokenResponse.getRefreshToken())
+                .refreshTokenExpires(LocalDateTime.now()
+                        .plusSeconds(tokenResponse.getRefreshTokenExpiresIn()))
+                .build();
     }
 
 }

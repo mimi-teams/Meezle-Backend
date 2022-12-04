@@ -25,19 +25,18 @@ public class KaKaoFeignConfig {
                 Response response
         ) {
             FeignException exception = FeignException.errorStatus(methodKey, response);
-        
+
             //TODO 에러 값 출력
 
-            switch(response.status()) {
+            switch (response.status()) {
                 case 400 -> throw new InvalidValueException(String.format(
                         "카카오 API 호출 중 필수 파라미터가 요청되지 않았습니다. status: (%s)" +
-                        " message: (%s)", response.status(), response.body()));
+                                " message: (%s)", response.status(), response.body()));
                 case 401, 403 -> throw new InvalidValueException(String.format(
                         "카카오 API 호출 중 잘못된 토큰이 입력되었습니다. status: (%s) " +
-                        "message: (%s)", response.status(), response.body()));
-                default ->
-                        throw new BadGatewayException(String.format("카카오 API 호출중 에러(%s)가 발생하였습니다. message: (%s) ",
-                                                                    response.status(), exception.getMessage()));
+                                "message: (%s)", response.status(), response.body()));
+                default -> throw new BadGatewayException(String.format("카카오 API 호출중 에러(%s)가 발생하였습니다. message: (%s) ",
+                        response.status(), exception.getMessage()));
             }
         }
 

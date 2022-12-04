@@ -19,13 +19,13 @@ public class ParticipleTimeJsonConverter {
     public static class Serializer extends JsonSerializer<ParticipleTime> {
         @Override
         public void serialize(ParticipleTime value, JsonGenerator gen, SerializerProvider serializers)
-        throws InvalidValueException {
+                throws InvalidValueException {
             try {
                 gen.writeString(value.toString());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Serialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
@@ -37,12 +37,12 @@ public class ParticipleTimeJsonConverter {
         public ParticipleTime deserialize(JsonParser p, DeserializationContext ctxt) throws InvalidValueException {
             try {
                 JsonNode jsonNode = p.getCodec()
-                                     .readTree(p);
+                        .readTree(p);
                 return ParticipleTime.of(jsonNode.asText());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Deserialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }

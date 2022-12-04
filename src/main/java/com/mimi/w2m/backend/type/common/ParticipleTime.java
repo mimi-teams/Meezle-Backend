@@ -28,7 +28,7 @@ public class ParticipleTime {
     @Schema(type = "String", description = "월요일(MONDAY) - 일요일(SUNDAY)", example = "MONDAY",
             allowableValues = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", " SATURDAY", "SUNDAY"})
     @NotNull
-    private final DayOfWeek      day;
+    private final DayOfWeek day;
     @Schema(type = "Array", description = "참여가능한 시작시간-종료시간의 리스트", example = "[10:00:00-12:00:00,13:00:00-14:00:00]")
     @NotNull
     private final Set<TimeRange> ranges;
@@ -36,17 +36,17 @@ public class ParticipleTime {
     public static ParticipleTime of(String participleTimeStr) throws InvalidValueException {
         try {
             final var parsedStrs = participleTimeStr.split("\\[T\\]");
-            if(parsedStrs.length != 2) {
+            if (parsedStrs.length != 2) {
                 throw new IOException();
             }
-            final var day    = DayOfWeek.valueOf(parsedStrs[0]);
+            final var day = DayOfWeek.valueOf(parsedStrs[0]);
             final var ranges = new HashSet<TimeRange>();
-            for(String s : parsedStrs[1].split("\\|")) {
+            for (String s : parsedStrs[1].split("\\|")) {
                 TimeRange of = TimeRange.of(s);
                 ranges.add(of);
             }
             return new ParticipleTime(day, ranges);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new InvalidValueException("Invalid ParticipleTime : " + participleTimeStr, "유효하지 않은 참여 가능한 시간 형식");
         }
     }
@@ -58,8 +58,10 @@ public class ParticipleTime {
 
     @Override
     public boolean equals(Object o) {
-        if(this == o) {return true;}
-        if(Objects.isNull(o) || !(o instanceof ParticipleTime)) {
+        if (this == o) {
+            return true;
+        }
+        if (Objects.isNull(o) || !(o instanceof ParticipleTime)) {
             return false;
         }
         return Objects.equals(this.hashCode(), o.hashCode());
@@ -73,9 +75,9 @@ public class ParticipleTime {
     public String toString() {
         final var builder = new StringBuilder();
         final var str = builder.append(day.name())
-                               .append("[T]");
+                .append("[T]");
         ranges.forEach(range -> builder.append(range.toString())
-                                       .append("|"));
+                .append("|"));
         return str.toString();
     }
 }

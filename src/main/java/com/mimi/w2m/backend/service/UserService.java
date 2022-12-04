@@ -26,9 +26,9 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class UserService {
 
-    private final HttpSession    httpSession;
+    private final HttpSession httpSession;
     private final UserRepository userRepository;
-    private final Logger         logger = LoggerFactory.getLogger(UserService.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(UserService.class.getName());
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -43,9 +43,9 @@ public class UserService {
     @Transactional
     protected User signup(String name, String email) {
         return userRepository.save(User.builder()
-                                       .name(name)
-                                       .email(email)
-                                       .build());
+                .name(name)
+                .email(email)
+                .build());
     }
 
     /**
@@ -68,12 +68,12 @@ public class UserService {
      */
     public User get(Long id) throws EntityNotFoundException {
         final var user = userRepository.findById(id);
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             return user.get();
         } else {
             final var formatter = new Formatter();
             final var msg = formatter.format("[UserService] Entity Not Found" + "(id=%d)", id)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         }
     }
@@ -92,12 +92,12 @@ public class UserService {
 
     public User getByEmail(String email) throws EntityNotFoundException {
         final var user = userRepository.findByEmail(email);
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             return user.get();
         } else {
             final var formatter = new Formatter();
             final var msg = formatter.format("[UserService] Entity Not Found" + "(email=%s)", email)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         }
     }

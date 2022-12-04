@@ -27,13 +27,13 @@ public class ApiResultCodeJsonConverter {
     public static class Serializer extends JsonSerializer<ApiResultCode> {
         @Override
         public void serialize(ApiResultCode value, JsonGenerator gen, SerializerProvider serializers)
-        throws InvalidValueException {
+                throws InvalidValueException {
             try {
                 gen.writeString(String.valueOf(value.code));
-            } catch(IOException e) {
+            } catch (IOException e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Serialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
@@ -45,12 +45,12 @@ public class ApiResultCodeJsonConverter {
         public ApiResultCode deserialize(JsonParser p, DeserializationContext ctxt) throws InvalidValueException {
             try {
                 final var valueAsString = p.getValueAsString();
-                final var code          = Integer.parseInt(valueAsString);
+                final var code = Integer.parseInt(valueAsString);
                 return ApiResultCode.ofCode(code);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Deserialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }

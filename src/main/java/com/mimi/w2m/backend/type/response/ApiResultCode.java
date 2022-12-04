@@ -35,20 +35,20 @@ public enum ApiResultCode {
      *
      * @since 2022-11-05
      */
-    public final int           code;
+    public final int code;
     public final ApiHttpStatus httpStatus;
-    public final String        defaultMessage;
+    public final String defaultMessage;
 
     ApiResultCode(int code, ApiHttpStatus httpStatus, String defaultMessage) {
-        this.code           = code;
-        this.httpStatus     = httpStatus;
+        this.code = code;
+        this.httpStatus = httpStatus;
         this.defaultMessage = defaultMessage;
     }
 
     public static ApiResultCode ofCode(int code) {
         return Arrays.stream(ApiResultCode.values())
-                     .filter(apiResultCode -> apiResultCode.code == code)
-                     .findFirst()
-                     .orElseThrow(() -> new EntityNotFoundException("잘못된 코드 입니다. code : " + code));
+                .filter(apiResultCode -> apiResultCode.code == code)
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("잘못된 코드 입니다. code : " + code));
     }
 }

@@ -24,31 +24,31 @@ public class Guest extends BaseTimeEntity {
     @Comment("Authorization 에서의 역할")
     @Convert(converter = RoleConverter.class)
     @Column(name = "role", length = 20, nullable = false, columnDefinition = "VARCHAR(20)")
-    private final Role   role = Role.GUEST;
+    private final Role role = Role.GUEST;
     @Id
     @Column(name = "guest_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private       Long   id;
+    private Long id;
     @Comment("참여자의 이름")
     @Column(name = "name", length = 20, nullable = false, columnDefinition = "VARCHAR(20)")
-    private       String name;
+    private String name;
     @Comment("Salt")
     @Column(name = "salt", length = 200)
-    private       String salt;
+    private String salt;
     @Comment("참여자 비밀번호(없어도 가능!)")
     @Column(name = "password")
-    private       String password;
+    private String password;
     @Comment("연관된 event")
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", updatable = false, nullable = false)
-    private       Event  event;
+    private Event event;
 
     @Builder
     public Guest(String name, String password, String salt, Event event) {
-        this.name     = name;
+        this.name = name;
         this.password = password;
-        this.salt     = salt;
-        this.event    = event;
+        this.salt = salt;
+        this.event = event;
     }
 
     protected Guest() {
@@ -70,7 +70,7 @@ public class Guest extends BaseTimeEntity {
 
     public Guest updatePassword(String password, String salt) {
         this.password = password;
-        this.salt     = salt;
+        this.salt = salt;
         return this;
     }
 
@@ -81,8 +81,12 @@ public class Guest extends BaseTimeEntity {
 
     @Override
     public boolean equals(Object o) {
-        if(this == o) {return true;}
-        if(o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
         Guest guest = (Guest) o;
         return Objects.equals(event, guest.event) && (name != null && Objects.equals(name, guest.name));
     }
@@ -90,7 +94,7 @@ public class Guest extends BaseTimeEntity {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
-               ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "role = " + getRole() + ", " + "name = " +
-               getName() + ", " + "salt = " + getSalt() + ", " + "password = " + getPassword() + ")";
+                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "role = " + getRole() + ", " + "name = " +
+                getName() + ", " + "salt = " + getSalt() + ", " + "password = " + getPassword() + ")";
     }
 }

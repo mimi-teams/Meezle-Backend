@@ -32,7 +32,7 @@ public class UserRequestDto implements Serializable {
 
     @Builder
     public UserRequestDto(String name, String email) {
-        this.name  = name;
+        this.name = name;
         this.email = email;
     }
 
@@ -41,8 +41,8 @@ public class UserRequestDto implements Serializable {
 
     public User to() {
         return User.builder()
-                   .name(name)
-                   .email(email)
-                   .build();
+                .name(name)
+                .email(email)
+                .build();
     }
 }

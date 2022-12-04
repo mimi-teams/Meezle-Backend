@@ -19,13 +19,13 @@ public class ColorJsonConverter {
     public static class Serializer extends JsonSerializer<ColorDto> {
         @Override
         public void serialize(ColorDto value, JsonGenerator gen, SerializerProvider serializers)
-        throws InvalidValueException {
+                throws InvalidValueException {
             try {
                 gen.writeString(value.toString());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Serialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
@@ -37,12 +37,12 @@ public class ColorJsonConverter {
         public ColorDto deserialize(JsonParser p, DeserializationContext ctxt) {
             try {
                 JsonNode jsonNode = p.getCodec()
-                                     .readTree(p);
+                        .readTree(p);
                 return ColorDto.of(jsonNode.asText());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Deserialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }

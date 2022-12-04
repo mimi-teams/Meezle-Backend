@@ -27,13 +27,13 @@ public class RoleJsonConverter {
     public static class Serializer extends JsonSerializer<Role> {
         @Override
         public void serialize(Role value, JsonGenerator gen, SerializerProvider serializers)
-        throws InvalidValueException {
+                throws InvalidValueException {
             try {
                 gen.writeString(value.getKey());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Serialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
@@ -45,19 +45,19 @@ public class RoleJsonConverter {
         public Role deserialize(JsonParser p, DeserializationContext ctxt) throws InvalidValueException {
             try {
                 JsonNode jsonNode = p.getCodec()
-                                     .readTree(p);
+                        .readTree(p);
                 final var roleStr = jsonNode.asText();
-                if(Objects.equals(roleStr, Role.USER.getKey())) {
+                if (Objects.equals(roleStr, Role.USER.getKey())) {
                     return Role.USER;
-                } else if(Objects.equals(roleStr, Role.GUEST.getKey())) {
+                } else if (Objects.equals(roleStr, Role.GUEST.getKey())) {
                     return Role.GUEST;
                 } else {
                     throw new IOException();
                 }
-            } catch(IOException e) {
+            } catch (IOException e) {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("Deserialize Failed")
-                                         .toString();
+                        .toString();
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }

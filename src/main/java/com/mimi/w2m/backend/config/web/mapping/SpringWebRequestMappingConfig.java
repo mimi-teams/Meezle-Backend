@@ -35,24 +35,24 @@ class CustomRequestMappingHandler extends RequestMappingHandlerMapping {
         final var requestMappingInfo = super.getMappingForMethod(method, handlerType);
 
         // URL 정보가 없는 경우, null 을 반환
-        if(Objects.isNull(requestMappingInfo)) {
+        if (Objects.isNull(requestMappingInfo)) {
             return null;
         }
 
         // [root, ..., super] 순서로 URL 저장
         var superclassUrlPatterns = new ArrayList<String>();
-        for(var superclass = handlerType.getSuperclass(); !Objects.equals(superclass, Object.class);
-            superclass = superclass.getSuperclass()) {
-            if(superclass.isAnnotationPresent(RequestMapping.class)) {
+        for (var superclass = handlerType.getSuperclass(); !Objects.equals(superclass, Object.class);
+             superclass = superclass.getSuperclass()) {
+            if (superclass.isAnnotationPresent(RequestMapping.class)) {
                 // @RequestMapping(path=[url]) 로 경로를 지정한다
                 superclassUrlPatterns.add(0, superclass.getAnnotation(RequestMapping.class)
-                                                       .path()[0]);
+                        .path()[0]);
             }
         }
-        if(!superclassUrlPatterns.isEmpty()) {
+        if (!superclassUrlPatterns.isEmpty()) {
             final var path = String.join("", superclassUrlPatterns);
             final var superclassRequestMappingInfo = RequestMappingInfo.paths(path)
-                                                                       .build();
+                    .build();
             return superclassRequestMappingInfo.combine(requestMappingInfo);
         } else {
             return requestMappingInfo;

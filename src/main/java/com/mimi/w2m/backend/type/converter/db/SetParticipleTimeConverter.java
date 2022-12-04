@@ -20,13 +20,13 @@ public class SetParticipleTimeConverter implements AttributeConverter<Set<Partic
 
     @Override
     public String convertToDatabaseColumn(Set<ParticipleTime> attribute) {
-        if(Objects.isNull(attribute) || attribute.isEmpty()) {
+        if (Objects.isNull(attribute) || attribute.isEmpty()) {
             return null;
         } else {
             final var builder = new StringBuilder();
-            for(var time : attribute) {
+            for (var time : attribute) {
                 builder.append(time.toString())
-                       .append(delimiter());
+                        .append(delimiter());
             }
             return builder.toString();
         }
@@ -34,11 +34,11 @@ public class SetParticipleTimeConverter implements AttributeConverter<Set<Partic
 
     @Override
     public Set<ParticipleTime> convertToEntityAttribute(String dbData) {
-        if(Objects.isNull(dbData) || dbData.isEmpty()) {
+        if (Objects.isNull(dbData) || dbData.isEmpty()) {
             return Set.of();
         } else {
             final var times = new HashSet<ParticipleTime>();
-            for(var time : dbData.split(delimiter())) {
+            for (var time : dbData.split(delimiter())) {
                 times.add(ParticipleTime.of(time));
             }
             return times;
@@ -50,7 +50,7 @@ public class SetParticipleTimeConverter implements AttributeConverter<Set<Partic
     }
 
     public Map<DayOfWeek, Set<TimeRange>> convertToMap(Set<ParticipleTime> participleTimes) {
-        if(Objects.isNull(participleTimes) || participleTimes.isEmpty()) {
+        if (Objects.isNull(participleTimes) || participleTimes.isEmpty()) {
             return Map.of();
         } else {
             final var map = new HashMap<DayOfWeek, Set<TimeRange>>();
@@ -60,14 +60,14 @@ public class SetParticipleTimeConverter implements AttributeConverter<Set<Partic
     }
 
     public Set<ParticipleTime> convertToSet(Map<DayOfWeek, Set<TimeRange>> participleTimes) {
-        if(Objects.isNull(participleTimes) || participleTimes.isEmpty()) {
+        if (Objects.isNull(participleTimes) || participleTimes.isEmpty()) {
             return Set.of();
         } else {
             final var set = new HashSet<ParticipleTime>();
             participleTimes.forEach((d, t) -> set.add(ParticipleTime.builder()
-                                                                    .day(d)
-                                                                    .ranges(t)
-                                                                    .build()));
+                    .day(d)
+                    .ranges(t)
+                    .build()));
             return set;
         }
     }

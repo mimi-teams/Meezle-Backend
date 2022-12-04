@@ -40,8 +40,8 @@ public class UserResponseDto implements Serializable {
 
     @Builder
     public UserResponseDto(Long id, String name, String email) {
-        this.id    = id;
-        this.name  = name;
+        this.id = id;
+        this.name = name;
         this.email = email;
     }
 
@@ -50,9 +50,9 @@ public class UserResponseDto implements Serializable {
 
     public static UserResponseDto of(User entity) {
         return UserResponseDto.builder()
-                              .id(entity.getId())
-                              .name(entity.getName())
-                              .email(entity.getEmail())
-                              .build();
+                .id(entity.getId())
+                .name(entity.getName())
+                .email(entity.getEmail())
+                .build();
     }
 }

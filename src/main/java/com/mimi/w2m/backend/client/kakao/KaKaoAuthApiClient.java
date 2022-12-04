@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Map;
 
 @FeignClient(name = "KakaoAuthApiClient",
-             url = "${external.client.kakao.oauth2.profile.base-url}",
-             configuration = {KaKaoFeignConfig.class})
+        url = "${external.client.kakao.oauth2.profile.base-url}",
+        configuration = {KaKaoFeignConfig.class})
 public interface KaKaoAuthApiClient {
 
     /**
@@ -23,7 +23,7 @@ public interface KaKaoAuthApiClient {
      */
     @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
     @PostMapping(path = "${external.client.kakao.oauth2.profile.token-uri}",
-                 consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     KakaoTokenResponse getToken(@RequestBody Map<String, ?> form);
 
 }

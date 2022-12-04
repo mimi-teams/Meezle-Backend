@@ -24,11 +24,11 @@ public class GuestResponseDto implements Serializable {
     @Schema(type = "Integer", description = "이용자 ID")
     @NotNull
     @PositiveOrZero
-    private Long   id;
+    private Long id;
     @Schema(type = "Integer", description = "이용자가 속한 Event 의 ID")
     @NotNull
     @PositiveOrZero
-    private Long   eventId;
+    private Long eventId;
     @Schema(type = "String", description = "이용자 이름", maxLength = 20)
     @Size(min = 1, max = 20)
     @NotNull
@@ -36,9 +36,9 @@ public class GuestResponseDto implements Serializable {
 
     @Builder
     public GuestResponseDto(Long id, Long eventId, String name) {
-        this.id      = id;
+        this.id = id;
         this.eventId = eventId;
-        this.name    = name;
+        this.name = name;
     }
 
     protected GuestResponseDto() {
@@ -46,11 +46,11 @@ public class GuestResponseDto implements Serializable {
 
     public static GuestResponseDto of(Guest entity) {
         return GuestResponseDto.builder()
-                               .id(entity.getId())
-                               .eventId(entity.getEvent()
-                                              .getId())
-                               .name(entity.getName())
-                               .build();
+                .id(entity.getId())
+                .eventId(entity.getEvent()
+                        .getId())
+                .name(entity.getName())
+                .build();
     }
 
 }

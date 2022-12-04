@@ -22,8 +22,8 @@ public class RootApi {
     private final HttpSession httpSession;
 
     @Operation(method = "GET", summary = "로그인 정보 반환",
-               description = "[로그인 X] 로그인 정보를 반환한다. 정보가 없다면 EntityNotFoundHandler 가 수행된다",
-               responses = {@ApiResponse(useReturnTypeSchema = true)})
+            description = "[로그인 X] 로그인 정보를 반환한다. 정보가 없다면 EntityNotFoundHandler 가 수행된다",
+            responses = {@ApiResponse(useReturnTypeSchema = true)})
     @GetMapping(path = "")
     public ApiCallResponse<SessionInfoResponseDto> get() {
 

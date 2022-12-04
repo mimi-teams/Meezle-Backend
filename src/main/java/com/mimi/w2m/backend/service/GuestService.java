@@ -31,18 +31,18 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GuestService {
-    private final GuestRepository            guestRepository;
+    private final GuestRepository guestRepository;
     private final EventParticipantRepository eventParticipantRepository;
-    private final EventService               eventService;
-    private final HttpSession                httpSession;
+    private final EventService eventService;
+    private final HttpSession httpSession;
 
     public List<Guest> getAllInEvent(Long eventId) throws EntityNotFoundException {
-        final var event  = eventService.get(eventId);
+        final var event = eventService.get(eventId);
         final var guests = guestRepository.findAllByEvent(event);
-        if(guests.isEmpty()) {
+        if (guests.isEmpty()) {
             final var formatter = new Formatter();
             final var msg = formatter.format("[GuestService] Entity Not Found(event=%d)", eventId)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         } else {
             return guests;
@@ -70,12 +70,12 @@ public class GuestService {
      */
     public Guest get(Long id) throws EntityNotFoundException {
         final var guest = guestRepository.findById(id);
-        if(guest.isPresent()) {
+        if (guest.isPresent()) {
             return guest.get();
         } else {
             final var formatter = new Formatter();
             final var msg = formatter.format("[GuestService] Entity Not Found(id=%d)", id)
-                                     .toString();
+                    .toString();
             throw new EntityNotFoundException(msg);
         }
     }
@@ -87,18 +87,18 @@ public class GuestService {
      * @since 2022/11/19
      **/
     protected Guest updateName(Guest guest, String name, Long eventId)
-    throws EntityNotFoundException, EntityDuplicatedException {
+            throws EntityNotFoundException, EntityDuplicatedException {
         final var event = eventService.get(eventId);
-        if(Objects.equals(guest.getName(), name)) {
+        if (Objects.equals(guest.getName(), name)) {
             return guest;
         } else {
             final var other = guestRepository.findByNameInEvent(name, event);
-            if(other.isEmpty()) {
+            if (other.isEmpty()) {
                 return guest.updateName(name);
             } else {
                 final var formatter = new Formatter();
                 final var msg = formatter.format("[GuestService] Entity Duplicated(name=%s, event=%d)", name, eventId)
-                                         .toString();
+                        .toString();
                 throw new EntityDuplicatedException(msg);
             }
         }
@@ -111,7 +111,7 @@ public class GuestService {
      * @since 2022/11/19
      **/
     protected Guest updatePassword(Guest guest, String password) {
-        final var salt     = generateSalt(Guest.getSaltLength());
+        final var salt = generateSalt(Guest.getSaltLength());
         final var hashedPw = generateHashedPw(salt, password);
         return guest.updatePassword(hashedPw, salt);
     }
@@ -122,11 +122,11 @@ public class GuestService {
 
     private String generateHashedPw(String salt, String password) {
         StringBuilder hashedPw = password == null ? null : new StringBuilder(password);
-        final var     pepper   = 5;
-        for(int i = 0; i < pepper; i++) {
+        final var pepper = 5;
+        for (int i = 0; i < pepper; i++) {
             hashedPw = (hashedPw == null ? new StringBuilder("null") : hashedPw).append(salt);
             hashedPw = new StringBuilder(String.valueOf(hashedPw.toString()
-                                                                .hashCode()));
+                    .hashCode()));
         }
         return hashedPw.toString();
     }
@@ -139,23 +139,23 @@ public class GuestService {
      **/
     @Transactional
     public Guest login(GuestRequestDto requestDto)
-    throws EntityDuplicatedException, EntityNotFoundException, InvalidValueException {
+            throws EntityDuplicatedException, EntityNotFoundException, InvalidValueException {
         final var event = eventService.get(requestDto.getEventId());
         final var guest = guestRepository.findByNameInEvent(requestDto.getName(), event)
-                                         .orElse(create(requestDto));
-        final var storedPw   = guest.getPassword();
+                .orElse(create(requestDto));
+        final var storedPw = guest.getPassword();
         final var storedSalt = guest.getSalt();
         final var receivedPw = generateHashedPw(storedSalt, requestDto.getPassword());
-        if(storedPw.equals(receivedPw)) {
+        if (storedPw.equals(receivedPw)) {
             final var info = new LoginInfo(guest.getId(), Role.GUEST);
             httpSession.setAttribute(LoginInfo.key, info);
             return guest;
         } else {
             final var formatter = new Formatter();
             final var msg = formatter.format("[GuestService] Invalid Password(salt=%s, stored=%s, received(origin)" +
-                                             "=%s, received(hashed)=%s)", storedSalt, storedPw,
-                                             requestDto.getPassword(), receivedPw)
-                                     .toString();
+                                    "=%s, received(hashed)=%s)", storedSalt, storedPw,
+                            requestDto.getPassword(), receivedPw)
+                    .toString();
             throw new InvalidValueException(msg);
         }
     }
@@ -170,21 +170,21 @@ public class GuestService {
     protected Guest create(GuestRequestDto requestDto) throws EntityDuplicatedException, EntityNotFoundException {
         final var event = eventService.get(requestDto.getEventId());
         final var other = guestRepository.findByNameInEvent(requestDto.getName(), event);
-        if(other.isPresent()) {
+        if (other.isPresent()) {
             final var formatter = new Formatter();
             final var msg = formatter.format("[GuestService] Entity Duplicated(event=%d, name=%s)", event.getId(),
-                                             requestDto.getName())
-                                     .toString();
+                            requestDto.getName())
+                    .toString();
             throw new EntityDuplicatedException(msg);
         } else {
-            final var salt     = generateSalt(Guest.getSaltLength());
+            final var salt = generateSalt(Guest.getSaltLength());
             final var hashedPw = generateHashedPw(salt, requestDto.getPassword());
-            final var guest    = guestRepository.save(requestDto.to(event, salt, hashedPw));
+            final var guest = guestRepository.save(requestDto.to(event, salt, hashedPw));
 
             final var participant = EventParticipant.builder()
-                                                    .event(event)
-                                                    .guest(guest)
-                                                    .build();
+                    .event(event)
+                    .guest(guest)
+                    .build();
             eventParticipantRepository.save(participant);
             return guest;
         }

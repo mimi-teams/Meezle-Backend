@@ -31,12 +31,12 @@ public class ApiCallResponse<T> implements Serializable {
     private final String message;
     @Valid
     @Nullable
-    private final T      data;
+    private final T data;
 
     private ApiCallResponse(ApiResultCode code, String message, T data) {
-        this.code    = code;
+        this.code = code;
         this.message = (Objects.isNull(message) || message.isEmpty()) ? code.defaultMessage : message;
-        this.data    = data;
+        this.data = data;
     }
 
     public static <T> ApiCallResponse<T> ofSuccess(T data) {

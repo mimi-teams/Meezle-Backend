@@ -24,14 +24,14 @@ public class RoleConverter implements AttributeConverter<Role, String> {
 
     @Override
     public Role convertToEntityAttribute(String dbData) throws InvalidValueException {
-        if(dbData.equals(Role.GUEST.getKey())) {
+        if (dbData.equals(Role.GUEST.getKey())) {
             return Role.GUEST;
-        } else if(dbData.equals(Role.USER.getKey())) {
+        } else if (dbData.equals(Role.USER.getKey())) {
             return Role.USER;
         } else {
             final var formatter = new Formatter();
             final var msg = formatter.format("Invalid Role String : %s", dbData)
-                                     .toString();
+                    .toString();
             throw new InvalidValueException(msg);
         }
     }

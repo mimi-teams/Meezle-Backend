@@ -11,7 +11,7 @@ public record TimeRange(LocalTime beginTime,
 
     public static TimeRange of(String timeRangeStr) throws IOException {
         final var parsedStrs = timeRangeStr.split(delimiter());
-        if(parsedStrs.length != 2) {
+        if (parsedStrs.length != 2) {
             throw new IOException();
         }
         final var begTime = LocalTime.from(formatter().parse(parsedStrs[0]));
@@ -55,16 +55,16 @@ public record TimeRange(LocalTime beginTime,
          * @since 2022/12/01
          **/
         public static TimeRange EMPTY = new TimeRange(LocalTime.MAX, LocalTime.MAX);
-        public static TimeRange FULL  = new TimeRange(LocalTime.MIN, LocalTime.MAX);
+        public static TimeRange FULL = new TimeRange(LocalTime.MIN, LocalTime.MAX);
 
         public static Pair<TimeRange, TimeRange> intersection(TimeRange a, TimeRange b) {
             final var orderedA = fixOrder(a);
             final var orderedB = fixOrder(b);
 
             final var beginTime = orderedA.beginTime.isBefore(orderedB.beginTime) ? orderedB.beginTime
-                                                                                  : orderedA.beginTime;
+                    : orderedA.beginTime;
             final var endTime = orderedA.endTime.isAfter(orderedB.endTime) ? orderedB.endTime : orderedA.endTime;
-            if(beginTime.isAfter(endTime)) {
+            if (beginTime.isAfter(endTime)) {
                 return Pair.of(EMPTY, EMPTY);
             } else {
                 return Pair.of(new TimeRange(beginTime, endTime), EMPTY);
@@ -74,11 +74,11 @@ public record TimeRange(LocalTime beginTime,
         public static Pair<TimeRange, TimeRange> union(TimeRange a, TimeRange b) {
             final var orderedA = fixOrder(a);
             final var orderedB = fixOrder(b);
-            if(orderedA.endTime.isBefore(orderedB.beginTime) || orderedB.endTime.isBefore(orderedA.beginTime)) {
+            if (orderedA.endTime.isBefore(orderedB.beginTime) || orderedB.endTime.isBefore(orderedA.beginTime)) {
                 return Pair.of(orderedA, orderedB);
             } else {
                 final var beginTime = orderedA.beginTime.isBefore(orderedB.beginTime) ? orderedA.beginTime
-                                                                                      : orderedB.beginTime;
+                        : orderedB.beginTime;
                 final var endTime = orderedA.endTime.isAfter(orderedB.endTime) ? orderedA.endTime : orderedB.endTime;
                 return Pair.of(new TimeRange(beginTime, endTime), EMPTY);
             }
@@ -87,7 +87,7 @@ public record TimeRange(LocalTime beginTime,
         public static Pair<TimeRange, TimeRange> not(TimeRange a) {
             final var orderedA = fixOrder(a);
             return Pair.of(new TimeRange(LocalTime.MIN, orderedA.beginTime),
-                           new TimeRange(orderedA.endTime, LocalTime.MAX));
+                    new TimeRange(orderedA.endTime, LocalTime.MAX));
         }
     }
 }

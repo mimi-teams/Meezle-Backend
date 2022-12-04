@@ -57,27 +57,27 @@ public class EventParticipantResponseDto implements Serializable {
                                        @Nullable UserResponseDto user,
                                        @Nullable GuestResponseDto guest,
                                        @Nullable Set<ParticipleTime> ableDaysAndTimes) {
-        this.eventId          = eventId;
-        this.user             = user;
-        this.guest            = guest;
+        this.eventId = eventId;
+        this.user = user;
+        this.guest = guest;
         this.ableDaysAndTimes = ableDaysAndTimes;
     }
 
     public static EventParticipantResponseDto of(EventParticipant entity) throws InvalidValueException {
-        if(Objects.nonNull(entity.getUser())) {
+        if (Objects.nonNull(entity.getUser())) {
             return EventParticipantResponseDto.builder()
-                                              .eventId(entity.getEvent()
-                                                             .getId())
-                                              .user(UserResponseDto.of(entity.getUser()))
-                                              .ableDaysAndTimes(entity.getAbleDaysAndTimes())
-                                              .build();
-        } else if(Objects.nonNull(entity.getGuest())) {
+                    .eventId(entity.getEvent()
+                            .getId())
+                    .user(UserResponseDto.of(entity.getUser()))
+                    .ableDaysAndTimes(entity.getAbleDaysAndTimes())
+                    .build();
+        } else if (Objects.nonNull(entity.getGuest())) {
             return EventParticipantResponseDto.builder()
-                                              .eventId(entity.getEvent()
-                                                             .getId())
-                                              .guest(GuestResponseDto.of(entity.getGuest()))
-                                              .ableDaysAndTimes(entity.getAbleDaysAndTimes())
-                                              .build();
+                    .eventId(entity.getEvent()
+                            .getId())
+                    .guest(GuestResponseDto.of(entity.getGuest()))
+                    .ableDaysAndTimes(entity.getAbleDaysAndTimes())
+                    .build();
         } else {
             throw new InvalidValueException("[EventParticipantResponseDto] Invalid Entity: id=" + entity.getId());
         }

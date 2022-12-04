@@ -19,9 +19,11 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e WHERE e.title = :title")
     List<Event> findAllByTitle(
-            @Param("title") String title);
+            @Param("title") String title
+    );
 
     @Query("SELECT e FROM Event e WHERE e.host = :host")
     List<Event> findAllByHost(
-            @Param("host") User host);
+            @Param("host") User host
+    );
 }
