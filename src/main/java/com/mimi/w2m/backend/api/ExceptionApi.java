@@ -94,7 +94,7 @@ public class ExceptionApi extends ResponseEntityExceptionHandler {
     @ApiResponse(description = "서버 내부의 문제일 때, 반환된다", useReturnTypeSchema = true)
     @ExceptionHandler({Exception.class})
     protected ApiCallResponse<Void> handleBaseException(Exception e) {
-        logger.warn("Unexpected Exception occurs");
+        logger.error("Unexpected Exception occurs", e);
         //        Arrays.stream(e.getStackTrace())
         //              .toList()
         //              .forEach(logger::warn);

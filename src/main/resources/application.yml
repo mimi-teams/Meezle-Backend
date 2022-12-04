@@ -18,3 +18,25 @@ server:
     whitelabel:
       enabled: false
 
+
+# 외부와 통신하기 위한 설정들
+external:
+  client:
+    kakao:
+      oauth2:
+        profile:
+          base-url: https://kauth.kakao.com
+          authorization-uri: /oauth/authorize
+          token-uri: /oauth/token
+      kapi:
+        profile:
+          base-url: https://kapi.kakao.com
+          user-info-uri: /v2/user/me
+
+
+# Oauth 정보
+oauth2:
+  kakao:
+    client-id: ${kakao-client-id}
+    client-secret: ${kakao-client-secret}
+    redirect_uri: http://localhost:8080/api/v1/auth/oauth2/authorization/redirect/kakao
