@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,11 +27,10 @@ public class RootApi {
                description = "[로그인 X] 로그인 정보를 반환한다. 정보가 없다면 EntityNotFoundHandler 가 수행된다",
                responses = {@ApiResponse(useReturnTypeSchema = true)})
     @GetMapping(path = "")
-    public ApiCallResponse<SessionInfoResponseDto> get(
-            HttpServletRequest request
-            ) {
+    public ApiCallResponse<SessionInfoResponseDto> get() {
 
-        final var loginInfo = authService.getLoginInfo(request.getSession());
+
+        final var loginInfo = authService.getLoginInfo(httpSession);
         return ApiCallResponse.ofSuccess(SessionInfoResponseDto.of(loginInfo));
     }
 }

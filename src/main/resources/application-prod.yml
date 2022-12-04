@@ -10,24 +10,21 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
-        show_sql: false
+        show_sql: true
         format_sql: true
-        use_sql_comments: false
+        use_sql_comments: true
         dialect: org.hibernate.dialect.MariaDB103Dialect
         connection.provider_disables_autocommit: false
   #    open-in-view: true # JPA의 영속성을 Transaction이 끝나도 유지한다(lazy loading을 service가 끝난 후(transaction 종료) controller에서 사용 가능) default: true
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3374/mimi?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: 0374
+    url: ${mysql_url}
+    username: ${mysql_user}
+    password: ${mysql_password}
     hikari:
       pool-name: HikariPool-Primary
       maximum-pool-size: 5
       connection-timeout: 5000
       connection-test-query: SELECT 1
+
