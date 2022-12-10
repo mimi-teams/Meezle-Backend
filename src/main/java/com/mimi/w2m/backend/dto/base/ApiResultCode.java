@@ -28,6 +28,8 @@ public enum ApiResultCode {
      * 외부 시스템에서 에러가 발생한 경우
      */
     BAD_GATEWAY(7, ApiHttpStatus.ERROR, "일시적인 에러가 발생하였습니다.\n잠시 후 다시 시도해주세요!"),
+
+    Unauthorized_ACCESS(8, ApiHttpStatus.ILLEGAL_ACCESS, "인증이 실패하였습니다"),
     ;
 
     /**

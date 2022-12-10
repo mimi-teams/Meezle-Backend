@@ -1,5 +1,6 @@
 package com.mimi.w2m.backend.service;
 
+import com.mimi.w2m.backend.exception.InvalidValueException;
 import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.user.UserRequestDto;
@@ -10,42 +11,46 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.util.Formatter;
 import java.util.Optional;
 
 /**
- * UserService
+ * 유저 정보 처리
  *
- * @author teddy
- * @version 1.0.0
- * @since 2022/11/19
+ * @author teddy, yeh35
+ * @since 2022-12-04
  **/
+
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
 
-    private final HttpSession httpSession;
     private final UserRepository userRepository;
-    private final Logger logger = LoggerFactory.getLogger(UserService.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     /**
-     * 이용자 정보를 저장한다
+     * 이용자를 등록한다. 저장한다
      *
-     * @author paul
+     * @author yeh35
      * @since 2022-11-01
      */
     @Transactional
-    protected User signup(String name, String email) {
-        return userRepository.save(User.builder()
+    protected User registerUser(String name, String email) {
+        if (getUserByEmail(email).isPresent()) {
+            throw new InvalidValueException(String.format("이미 등록된 유저입니다: email=%s", email));
+        }
+
+        final var user = User.builder()
                 .name(name)
                 .email(email)
-                .build());
+                .build();
+        return userRepository.save(user);
     }
 
     /**
