@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.common.ParticipleTime;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
 import lombok.Builder;
 import lombok.Getter;

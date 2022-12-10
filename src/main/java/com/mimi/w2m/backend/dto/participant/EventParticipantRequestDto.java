@@ -1,12 +1,12 @@
 package com.mimi.w2m.backend.dto.participant;
 
-import com.mimi.w2m.backend.common.ParticipleTime;
-import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipant;
 import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

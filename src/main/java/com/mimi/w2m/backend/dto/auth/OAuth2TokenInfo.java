@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.dto.auth;
 
 import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenResponse;
-import com.mimi.w2m.backend.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
 import lombok.Builder;
 import lombok.Getter;
 

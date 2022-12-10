@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.common;
+package com.mimi.w2m.backend.domain.type;
 
 import org.springframework.data.util.Pair;
 

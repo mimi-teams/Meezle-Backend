@@ -1,6 +1,6 @@
-package com.mimi.w2m.backend.common;
+package com.mimi.w2m.backend.domain.type;
 
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;

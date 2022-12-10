@@ -9,12 +9,14 @@ import lombok.Getter;
  */
 @Builder
 @Getter
-public class UserInfo {
+public class OAuth2UserInfo {
 
+    private final String name;
     private final String email;
 
-    public static UserInfo of(KakaoUserInfoResponse info) {
-        return UserInfo.builder()
+    public static OAuth2UserInfo of(KakaoUserInfoResponse info) {
+        return OAuth2UserInfo.builder()
+                .name(info.getKakaoAccount().getProfile().getNickname())
                 .email(info.getKakaoAccount().getEmail())
                 .build();
     }

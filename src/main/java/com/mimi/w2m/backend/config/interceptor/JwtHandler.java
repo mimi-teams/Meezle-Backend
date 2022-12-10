@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.service;
+package com.mimi.w2m.backend.config.interceptor;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -19,14 +19,14 @@ import java.util.Optional;
  * @since 2022-12-04
  */
 @Service
-public class JwtService {
+public class JwtHandler {
 
     private final static String ISSUER = "mezzle";
     private final static String CLAIM_USER = "userid";
 
     private final Algorithm algorithm;
 
-    public JwtService(
+    public JwtHandler(
             @Value("${auth.token.secret}") String secretKeyString
     ) {
         byte[] secretKey = Base64Utils.decodeFromString(secretKeyString);
@@ -59,7 +59,7 @@ public class JwtService {
 
         try {
             JWTVerifier verifier = JWT.require(algorithm)
-                    // specify an specific claim validations
+                    // specify a specific claim validations
                     .withIssuer(ISSUER)
                     // reusable verifier instance
                     .build();
@@ -74,7 +74,6 @@ public class JwtService {
             // Invalid signature/claims
             return Optional.empty();
         }
-
     }
 
     @Getter

@@ -23,6 +23,9 @@ public class KakaoUserInfoResponse {
     @Getter
     public static class KakaoAccount {
 
+        @JsonProperty("profile")
+        private KakaoAccountProfile profile;
+
         @JsonProperty("is_email_valid")
         private Boolean is_email_valid;
 
@@ -33,4 +36,11 @@ public class KakaoUserInfoResponse {
         private String email;
     }
 
+    /**
+     * 카카오톡 유저 프로필
+     */
+    @Getter
+    public static class KakaoAccountProfile {
+        private String nickname;
+    }
 }

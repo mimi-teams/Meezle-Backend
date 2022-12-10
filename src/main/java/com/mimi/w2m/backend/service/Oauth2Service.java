@@ -5,13 +5,15 @@ import com.mimi.w2m.backend.client.kakao.KaKaoAuthApiClient;
 import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenRequest;
 import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenResponse;
 import com.mimi.w2m.backend.client.kakao.dto.KakaoUserInfoResponse;
+import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.auth.OAuth2TokenInfo;
-import com.mimi.w2m.backend.dto.auth.UserInfo;
-import com.mimi.w2m.backend.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.dto.auth.OAuth2UserInfo;
+import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
 import com.mimi.w2m.backend.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * OAuth2 관련 처리를 해주는 서비스
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
  * @since 2022-12-04
  */
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class Oauth2Service {
@@ -37,6 +40,7 @@ public class Oauth2Service {
 
     private final KaKaoAuthApiClient kaKaoAuthApiClient;
     private final KaKaoApiClient kaoApiClient;
+    private final UserService userService;
 
     /**
      * OAuth2 로그인 URL
@@ -69,16 +73,28 @@ public class Oauth2Service {
     /**
      * OAuth2 로그인 이후 redirect 처리
      *
+     * @return token
      * @author yeh35
      * @since 2022-12-04
      */
-    public void afterAuthorization(
+    @Transactional
+    public User afterAuthorization(
             OAuth2PlatformType platformType,
             String authorizationCode
     ) {
         final OAuth2TokenInfo tokenInfo = loadToken(platformType, authorizationCode);
-        final UserInfo userInfo = loadUserInfo(tokenInfo);
-        System.out.println(userInfo.getEmail());
+        final OAuth2UserInfo OAuth2UserInfo = loadOAuth2UserInfo(tokenInfo);
+        //당장은 뭔가 하는게 없어서 Oauth2 Token을 저장하지 않고 날린다.
+
+        //noinspection UnnecessaryLocalVariable
+        final User user = userService.getUserByEmail(OAuth2UserInfo.getEmail()).orElseGet(() -> {
+            /*
+             * 회원가입 처리
+             */
+            return userService.registerUser(OAuth2UserInfo.getName(), OAuth2UserInfo.getEmail());
+        });
+
+        return user;
     }
 
     /**
@@ -117,11 +133,11 @@ public class Oauth2Service {
      * @author yeh35
      * @since 2022-12-04
      */
-    protected UserInfo loadUserInfo(OAuth2TokenInfo tokenInfo) {
+    protected OAuth2UserInfo loadOAuth2UserInfo(OAuth2TokenInfo tokenInfo) {
         switch (tokenInfo.getPlatformType()) {
             case KAKAO -> {
                 KakaoUserInfoResponse userInfo = kaoApiClient.getUserInfo(HttpUtils.withBearerToken(tokenInfo.getAccessToken()));
-                return UserInfo.of(userInfo);
+                return OAuth2UserInfo.of(userInfo);
             }
             default -> {
                 assert false : "처리되지 않은 플렛폼입니다.";

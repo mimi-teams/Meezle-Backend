@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.converter.db;
 
-import com.mimi.w2m.backend.common.Role;
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

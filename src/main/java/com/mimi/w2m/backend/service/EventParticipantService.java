@@ -1,15 +1,15 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.repository.EventParticipantRepository;
-import com.mimi.w2m.backend.common.Role;
-import com.mimi.w2m.backend.common.TimeRange;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.domain.type.TimeRange;
 import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipant;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
-import com.mimi.w2m.backend.exception.EntityDuplicatedException;
-import com.mimi.w2m.backend.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.EntityDuplicatedException;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
