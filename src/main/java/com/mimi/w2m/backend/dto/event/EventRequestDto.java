@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.dto.event;
 
-import com.mimi.w2m.backend.common.ParticipleTime;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;

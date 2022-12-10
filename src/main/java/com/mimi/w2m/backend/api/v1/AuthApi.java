@@ -5,7 +5,7 @@ import com.mimi.w2m.backend.dto.auth.LoginSuccessResponse;
 import com.mimi.w2m.backend.dto.auth.OAauth2AuthorizationResponse;
 import com.mimi.w2m.backend.config.interceptor.JwtHandler;
 import com.mimi.w2m.backend.service.Oauth2Service;
-import com.mimi.w2m.backend.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

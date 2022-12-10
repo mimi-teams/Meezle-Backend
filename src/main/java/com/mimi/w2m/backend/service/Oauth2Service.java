@@ -8,7 +8,7 @@ import com.mimi.w2m.backend.client.kakao.dto.KakaoUserInfoResponse;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.auth.OAuth2TokenInfo;
 import com.mimi.w2m.backend.dto.auth.OAuth2UserInfo;
-import com.mimi.w2m.backend.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
 import com.mimi.w2m.backend.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

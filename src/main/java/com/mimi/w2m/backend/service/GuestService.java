@@ -2,14 +2,14 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import com.mimi.w2m.backend.repository.GuestRepository;
-import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.domain.EventParticipant;
 import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.dto.guest.GuestRequestDto;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
-import com.mimi.w2m.backend.exception.EntityDuplicatedException;
-import com.mimi.w2m.backend.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.EntityDuplicatedException;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.stereotype.Service;

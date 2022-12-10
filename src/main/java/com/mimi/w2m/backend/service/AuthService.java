@@ -1,9 +1,9 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
-import com.mimi.w2m.backend.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.exception.IllegalAccessException;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.IllegalAccessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

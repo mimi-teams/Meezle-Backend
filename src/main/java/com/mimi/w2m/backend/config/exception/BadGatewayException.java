@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.exception;
+package com.mimi.w2m.backend.config.exception;
 
 import com.mimi.w2m.backend.dto.base.ApiResultCode;
 

@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.config.interceptor;
 
-import com.mimi.w2m.backend.exception.UnauthorizedException;
+import com.mimi.w2m.backend.config.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;

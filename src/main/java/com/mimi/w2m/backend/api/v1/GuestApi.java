@@ -3,7 +3,7 @@ package com.mimi.w2m.backend.api.v1;
 import com.mimi.w2m.backend.service.AuthService;
 import com.mimi.w2m.backend.service.EventParticipantService;
 import com.mimi.w2m.backend.service.GuestService;
-import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.guest.GuestRequestDto;
 import com.mimi.w2m.backend.dto.guest.GuestResponseDto;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;

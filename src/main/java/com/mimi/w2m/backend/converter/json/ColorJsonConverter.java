@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.mimi.w2m.backend.dto.event.ColorDto;
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;

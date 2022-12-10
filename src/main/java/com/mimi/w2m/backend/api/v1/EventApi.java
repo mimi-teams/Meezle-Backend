@@ -1,14 +1,14 @@
 package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.service.*;
-import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.event.EventResponseDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantResponseDto;
 import com.mimi.w2m.backend.dto.user.UserResponseDto;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

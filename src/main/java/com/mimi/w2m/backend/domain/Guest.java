@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.common.Role;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.converter.db.RoleConverter;
 import lombok.Builder;
 import lombok.Getter;

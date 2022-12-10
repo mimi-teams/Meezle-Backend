@@ -2,10 +2,10 @@ package com.mimi.w2m.backend.config;
 
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import com.mimi.w2m.backend.dto.base.ApiResultCode;
-import com.mimi.w2m.backend.exception.EntityDuplicatedException;
-import com.mimi.w2m.backend.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.exception.IllegalAccessException;
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.EntityDuplicatedException;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.IllegalAccessException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;

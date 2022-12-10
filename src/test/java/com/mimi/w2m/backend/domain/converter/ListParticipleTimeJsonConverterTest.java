@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.domain.converter;
 
-import com.mimi.w2m.backend.common.ParticipleTime;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

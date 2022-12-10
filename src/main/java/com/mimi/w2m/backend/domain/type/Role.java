@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.common;
+package com.mimi.w2m.backend.domain.type;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

@@ -1,10 +1,10 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.user.UserRequestDto;
-import com.mimi.w2m.backend.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
