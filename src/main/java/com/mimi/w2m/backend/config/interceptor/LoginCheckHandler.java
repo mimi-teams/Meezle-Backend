@@ -58,7 +58,7 @@ public class LoginCheckHandler {
         }
 
         final String token;
-        if (Pattern.matches("^Bearer *", authorization)) {
+        if (Pattern.matches("^Bearer .*", authorization)) {
             token = authorization.replaceAll("^Bearer( )*", "");
             return token;
         } else {
