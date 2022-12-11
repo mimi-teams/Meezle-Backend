@@ -2,6 +2,7 @@ plugins {
     id "org.springframework.boot" version "2.7.4"
     id "io.spring.dependency-management" version "1.0.14.RELEASE"
     id "java"
+    id "com.google.cloud.tools.jib" version "3.2.1"
 }
 
 
@@ -45,9 +46,6 @@ dependencies {
     //Open-API (Swagger)
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
 
-    //Logger
-//    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
@@ -60,4 +58,24 @@ tasks.named("test") {
 tasks.test {
     systemProperty 'spring.profiles.active', 'test'
 //	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LoggerFactory'
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:17-jre"
+    }
+    to {
+        image = System.getProperty("image", "")
+        tags = [(System.getProperty("tag", "latest"))]
+    }
+    container {
+        jvmFlags = [
+                "-server",
+                "-XX:+UseG1GC",
+                "-Xms256M",
+                "-Xmx256M",
+                "-Duser.timezone=Asia/Seoul"
+        ]
+        ports = ["8080"]
+    }
 }
