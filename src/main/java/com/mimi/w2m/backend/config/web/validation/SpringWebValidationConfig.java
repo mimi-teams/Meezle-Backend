@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -40,5 +41,11 @@ public class SpringWebValidationConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor);
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        WebMvcConfigurer.super.addCorsMappings(registry);
+        registry.addMapping("/**").allowedOrigins("*"); // CORS 전체 허용
     }
 }
