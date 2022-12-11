@@ -28,3 +28,5 @@ spring:
       connection-timeout: 5000
       connection-test-query: SELECT 1
 
+auth:
+  token.secret: ${token-secret}
