@@ -1,7 +1,5 @@
 package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.converter.db.RoleConverter;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.Hibernate;
@@ -21,10 +19,7 @@ import java.util.Objects;
 @Getter
 @Table(name = "guest", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "event_id"})})
 public class Guest extends BaseTimeEntity {
-    @Comment("Authorization 에서의 역할")
-    @Convert(converter = RoleConverter.class)
-    @Column(name = "role", length = 20, nullable = false, columnDefinition = "VARCHAR(20)")
-    private final Role role = Role.GUEST;
+
     @Id
     @Column(name = "guest_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +30,11 @@ public class Guest extends BaseTimeEntity {
     @Comment("Salt")
     @Column(name = "salt", length = 200)
     private String salt;
+
     @Comment("참여자 비밀번호(없어도 가능!)")
     @Column(name = "password")
     private String password;
+
     @Comment("연관된 event")
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", updatable = false, nullable = false)
@@ -94,7 +91,7 @@ public class Guest extends BaseTimeEntity {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
-                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "role = " + getRole() + ", " + "name = " +
+                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "name = " +
                 getName() + ", " + "salt = " + getSalt() + ", " + "password = " + getPassword() + ")";
     }
 }

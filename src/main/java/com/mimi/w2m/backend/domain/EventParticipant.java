@@ -23,14 +23,17 @@ import java.util.Set;
 @Table(name = "event_participant", uniqueConstraints = {@UniqueConstraint(columnNames = {"event_id", "user_id"}),
         @UniqueConstraint(columnNames = {"event_id", "guest_id"})})
 public class EventParticipant {
-    @Comment("참여 가능한 시간")
-    @Convert(converter = SetParticipleTimeConverter.class)
-    @Column(name = "able_days_and_times")
-    Set<ParticipleTime> ableDaysAndTimes;
+
     @Id
     @Column(name = "event_participant_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Comment("참여 가능한 시간")
+    @Convert(converter = SetParticipleTimeConverter.class)
+    @Column(name = "able_days_and_times")
+    Set<ParticipleTime> ableDaysAndTimes;
+
     @Comment("연관된 event")
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", updatable = false, nullable = false)
