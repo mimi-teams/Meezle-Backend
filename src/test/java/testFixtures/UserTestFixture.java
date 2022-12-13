@@ -1,4 +1,6 @@
-package com.mimi.w2m.backend.domain;
+package testFixtures;
+
+import com.mimi.w2m.backend.domain.User;
 
 public class UserTestFixture {
 
