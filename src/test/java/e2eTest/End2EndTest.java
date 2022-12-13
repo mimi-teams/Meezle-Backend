@@ -1,6 +1,7 @@
 package e2eTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mimi.w2m.backend.W2mApplication;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,15 +17,14 @@ import testFixtures.DatabaseCleaner;
  * @author paul
  */
 
-@AutoConfigureMockMvc
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@SpringBootTest
+@AutoConfigureMockMvc
+@SpringBootTest(classes = W2mApplication.class)
 public abstract class End2EndTest {
 
     @Autowired
     protected MockMvc mockMvc;
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     protected ObjectMapper objectMapper;
 
