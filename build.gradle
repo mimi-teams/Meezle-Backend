@@ -64,6 +64,7 @@ tasks.test {
 //	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LoggerFactory'
 }
 
+
 jib {
     from {
         image = "eclipse-temurin:17-jre"

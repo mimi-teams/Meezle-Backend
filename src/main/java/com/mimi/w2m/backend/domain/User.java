@@ -1,7 +1,5 @@
 package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.converter.db.RoleConverter;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.Hibernate;
@@ -22,23 +20,22 @@ import java.util.Objects;
 @Getter
 @Table(name = "user")
 public class User extends BaseTimeEntity {
-    @Comment("Authorization 에서의 역할")
-    @Convert(converter = RoleConverter.class)
-    @Column(name = "role", length = 20, nullable = false, columnDefinition = "VARCHAR(20)")
-    private final Role role = Role.USER;
+
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Comment("가입한 사용자 이름(중복O)")
     @Column(name = "name", length = 200, nullable = false)
     private String name;
+
     @Comment("가입한 사용자 이메일(oauth login 에 사용(중복X)")
     @Column(name = "email", length = 200, nullable = false, unique = true)
     private String email;
     @Comment("이용자 삭제일(없으면 null)")
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private LocalDateTime deletedAt = null;
 
     @Builder
     public User(String name, String email) {
@@ -86,7 +83,7 @@ public class User extends BaseTimeEntity {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
-                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "role = " + getRole() + ", " + "name = " +
+                ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "name = " +
                 getName() + ", " + "email = " + getEmail() + ", " + "deletedAt = " + getDeletedAt() + ")";
     }
 
