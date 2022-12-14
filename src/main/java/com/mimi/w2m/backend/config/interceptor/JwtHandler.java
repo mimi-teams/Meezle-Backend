@@ -70,7 +70,7 @@ public class JwtHandler {
             decodedJWT = verifier.verify(token);
 
             final var userId = decodedJWT.getClaim(CLAIM_USER).asLong();
-            final var role = Role.valueOf(decodedJWT.getClaim(CLAIM_USER_ROLE).asString());
+            final var role = Role.ofKey(decodedJWT.getClaim(CLAIM_USER_ROLE).asString());
 
             return Optional.of(new TokenInfo(userId, role));
         } catch (JWTVerificationException exception) {
