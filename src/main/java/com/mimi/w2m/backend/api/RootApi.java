@@ -3,8 +3,9 @@ package com.mimi.w2m.backend.api;
 import com.mimi.w2m.backend.config.constants.AttributeConstants;
 import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
 import com.mimi.w2m.backend.service.AuthService;
-import com.mimi.w2m.backend.dto.security.SessionInfoResponseDto;
+import com.mimi.w2m.backend.dto.security.CurrentUserInfoResponseDto;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,14 +33,13 @@ public class RootApi {
             description = "[로그인 X] 로그인 정보를 반환한다. 정보가 없다면 EntityNotFoundHandler 가 수행된다",
             responses = {@ApiResponse(useReturnTypeSchema = true)})
     @GetMapping(path = "")
-    public ApiCallResponse<SessionInfoResponseDto> get() {
+    public ApiCallResponse<CurrentUserInfoResponseDto> get() {
 
         //인증 정보 꺼내 쓰기
-        final var userId = (Long) request.getAttribute(AttributeConstants.USER_ID);
+        final var currentUserInfo = (CurrentUserInfo) request.getAttribute(AttributeConstants.CURRENT_USER);
 
-//        final var loginInfo = authService.getLoginInfo(httpSession);
-        return ApiCallResponse.ofSuccess(SessionInfoResponseDto.builder()
-                .id(userId)
+        return ApiCallResponse.ofSuccess(CurrentUserInfoResponseDto.builder()
+                .id(currentUserInfo.loginId())
                 .role(Role.USER)
                 .build());
     }

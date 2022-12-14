@@ -8,5 +8,5 @@ package com.mimi.w2m.backend.config.constants;
  * @author yeh35
  */
 public class AttributeConstants {
-    public static String USER_ID = "USER_ID";
+    public static String CURRENT_USER = "CURRENT_USER";
 }

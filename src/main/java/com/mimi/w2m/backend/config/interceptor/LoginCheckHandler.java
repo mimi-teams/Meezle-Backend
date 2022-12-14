@@ -1,6 +1,8 @@
 package com.mimi.w2m.backend.config.interceptor;
 
 import com.mimi.w2m.backend.config.exception.UnauthorizedException;
+import com.mimi.w2m.backend.dto.security.LoginInfo;
+import com.mimi.w2m.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -23,8 +25,9 @@ import java.util.regex.Pattern;
 public class LoginCheckHandler {
 
     private final JwtHandler jwtHandler;
+    private final UserService userService;
 
-    public long getUserId(HttpServletRequest request) {
+    public LoginInfo loadLoginInfo(HttpServletRequest request) {
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorization.isBlank()) {
             throw new UnauthorizedException("Authorization 헤더가 존재하지 않습니다");
@@ -40,7 +43,9 @@ public class LoginCheckHandler {
             throw new UnauthorizedException("검증되지 않은 토큰입니다.");
         }
 
-        return tokenInfo.get().userId;
+        final var tokeInfo = tokenInfo.get();
+
+        return new LoginInfo(tokeInfo.userId, tokeInfo.role);
     }
 
 
