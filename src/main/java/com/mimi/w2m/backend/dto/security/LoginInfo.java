@@ -11,7 +11,9 @@ import java.io.Serializable;
  * @version 1.0.0
  * @since 2022/11/25
  **/
-public record LoginInfo(Long loginId,
-                        Role role) implements Serializable {
+public record LoginInfo(
+        Long loginId,
+        Role role
+) implements Serializable {
     public static String key = "info";
 }

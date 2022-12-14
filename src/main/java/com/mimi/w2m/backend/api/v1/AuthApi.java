@@ -55,7 +55,7 @@ public class AuthApi {
             @RequestParam String code
     ) {
         final User user = oauth2Service.afterAuthorization(OAuth2PlatformType.KAKAO, code);
-        final String token = jwtHandler.createToken(user.getId());
+        final String token = jwtHandler.createToken(user.getId(), user.getRole());
 
         return ApiCallResponse.ofSuccess(
                 LoginSuccessResponse.builder()

@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.mimi.w2m.backend.domain.type.Role;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,8 @@ import java.util.Optional;
 public class JwtHandler {
 
     private final static String ISSUER = "mezzle";
-    private final static String CLAIM_USER = "userid";
+    private final static String CLAIM_USER = "USER_ID";
+    private final static String CLAIM_USER_ROLE = "USER_ROLE";
 
     private final Algorithm algorithm;
 
@@ -40,10 +42,11 @@ public class JwtHandler {
      * @author yeh35
      * @since 2022-12-04
      */
-    public String createToken(long userid) {
+    public String createToken(long userid, Role role) {
         return JWT.create()
                 .withIssuer(ISSUER)
                 .withClaim(CLAIM_USER, userid)
+                .withClaim(CLAIM_USER_ROLE, role.getKey())
                 .sign(algorithm);
     }
 
@@ -66,22 +69,23 @@ public class JwtHandler {
 
             decodedJWT = verifier.verify(token);
 
-            final var userId = decodedJWT.getClaim(CLAIM_USER)
-                    .asLong();
+            final var userId = decodedJWT.getClaim(CLAIM_USER).asLong();
+            final var role = Role.valueOf(decodedJWT.getClaim(CLAIM_USER_ROLE).asString());
 
-            return Optional.of(new TokenInfo(userId));
+            return Optional.of(new TokenInfo(userId, role));
         } catch (JWTVerificationException exception) {
             // Invalid signature/claims
             return Optional.empty();
         }
     }
 
-    @Getter
     public static class TokenInfo {
         public final long userId;
+        public final Role role;
 
-        public TokenInfo(long id) {
-            userId = id;
+        public TokenInfo(long id, Role role) {
+            this.userId = id;
+            this.role = role;
         }
     }
 

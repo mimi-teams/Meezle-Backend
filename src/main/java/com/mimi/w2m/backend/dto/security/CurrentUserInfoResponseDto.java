@@ -10,10 +10,10 @@ import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 
 @Getter
-@Schema(title = "로그인한 이용자 정보", description = "로그인 성공 시, 얻을 수 있다", example = "{\"id\":0, \"role\":\"ROLE_USER\"}",
+@Schema(title = "현재 이용자 정보", description = "로그인 성공 시, 얻을 수 있다", example = "{\"id\":0, \"role\":\"ROLE_USER\"}",
         requiredProperties = {"id", "role"})
-public class SessionInfoResponseDto implements Serializable {
-    @Schema(type = "Integer", description = "로그인한 이용자의 ID")
+public class CurrentUserInfoResponseDto implements Serializable {
+    @Schema(description = "로그인한 이용자의 ID")
     @NotNull
     @PositiveOrZero
     private Long id;
@@ -21,16 +21,16 @@ public class SessionInfoResponseDto implements Serializable {
     private Role role;
 
     @Builder
-    public SessionInfoResponseDto(Long id, Role role) {
+    public CurrentUserInfoResponseDto(Long id, Role role) {
         this.id = id;
         this.role = role;
     }
 
-    protected SessionInfoResponseDto() {
+    protected CurrentUserInfoResponseDto() {
     }
 
-    public static SessionInfoResponseDto of(LoginInfo info) {
-        return SessionInfoResponseDto.builder()
+    public static CurrentUserInfoResponseDto of(LoginInfo info) {
+        return CurrentUserInfoResponseDto.builder()
                 .id(info.loginId())
                 .role(info.role())
                 .build();
