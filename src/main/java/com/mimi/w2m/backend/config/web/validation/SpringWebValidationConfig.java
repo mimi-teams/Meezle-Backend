@@ -3,7 +3,6 @@ package com.mimi.w2m.backend.config.web.validation;
 import com.mimi.w2m.backend.config.interceptor.AuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -19,9 +18,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @since 2022/12/02
  **/
 @RequiredArgsConstructor
-@EnableWebMvc
+// //이걸 사용하는 순간 더이상 Spring
 @Configuration
-@ComponentScan(basePackageClasses = SpringWebValidationConfig.class)
+//@ComponentScan(basePackageClasses = SpringWebValidationConfig.class)
 public class SpringWebValidationConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
