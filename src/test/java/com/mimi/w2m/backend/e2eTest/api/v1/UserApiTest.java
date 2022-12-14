@@ -1,11 +1,11 @@
-package e2eTest.api.v1;
+package com.mimi.w2m.backend.e2eTest.api.v1;
 
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.UserRepository;
-import e2eTest.End2EndTest;
 import org.junit.jupiter.api.Test;
+import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.springframework.beans.factory.annotation.Autowired;
-import testFixtures.UserTestFixture;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,7 +31,6 @@ public class UserApiTest extends End2EndTest {
                 .andExpect(jsonPath("$.data.name").value(user.getName()))
                 .andExpect(jsonPath("$.data.name").value(user.getEmail()))
         ;
-
 
     }
 

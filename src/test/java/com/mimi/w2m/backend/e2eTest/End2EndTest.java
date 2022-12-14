@@ -1,4 +1,4 @@
-package e2eTest;
+package com.mimi.w2m.backend.e2eTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mimi.w2m.backend.W2mApplication;
@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
-import testFixtures.DatabaseCleaner;
+import com.mimi.w2m.backend.testFixtures.DatabaseCleaner;
 
 /**
  * End2End Test 최상위 함수

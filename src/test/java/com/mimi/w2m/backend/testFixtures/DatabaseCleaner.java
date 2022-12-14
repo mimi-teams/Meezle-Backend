@@ -1,4 +1,4 @@
-package testFixtures;
+package com.mimi.w2m.backend.testFixtures;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,9 +19,6 @@ import java.util.Set;
  */
 @Component
 public class DatabaseCleaner implements InitializingBean {
-
-    private final static String REFERENTIAL_INTEGRITY_SQL = "SET REFERENTIAL_INTEGRITY";
-    private final static String TRUNCATE_TABLE_SQL = "TRUNCATE TABLE";
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -51,11 +48,11 @@ public class DatabaseCleaner implements InitializingBean {
                 .doWork(connection -> {
                     entityManager.flush();
                     final var statement = connection.createStatement();
-                    statement.executeUpdate(String.format("%s %s", REFERENTIAL_INTEGRITY_SQL, "FALSE"));
+                    statement.executeUpdate("SET @@foreign_key_checks = 0;");
                     for (final String tableName : tableNames) {
-                        statement.executeUpdate(String.format("%s %s", TRUNCATE_TABLE_SQL, tableName));
+                        statement.executeUpdate("DROP TABLE IF EXISTS " + tableName);
                     }
-                    statement.executeUpdate(String.format("%s %s", REFERENTIAL_INTEGRITY_SQL, "TRUE"));
+                    statement.executeUpdate("SET @@foreign_key_checks = 1;");
                 });
     }
 }
