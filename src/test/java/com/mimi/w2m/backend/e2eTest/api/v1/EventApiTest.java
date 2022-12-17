@@ -1,5 +1,6 @@
 package com.mimi.w2m.backend.e2eTest.api.v1;
 
+import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
@@ -7,6 +8,7 @@ import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
+import com.mimi.w2m.backend.testFixtures.EventTestFixture;
 import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.http.MediaType;
 
 import java.util.Set;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,6 +63,30 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
+                .andExpect(jsonPath("$.data.event.dday").exists())
+        ;
+    }
+
+    @Test
+    void 이벤트_조회() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        //when & then
+        mockMvc.perform(
+                        get("/v1/events/{id}", event.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.event.id").exists())
+                .andExpect(jsonPath("$.data.event.title").value(event.getTitle()))
+                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
+                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
+                .andExpect(jsonPath("$.data.event.color").value(event.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
         ;
     }
