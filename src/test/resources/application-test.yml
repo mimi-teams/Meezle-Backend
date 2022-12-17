@@ -25,3 +25,6 @@ spring:
       maximum-pool-size: 5
       connection-timeout: 5000
       connection-test-query: SELECT 1
+
+auth:
+  token.secret: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM=
