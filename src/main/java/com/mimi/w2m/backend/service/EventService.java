@@ -63,9 +63,13 @@ public class EventService {
     @Transactional
     public Event modifyEvent(Long eventId, EventRequestDto requestDto) throws EntityNotFoundException {
         var event = get(eventId);
-        return event.update(requestDto.getTitle(), requestDto.getDDay(), requestDto.getSelectableParticipleTimes(),
-                requestDto.getColor()
-                        .to(), requestDto.getDescription());
+        return event.update(
+                requestDto.getTitle(),
+                requestDto.getDDay(),
+                requestDto.getSelectableParticipleTimes(),
+                requestDto.getColor(),
+                requestDto.getDescription()
+        );
     }
 
     /**

@@ -1,7 +1,9 @@
 package com.mimi.w2m.backend.domain;
 
+import com.mimi.w2m.backend.converter.db.ColorConverter;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
+import com.mimi.w2m.backend.dto.event.ColorDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +11,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
-import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
@@ -57,8 +58,9 @@ public class Event extends BaseTimeEntity {
     private Set<ParticipleTime> selectedDaysAndTimes;
 
     @Comment("이벤트의 대표 색상. Backend에서 설정해 Front에 전달한다(브라우저마다 동일하게 보이게 만들려고!)")
-    @Column(name = "color", nullable = false)
-    private Color color;
+    @Convert(converter = ColorConverter.class)
+    @Column(name = "color", nullable = false, length = 100)
+    private ColorDto color;
 
     @Comment("이벤트 세부 설명(Default : EMPTY STRING)")
     @Column(name = "description", nullable = false, length = 1000, columnDefinition = "VARCHAR(1000)")
@@ -73,7 +75,7 @@ public class Event extends BaseTimeEntity {
     }
 
     @Builder
-    public Event(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, Color color,
+    public Event(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, ColorDto color,
                  String description, User host) {
         this.title = title;
         this.dDay = dDay;
@@ -83,7 +85,7 @@ public class Event extends BaseTimeEntity {
         this.host = host;
     }
 
-    public Event update(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, Color color,
+    public Event update(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, ColorDto color,
                         String description) {
         this.title = title;
         this.dDay = dDay;

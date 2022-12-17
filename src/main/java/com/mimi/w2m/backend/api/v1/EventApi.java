@@ -57,17 +57,12 @@ public class EventApi {
     private final AuthService authService;
     private final HttpSession httpSession;
 
-    @Operation(method = "GET",
-            summary = "이벤트 정보 반환",
-            description = "[로그인 O, 인가 O] ID에 해당하는 이벤트 정보를 반환한다. 이벤트 참여자만 이용할 수 있다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
+    @Operation(summary = "이벤트 정보 반환", description = "ID에 해당하는 이벤트 정보를 반환한다. 이벤트 참여자만 이용할 수 있다")
     @GetMapping("/{id}")
     public @Valid ApiCallResponse<EventResponseDto> get(
             @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isInEvent(loginInfo, id);
         final var event = eventService.get(id);
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
     }

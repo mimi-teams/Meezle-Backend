@@ -34,7 +34,7 @@ public class EventResponseDto implements Serializable {
                 .dDay(entity.getDDay())
                 .selectableParticipleTimes(entity.getSelectableDaysAndTimes())
                 .selectedParticipleTimes(entity.getSelectedDaysAndTimes())
-                .color(ColorDto.of(entity.getColor()))
+                .color(entity.getColor())
                 .description(entity.getDescription())
                 .build();
 
