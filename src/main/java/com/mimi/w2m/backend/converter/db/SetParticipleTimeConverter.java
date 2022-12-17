@@ -54,7 +54,7 @@ public class SetParticipleTimeConverter implements AttributeConverter<Set<Partic
             return Map.of();
         } else {
             final var map = new HashMap<DayOfWeek, Set<TimeRange>>();
-            participleTimes.forEach(p -> map.put(p.getDay(), p.getRanges()));
+            participleTimes.forEach(p -> map.put(p.getWeek(), p.getRanges()));
             return map;
         }
     }
@@ -65,7 +65,7 @@ public class SetParticipleTimeConverter implements AttributeConverter<Set<Partic
         } else {
             final var set = new HashSet<ParticipleTime>();
             participleTimes.forEach((d, t) -> set.add(ParticipleTime.builder()
-                    .day(d)
+                    .week(d)
                     .ranges(t)
                     .build()));
             return set;
