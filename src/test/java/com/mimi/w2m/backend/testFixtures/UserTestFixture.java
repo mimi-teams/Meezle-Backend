@@ -11,4 +11,9 @@ public class UserTestFixture {
                 .build();
     }
 
+    public static User createUser() {
+        return createUser("테스트 유저");
+    }
+
+
 }
