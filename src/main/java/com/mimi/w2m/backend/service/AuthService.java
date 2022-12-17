@@ -59,22 +59,12 @@ public class AuthService {
         }
     }
 
-    public void isHost(LoginInfo info, Long eventId) throws IllegalAccessException {
-        try {
-            final var event = eventService.get(eventId);
-            if (Objects.equals(info.role(), Role.GUEST)) {
-                throw new RuntimeException();
-            }
-            final var user = userService.get(info.loginId());
-            if (!Objects.equals(event.getHost(), user)) {
-                throw new RuntimeException();
-            }
-        } catch (RuntimeException e) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[AuthService] Illegal Access(id=%d, role=%s, event=%d)", info.loginId(),
-                            info.role(), eventId)
-                    .toString();
-            throw new IllegalAccessException(msg);
+    public void isHost(Long userId, Long eventId) throws IllegalAccessException {
+        final var event = eventService.get(eventId);
+        final var user = userService.get(userId);
+
+        if (!Objects.equals(event.getHost(), user)) {
+            throw new IllegalAccessException(String.format("[AuthService] Illegal Access(id=%d, event=%d)", userId,  eventId));
         }
     }
 
