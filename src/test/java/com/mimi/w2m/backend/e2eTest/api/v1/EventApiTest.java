@@ -6,6 +6,7 @@ import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.guest.GuestLoginRequest;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
@@ -208,6 +209,36 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value(guestCreateDto.getName()))
                 .andExpect(jsonPath("$.data.token").exists())
+        ;
+    }
+
+    @Test
+    void 이벤트_게스트_이벤트_참여() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        final var guestCreateDto = GuestTestFixture.createGuestCreateDto(event);
+        String token = loginGuest(guestCreateDto);
+
+
+        final var request = new EventParticipantRequest(Set.of(
+                ParticipleTime.of("MONDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                ParticipleTime.of("TUESDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                ParticipleTime.of("THURSDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|")
+        ));
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/events/{eventId}/guests/participate", event.getId())
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isOk())
         ;
     }
 }
