@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.config.interceptor;
 
 import com.mimi.w2m.backend.config.constants.AttributeConstants;
+import com.mimi.w2m.backend.config.exception.IllegalAccessException;
 import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +39,13 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         // 유저 정보
         final LoginInfo loginInfo = loginCheckHandler.loadLoginInfo(request);
+        
+        // 유저 타입이 맞는지 확인
+        if (auth.value() != loginInfo.role()) {
+            throw new IllegalAccessException("허용된 유저 타입이 다릅니다.");
+        }
+        
         request.setAttribute(AttributeConstants.CURRENT_USER, CurrentUserInfo.of(loginInfo));
-
         return true;
     }
 }
