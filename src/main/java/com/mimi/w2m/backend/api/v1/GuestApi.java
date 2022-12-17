@@ -92,7 +92,7 @@ public class GuestApi {
     public ResponseEntity<?> login(
             @Valid @RequestBody GuestRequestDto requestDto
     ) {
-        authService.logout(httpSession);
+        authService.logoutToken("");
         guestService.login(requestDto);
         final var headers = new HttpHeaders();
         headers.setLocation(URI.create("/"));
@@ -106,7 +106,7 @@ public class GuestApi {
                     content = {@Content(schema = @Schema(description = "GET '/'"))})})
     @GetMapping(path = "/logout")
     public ResponseEntity<?> logout() {
-        authService.logout(httpSession);
+        authService.logoutToken("");
         final var headers = new HttpHeaders();
         headers.setLocation(URI.create("/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);

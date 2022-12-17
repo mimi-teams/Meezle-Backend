@@ -78,6 +78,7 @@ public class AuthService {
         }
     }
 
+    @Deprecated
     public LoginInfo getLoginInfo(HttpSession httpSession) throws EntityNotFoundException {
         final var info = (LoginInfo) httpSession.getAttribute(LoginInfo.key);
         if (Objects.isNull(info)) {
@@ -101,7 +102,7 @@ public class AuthService {
         return (CurrentUserInfo) attribute;
     }
 
-    public void logout(HttpSession httpSession) {
-        httpSession.removeAttribute(LoginInfo.key);
+    public void logoutToken(String token) {
+        // TODO 나중에 다시 구현, 로그아웃된 토큰을 DB에 저장하는 방식으로
     }
 }
