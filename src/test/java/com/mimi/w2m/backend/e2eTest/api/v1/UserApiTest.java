@@ -88,4 +88,45 @@ public class UserApiTest extends End2EndTest {
         ;
     }
 
+    @Test
+    void 이용자_로그아웃() throws Exception {
+        // given
+        User user = UserTestFixture.createUser("가나");
+        userRepository.save(user);
+
+        final String token = login(user);
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/users/me/logout")
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+        ;
+    }
+
+
+
+    @Test
+    void 이용자_탈퇴() throws Exception {
+        // given
+        User user = UserTestFixture.createUser("가나");
+        userRepository.save(user);
+
+        final String token = login(user);
+
+        final var userRequestDto = new UserRequestDto("가나다라", "가나다라@naver.com");
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/users/me/leave")
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(userRequestDto))
+                )
+                .andExpect(status().isOk())
+        ;
+    }
+
 }
