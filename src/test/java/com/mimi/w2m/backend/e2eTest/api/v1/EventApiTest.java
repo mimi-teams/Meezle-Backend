@@ -5,10 +5,13 @@ import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.dto.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
+import com.mimi.w2m.backend.service.GuestService;
 import com.mimi.w2m.backend.testFixtures.EventTestFixture;
+import com.mimi.w2m.backend.testFixtures.GuestTestFixture;
 import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +28,10 @@ public class EventApiTest extends End2EndTest {
 
     @Autowired
     protected UserRepository userRepository;
-
     @Autowired
     protected EventRepository eventRepository;
+    @Autowired
+    protected GuestService guestService;
 
     @Test
     void 이벤트_등록() throws Exception {
@@ -151,4 +155,59 @@ public class EventApiTest extends End2EndTest {
         ;
     }
 
+    @Test
+    void 이벤트_게스트_로그인_DB에_없는_경우() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+
+        final var loginRequest = GuestLoginRequest.builder()
+                .name("테스트 게스트")
+                .password("1234")
+                .build();
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/events/{eventId}/guests/login", event.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").value(loginRequest.getName()))
+                .andExpect(jsonPath("$.data.token").exists())
+        ;
+    }
+
+    @Test
+    void 이벤트_게스트_로그인() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        final var guestCreateDto = GuestTestFixture.createGuestCreateDto(event);
+        guestService.create(guestCreateDto);
+
+        final var loginRequest = GuestLoginRequest.builder()
+                .name(guestCreateDto.getName())
+                .password(guestCreateDto.getPassword())
+                .build();
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/events/{eventId}/guests/login", event.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").value(guestCreateDto.getName()))
+                .andExpect(jsonPath("$.data.token").exists())
+        ;
+    }
 }
