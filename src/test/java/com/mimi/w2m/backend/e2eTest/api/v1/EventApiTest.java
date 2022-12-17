@@ -16,8 +16,7 @@ import org.springframework.http.MediaType;
 
 import java.util.Set;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,5 +90,65 @@ public class EventApiTest extends End2EndTest {
         ;
     }
 
+    @Test
+    void 이벤트_수정() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final String token = login(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        final var requestDto = EventRequestDto.builder()
+                .title("수정된 테스트 이벤트")
+                .selectableParticipleTimes(Set.of(
+                        ParticipleTime.of("SATURDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                        ParticipleTime.of("SUNDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|")
+                ))
+                .dDay(null)
+                .color(ColorDto.of("#ffffff"))
+                .description("수정되었습니다람쥐")
+                .build();
+
+
+        //when & then
+        mockMvc.perform(
+                        patch("/v1/events/{id}", event.getId())
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDto))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.event.id").exists())
+                .andExpect(jsonPath("$.data.event.title").value(requestDto.getTitle()))
+                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
+                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
+                .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
+                .andExpect(jsonPath("$.data.event.dday").exists())
+        ;
+    }
+
+    @Test
+    void 이벤트_삭제() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final String token = login(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        //when & then
+        mockMvc.perform(
+                        delete("/v1/events/{id}", event.getId())
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+        ;
+    }
 
 }
