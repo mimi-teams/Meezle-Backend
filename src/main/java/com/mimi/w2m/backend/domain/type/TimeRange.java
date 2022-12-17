@@ -1,21 +1,23 @@
 package com.mimi.w2m.backend.domain.type;
 
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import org.springframework.data.util.Pair;
 
-import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public record TimeRange(LocalTime beginTime,
                         LocalTime endTime) implements Comparable<TimeRange> {
 
-    public static TimeRange of(String timeRangeStr) throws IOException {
-        final var parsedStrs = timeRangeStr.split(delimiter());
-        if (parsedStrs.length != 2) {
-            throw new IOException();
+    public static TimeRange of(String timeRangeStr) {
+        final var parsedSplit = timeRangeStr.split(delimiter());
+
+        if (parsedSplit.length != 2) {
+            throw new InvalidValueException("잘못된 형식의 값입니다.: timeRangeStr = " + timeRangeStr);
         }
-        final var begTime = LocalTime.from(formatter().parse(parsedStrs[0]));
-        final var endTime = LocalTime.from((formatter().parse(parsedStrs[1])));
+
+        final var begTime = LocalTime.from(formatter().parse(parsedSplit[0]));
+        final var endTime = LocalTime.from((formatter().parse(parsedSplit[1])));
         return fixOrder(new TimeRange(begTime, endTime));
     }
 
@@ -51,7 +53,6 @@ public record TimeRange(LocalTime beginTime,
         /**
          * 시간 계산을 위한 연산. Disjoint Set 인 경우, Pair 의 a, b가 모두 채워지고, 그렇지 않다면 a 만 채워진다(b=EMPTY)
          *
-         * @author teddy
          * @since 2022/12/01
          **/
         public static TimeRange EMPTY = new TimeRange(LocalTime.MAX, LocalTime.MAX);
