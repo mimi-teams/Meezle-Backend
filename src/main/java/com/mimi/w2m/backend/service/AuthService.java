@@ -60,7 +60,7 @@ public class AuthService {
     }
 
     public void isHost(Long userId, Long eventId) throws IllegalAccessException {
-        final var event = eventService.get(eventId);
+        final var event = eventService.getEvent(eventId);
         final var user = userService.get(userId);
 
         if (!Objects.equals(event.getHost(), user)) {

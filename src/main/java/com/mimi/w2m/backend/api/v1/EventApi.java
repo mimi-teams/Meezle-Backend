@@ -1,6 +1,5 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
@@ -21,16 +20,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.Objects;
 
 /**
  * EventApi
@@ -60,8 +56,9 @@ public class EventApi {
             @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
     ) {
-        final var event = eventService.get(id);
-        return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
+        final var event = eventService.getEvent(id);
+        final var eventSelectableParticipleTimes = eventService.getEventSelectableParticipleTimes(id);
+        return ApiCallResponse.ofSuccess(EventResponseDto.of(event, eventSelectableParticipleTimes));
     }
 
     @Operation(summary = "[인증] 새로운 이벤트 등록", description = "새로운 이벤트를 등록한다. 가입한 이용자만 이용할 수 있다")
@@ -73,8 +70,9 @@ public class EventApi {
         final var currentUserInfo = authService.getCurrentUserInfo();
 
         final var event = eventService.createEvent(currentUserInfo.userId(), requestDto);
+        final var eventSelectableParticipleTimes = eventService.getEventSelectableParticipleTimes(event.getId());
 
-        return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
+        return ApiCallResponse.ofSuccess(EventResponseDto.of(event, eventSelectableParticipleTimes));
     }
 
     @Operation(summary = "[인증] 이벤트 정보 수정", description = "ID에 해당하는 이벤트 정보를 수정한다. 이벤트 생성자만 수정 가능한다")
@@ -89,8 +87,9 @@ public class EventApi {
         authService.isHost(currentUserInfo.userId(), id);
 
         final var event = eventService.modifyEvent(id, requestDto);
+        final var eventSelectableParticipleTimes = eventService.getEventSelectableParticipleTimes(id);
 
-        return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
+        return ApiCallResponse.ofSuccess(EventResponseDto.of(event, eventSelectableParticipleTimes));
     }
 
     @Operation(summary = "[인증]이벤트 삭제",
@@ -220,53 +219,53 @@ public class EventApi {
         return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
     }
 
-    @Operation(method = "PATCH",
-            summary = "이벤트 참여자 정보 수정하기",
-            description = "[로그인 O, 인가 O] 이벤트 참여자 정보를 수정한다. 본인만 수정 가능한다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @PatchMapping(path = "/{eventId}/participants/{id}")
-    public @Valid ApiCallResponse<EventParticipantResponseDto> modifyParticipant(
-            @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("eventId") Long eventId,
-            @Parameter(name = "id", description = "참여자의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
-            @Valid @RequestBody EventParticipantRequestDto requestDto
-    ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isInEvent(loginInfo, eventId);
-        final var participant = eventParticipantService.modify(id, requestDto);
-        return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
-    }
-
-    @Operation(method = "PATCH",
-            summary = "이벤트 참가 시간 설정하기",
-            description = "[로그인 O, 인가 O] 이벤트 생성자만 이용 가능하다. mode=[calculate|modify]가 있으며, Query 로 설정한다. " +
-                    "(mode=calculate) 이벤트의 참여 시간을 계산한다. 모든 참여자가 참여 가능한 시간이 계산되며, 아무 시간도 선택하지 않은 참여자는 제외된다. " +
-                    "(mode=modify) 이벤트의 참여 시간을 직접 수정한다. Request Body 에 해당 정보를 담아 보낸다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @PatchMapping(path = "/{id}/time")
-    public @Valid ApiCallResponse<EventResponseDto> calculateTime(
-            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
-            @Parameter(name = "mode", description = "시간 설정 모드", in = ParameterIn.QUERY, required = true)
-            @NotNull @Pattern(regexp = "^(calculate|modify)$") @Valid @RequestParam String mode,
-            @RequestBody @Nullable @Valid EventParticipantRequestDto requestDto
-    ) {
-        final var currentUserInfo = authService.getCurrentUserInfo();
-        authService.isHost(currentUserInfo.userId(), id);
-
-        if (Objects.equals(mode, "calculate")) {
-            final var event = eventParticipantService.calculateSharedTime(id);
-            return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
-        } else if (Objects.equals(mode, "modify")) {
-            if (Objects.nonNull(requestDto)) {
-                final var event = eventService.modifySelectedDaysAndTimesDirectly(requestDto);
-                return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
-            } else {
-                throw new InvalidValueException("[EventApi] Request body 가 없습니다");
-            }
-        } else {
-            throw new InvalidValueException("[EventApi] 잘못된 mode 의 요청입니다 : " + mode);
-        }
-    }
+//    @Operation(method = "PATCH",
+//            summary = "이벤트 참여자 정보 수정하기",
+//            description = "[로그인 O, 인가 O] 이벤트 참여자 정보를 수정한다. 본인만 수정 가능한다",
+//            responses = {@ApiResponse(useReturnTypeSchema = true)})
+//    @PatchMapping(path = "/{eventId}/participants/{id}")
+//    public @Valid ApiCallResponse<EventParticipantResponseDto> modifyParticipant(
+//            @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("eventId") Long eventId,
+//            @Parameter(name = "id", description = "참여자의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
+//            @Valid @RequestBody EventParticipantRequestDto requestDto
+//    ) {
+//        final var loginInfo = authService.getLoginInfo(httpSession);
+//        authService.isInEvent(loginInfo, eventId);
+//        final var participant = eventParticipantService.modify(id, requestDto);
+//        return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
+//    }
+//
+//    @Operation(method = "PATCH",
+//            summary = "이벤트 참가 시간 설정하기",
+//            description = "[로그인 O, 인가 O] 이벤트 생성자만 이용 가능하다. mode=[calculate|modify]가 있으며, Query 로 설정한다. " +
+//                    "(mode=calculate) 이벤트의 참여 시간을 계산한다. 모든 참여자가 참여 가능한 시간이 계산되며, 아무 시간도 선택하지 않은 참여자는 제외된다. " +
+//                    "(mode=modify) 이벤트의 참여 시간을 직접 수정한다. Request Body 에 해당 정보를 담아 보낸다",
+//            responses = {@ApiResponse(useReturnTypeSchema = true)})
+//    @PatchMapping(path = "/{id}/time")
+//    public @Valid ApiCallResponse<EventResponseDto> calculateTime(
+//            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
+//            @Parameter(name = "mode", description = "시간 설정 모드", in = ParameterIn.QUERY, required = true)
+//            @NotNull @Pattern(regexp = "^(calculate|modify)$") @Valid @RequestParam String mode,
+//            @RequestBody @Nullable @Valid EventParticipantRequestDto requestDto
+//    ) {
+//        final var currentUserInfo = authService.getCurrentUserInfo();
+//        authService.isHost(currentUserInfo.userId(), id);
+//
+//        if (Objects.equals(mode, "calculate")) {
+//            final var event = eventParticipantService.calculateSharedTime(id);
+//            return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
+//        } else if (Objects.equals(mode, "modify")) {
+//            if (Objects.nonNull(requestDto)) {
+//                final var event = eventService.modifySelectedDaysAndTimesDirectly(requestDto);
+//                return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
+//            } else {
+//                throw new InvalidValueException("[EventApi] Request body 가 없습니다");
+//            }
+//        } else {
+//            throw new InvalidValueException("[EventApi] 잘못된 mode 의 요청입니다 : " + mode);
+//        }
+//    }
 }

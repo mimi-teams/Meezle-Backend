@@ -60,7 +60,7 @@ public class GuestService {
      * @return 사용중이라면 true, 아니라면 false
      */
     public boolean isUsedGuestName(Long eventId, String guestName) {
-        final Event event = eventService.get(eventId);
+        final Event event = eventService.getEvent(eventId);
         Optional<Guest> byNameAndEvent = guestRepository.findByNameAndEvent(guestName, event);
         return byNameAndEvent.isPresent();
     }
@@ -72,7 +72,7 @@ public class GuestService {
      * @since 2022-12-17
      */
     public GuestLoginResponse login(Long eventId, GuestLoginRequest loginDto) {
-        final Event event = eventService.get(eventId);
+        final Event event = eventService.getEvent(eventId);
 
         Optional<Guest> byNameAndEvent = guestRepository.findByNameAndEvent(loginDto.getName(), event);
         if (byNameAndEvent.isEmpty()) {
@@ -97,7 +97,7 @@ public class GuestService {
      */
     @Transactional
     public Guest create(GuestCreateDto createDto) {
-        final Event event = eventService.get(createDto.getEventId());
+        final Event event = eventService.getEvent(createDto.getEventId());
 
         // 비밀번호 헤슁
         final String password = passwordEncoder.encode(createDto.getPassword());

@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.domain;
 
 import com.mimi.w2m.backend.converter.db.SetTimeRangeConverter;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.domain.type.TimeRange;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,13 +9,15 @@ import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * 이벤트 참여 가능한 시간
+ * ParticipleTime가 해당 엔티티의 추상형태이다.
  *
- * @since 2022-12-17
  * @author yeh35
+ * @since 2022-12-17
  */
 @Entity
 @Getter
@@ -47,10 +50,30 @@ public class EventSelectableParticipleTime extends BaseTimeEntity {
 
     @SuppressWarnings("unused")
     @Builder
-    public EventSelectableParticipleTime(Long id, DayOfWeek week, Set<TimeRange> timeRanges, Event event) {
-        this.id = id;
+    public EventSelectableParticipleTime(DayOfWeek week, Set<TimeRange> timeRanges, Event event) {
         this.week = week;
         this.timeRanges = timeRanges;
         this.event = event;
+    }
+
+    public ParticipleTime toParticipleTime() {
+        return ParticipleTime.builder()
+                .week(week)
+                .ranges(timeRanges)
+                .build();
+    }
+
+    public static Set<EventSelectableParticipleTime> of(Event event, Set<ParticipleTime> participleTimeSet) {
+        final var resultSet = new HashSet<EventSelectableParticipleTime>(participleTimeSet.size());
+
+        for (final var participleTime : participleTimeSet) {
+            resultSet.add(EventSelectableParticipleTime.builder()
+                    .event(event)
+                    .week(participleTime.getWeek())
+                    .timeRanges(participleTime.getRanges())
+                    .build());
+        }
+
+        return resultSet;
     }
 }

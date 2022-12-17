@@ -1,8 +1,6 @@
 package com.mimi.w2m.backend.domain;
 
 import com.mimi.w2m.backend.converter.db.ColorConverter;
-import com.mimi.w2m.backend.domain.type.ParticipleTime;
-import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +11,6 @@ import org.hibernate.annotations.Comment;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Event
@@ -46,17 +43,6 @@ public class Event extends BaseTimeEntity {
     @Column(name = "d_day")
     private LocalDateTime dDay;
 
-    @Comment("선택 가능한 시간(Default : 모든 요일 & 모든 시간)")
-    @Convert(converter = SetParticipleTimeConverter.class)
-    @Column(name = "selectable_days_and_times", nullable = false)
-    private Set<ParticipleTime> selectableDaysAndTimes;
-
-    @Comment("선택된 시간(Default : null)")
-    @Setter
-    @Convert(converter = SetParticipleTimeConverter.class)
-    @Column(name = "selected_days_and_times")
-    private Set<ParticipleTime> selectedDaysAndTimes;
-
     @Comment("이벤트의 대표 색상. Backend에서 설정해 Front에 전달한다(브라우저마다 동일하게 보이게 만들려고!)")
     @Convert(converter = ColorConverter.class)
     @Column(name = "color", nullable = false, length = 100)
@@ -75,21 +61,19 @@ public class Event extends BaseTimeEntity {
     }
 
     @Builder
-    public Event(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, ColorDto color,
+    public Event(String title, LocalDateTime dDay, ColorDto color,
                  String description, User host) {
         this.title = title;
         this.dDay = dDay;
-        this.selectableDaysAndTimes = selectableDaysAndTimes;
         this.color = color;
         this.description = Objects.nonNull(description) ? description : "";
         this.host = host;
     }
 
-    public Event update(String title, LocalDateTime dDay, Set<ParticipleTime> selectableDaysAndTimes, ColorDto color,
+    public Event update(String title, LocalDateTime dDay, ColorDto color,
                         String description) {
         this.title = title;
         this.dDay = dDay;
-        this.selectableDaysAndTimes = selectableDaysAndTimes;
         this.color = color;
         this.description = Objects.nonNull(description) ? description : "";
         return this;
@@ -117,7 +101,6 @@ public class Event extends BaseTimeEntity {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
                 ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "title = " + getTitle() + ", " +
                 "deletedAt = " + getDeletedAt() + ", " + "dDay = " + dDay + ", " + "selectableDaysAndTimes = " +
-                getSelectableDaysAndTimes() + ", " + "selectedDaysAndTimes = " + getSelectedDaysAndTimes() + ", " +
                 "color = " + getColor() + ", " + "description = " + getDescription() + ")";
     }
 

@@ -64,10 +64,9 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(requestDto.getTitle()))
-                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
-                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
         ;
     }
 
@@ -88,10 +87,9 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(event.getTitle()))
-                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
-                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.color").value(event.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
         ;
     }
 
@@ -128,10 +126,9 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(requestDto.getTitle()))
-                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
-                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
         ;
     }
 

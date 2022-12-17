@@ -32,7 +32,7 @@ public class EventRequestDto implements Serializable {
     private String title;
 
     @Schema(title = "참여자들이 선택 가능한 시간", description = "이벤트 참여자들이 선택할 수 있는 시간의 범위를 지정")
-    @Nullable
+    @NotNull
     @Valid
     private Set<ParticipleTime> selectableParticipleTimes;
 
@@ -71,7 +71,6 @@ public class EventRequestDto implements Serializable {
         return Event.builder()
                 .title(title)
                 .host(user)
-                .selectableDaysAndTimes(selectableParticipleTimes)
                 .dDay(dDay)
                 .color(color)
                 .description(description)

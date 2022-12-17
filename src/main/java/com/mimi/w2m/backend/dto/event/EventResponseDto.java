@@ -1,10 +1,12 @@
 package com.mimi.w2m.backend.dto.event;
 
 import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * EventResponseDto
@@ -19,12 +21,16 @@ import java.io.Serializable;
                 "color", "description"})
 public class EventResponseDto implements Serializable {
 
+    @Schema(description = "이벤트")
     private EventDto event;
+
+    @Schema(description = "선택 가능한 시간")
+    private Set<ParticipleTime> selectableParticipleTimes;
 
     protected EventResponseDto() {
     }
 
-    public static EventResponseDto of(Event entity) {
+    public static EventResponseDto of(Event entity, Set<ParticipleTime> selectableParticipleTime) {
         final var responseDto = new EventResponseDto();
         responseDto.event = EventDto.builder()
                 .id(entity.getId())
@@ -32,11 +38,10 @@ public class EventResponseDto implements Serializable {
                         .getId())
                 .title(entity.getTitle())
                 .dDay(entity.getDDay())
-                .selectableParticipleTimes(entity.getSelectableDaysAndTimes())
-                .selectedParticipleTimes(entity.getSelectedDaysAndTimes())
                 .color(entity.getColor())
                 .description(entity.getDescription())
                 .build();
+        responseDto.selectableParticipleTimes = selectableParticipleTime;
 
         return responseDto;
     }

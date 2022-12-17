@@ -1,15 +1,13 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.repository.EventParticipantRepository;
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.domain.type.TimeRange;
-import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.EventParticipant;
-import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.config.exception.EntityDuplicatedException;
 import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.domain.EventParticipant;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.domain.type.TimeRange;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
+import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +40,7 @@ public class EventParticipantService {
     @Transactional
     public EventParticipant participateGuest(EventParticipantRequestDto requestDto) throws InvalidValueException, EntityNotFoundException, EntityDuplicatedException {
         final var formatter = new Formatter();
-        final var event = eventService.get(requestDto.getEventId());
+        final var event = eventService.getEvent(requestDto.getEventId());
         return switch (requestDto.getOwnerType()) {
             case USER -> {
                 final var user = userService.get(requestDto.getOwnerId());
@@ -76,7 +74,7 @@ public class EventParticipantService {
     public EventParticipant create(EventParticipantRequestDto requestDto)
             throws InvalidValueException, EntityNotFoundException, EntityDuplicatedException {
         final var formatter = new Formatter();
-        final var event = eventService.get(requestDto.getEventId());
+        final var event = eventService.getEvent(requestDto.getEventId());
         return switch (requestDto.getOwnerType()) {
             case USER -> {
                 final var user = userService.get(requestDto.getOwnerId());
@@ -131,7 +129,7 @@ public class EventParticipantService {
      * @since 2022-11-01
      */
     public EventParticipant get(Long eventId, Long roleId, Role role) throws EntityNotFoundException {
-        final var event = eventService.get(eventId);
+        final var event = eventService.getEvent(eventId);
         final var formatter = new Formatter();
         final var msg = formatter.format("[EventParticipantService] Entity Not Found(event=%d, id=%d, role=%s)",
                         eventId, roleId, role)
@@ -158,42 +156,43 @@ public class EventParticipantService {
      * @author teddy
      * @since 2022/11/20
      **/
-    @Transactional
-    public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, InvalidValueException {
-        final var formatter = new Formatter();
-        final var converter = new SetParticipleTimeConverter();
-        final var event = eventService.get(eventId);
-        final var participants = getAll(eventId);
-
-        final var selectableDaysAndTimesMap = converter.convertToMap(event.getSelectableDaysAndTimes());
-        final var selectedDaysAndTimesMap = new HashMap<DayOfWeek, Set<TimeRange>>();
-
-        participants.forEach(p -> {
-            final var ableDaysAndTimesMap = converter.convertToMap(p.getAbleDaysAndTimes());
-            if (!verify(selectableDaysAndTimesMap, ableDaysAndTimesMap)) {
-                final var msg = formatter.format(
-                                "[EventParticipantService] Out Of Selectable Range(event=%d, " +
-                                        "participant=%d)", eventId,
-                                p.getId())
-                        .toString();
-                throw new InvalidValueException(msg);
-            }
-            ableDaysAndTimesMap.forEach((d, t) -> {
-                if (selectedDaysAndTimesMap.containsKey(d)) {
-                    // 해당 요일에 가능한 누군가 있다면, 선택될 수 있다.
-                    final var selectedTimeRange = selectedDaysAndTimesMap.get(d);
-                    final var updatedTimeRange = findSharedRange(t, selectedTimeRange);
-                    selectedDaysAndTimesMap.put(d, updatedTimeRange);
-                } else if (selectedDaysAndTimesMap.isEmpty()) {
-                    // 처음에는 그냥 넣을 수 있다
-                    selectedDaysAndTimesMap.put(d, t);
-                }
-                // 처음이 아니거나, 앞서 해당 요일을 선택한 참여자가 없다면, 전원 일치가 불가능하므로 무시한다
-            });
-        });
-        event.setSelectedDaysAndTimes(converter.convertToSet(selectedDaysAndTimesMap));
-        return event;
-    }
+    //TODO 나중에 알고리즘이 필요한 경우 다시 사용하자..
+//    @Transactional
+//    public Event calculateSharedTime(Long eventId) throws EntityNotFoundException, InvalidValueException {
+//        final var formatter = new Formatter();
+//        final var converter = new SetParticipleTimeConverter();
+//        final var event = eventService.get(eventId);
+//        final var participants = getAll(eventId);
+//
+//        final var selectableDaysAndTimesMap = converter.convertToMap(event.getSelectableDaysAndTimes());
+//        final var selectedDaysAndTimesMap = new HashMap<DayOfWeek, Set<TimeRange>>();
+//
+//        participants.forEach(p -> {
+//            final var ableDaysAndTimesMap = converter.convertToMap(p.getAbleDaysAndTimes());
+//            if (!verify(selectableDaysAndTimesMap, ableDaysAndTimesMap)) {
+//                final var msg = formatter.format(
+//                                "[EventParticipantService] Out Of Selectable Range(event=%d, " +
+//                                        "participant=%d)", eventId,
+//                                p.getId())
+//                        .toString();
+//                throw new InvalidValueException(msg);
+//            }
+//            ableDaysAndTimesMap.forEach((d, t) -> {
+//                if (selectedDaysAndTimesMap.containsKey(d)) {
+//                    // 해당 요일에 가능한 누군가 있다면, 선택될 수 있다.
+//                    final var selectedTimeRange = selectedDaysAndTimesMap.get(d);
+//                    final var updatedTimeRange = findSharedRange(t, selectedTimeRange);
+//                    selectedDaysAndTimesMap.put(d, updatedTimeRange);
+//                } else if (selectedDaysAndTimesMap.isEmpty()) {
+//                    // 처음에는 그냥 넣을 수 있다
+//                    selectedDaysAndTimesMap.put(d, t);
+//                }
+//                // 처음이 아니거나, 앞서 해당 요일을 선택한 참여자가 없다면, 전원 일치가 불가능하므로 무시한다
+//            });
+//        });
+//        event.setSelectedDaysAndTimes(converter.convertToSet(selectedDaysAndTimesMap));
+//        return event;
+//    }
 
     /**
      * 특정 이벤트 참여 가능한 모든 시간 조회(등록된 모든 것)
@@ -202,7 +201,7 @@ public class EventParticipantService {
      * @since 2022-10-31
      */
     public List<EventParticipant> getAll(Long eventId) throws EntityNotFoundException {
-        final var event = eventService.get(eventId);
+        final var event = eventService.getEvent(eventId);
         final var participants = eventParticipantRepository.findAllInEvent(event);
         if (participants.isEmpty()) {
             final var formatter = new Formatter();

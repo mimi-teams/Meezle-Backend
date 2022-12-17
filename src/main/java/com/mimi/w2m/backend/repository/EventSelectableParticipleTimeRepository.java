@@ -14,6 +14,11 @@ public interface EventSelectableParticipleTimeRepository extends JpaRepository<E
     /**
      * 이벤트에 해당되는 모든 선택 가능한 시간을 가져온다.
      */
-    List<EventSelectableParticipleTime> findAllByEvent(Event event);
+    List<EventSelectableParticipleTime> findByEvent(Event event);
+
+    /**
+     * 이벤트에 해당되는 모든 선택 가능한 시간을 삭제한다.
+     */
+    Long deleteByEvent(Event event);
 
 }
