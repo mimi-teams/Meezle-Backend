@@ -48,7 +48,9 @@ public class EventService {
                 .event(event)
                 .user(host)
                 .build();
+
         eventParticipantRepository.save(participant);
+
         return event;
     }
 

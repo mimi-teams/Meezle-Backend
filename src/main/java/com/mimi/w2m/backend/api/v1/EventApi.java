@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.api.v1;
 
+import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.service.*;
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.event.EventResponseDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
@@ -61,7 +61,7 @@ public class EventApi {
             summary = "이벤트 정보 반환",
             description = "[로그인 O, 인가 O] ID에 해당하는 이벤트 정보를 반환한다. 이벤트 참여자만 이용할 수 있다",
             responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @GetMapping(path = "/{id}")
+    @GetMapping("/{id}")
     public @Valid ApiCallResponse<EventResponseDto> get(
             @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
@@ -72,17 +72,16 @@ public class EventApi {
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
     }
 
-    @Operation(method = "POST",
-            summary = "새로운 이벤트 등록",
-            description = "[로그인 O, 인가 O] 새로운 이벤트를 등록한다. 가입한 이용자만 이용할 수 있다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @PostMapping(path = "")
-    public @Valid ApiCallResponse<EventResponseDto> post(
+    @Operation(summary = "새로운 이벤트 등록", description = "[인증] 새로운 이벤트를 등록한다. 가입한 이용자만 이용할 수 있다")
+    @Auth
+    @PostMapping("")
+    public @Valid ApiCallResponse<EventResponseDto> createEvent(
             @Valid @RequestBody EventRequestDto requestDto
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isValidLogin(loginInfo, loginInfo.loginId(), Role.USER);
-        final var event = eventService.createEvent(loginInfo.loginId(), requestDto);
+        final var currentUserInfo = authService.getCurrentUserInfo();
+
+        final var event = eventService.createEvent(currentUserInfo.userId(), requestDto);
+
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
     }
 
