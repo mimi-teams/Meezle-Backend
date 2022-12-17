@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 이벤트 참여 선택 가능한 시간
+ * 이벤트 참여 가능한 시간
  * ParticipleTime가 해당 엔티티의 추상형태이다.
  *
  * @author yeh35
@@ -21,8 +21,8 @@ import java.util.Set;
  */
 @Entity
 @Getter
-@Table(name = "event_selectable_participle_time")
-public class EventSelectableParticipleTime extends BaseTimeEntity {
+@Table(name = "event_participant_able_time")
+public class EventParticipantAbleTime extends BaseTimeEntity {
 
     @Id
     @Column(name = "event_selectable_participle_time_id")
@@ -38,22 +38,22 @@ public class EventSelectableParticipleTime extends BaseTimeEntity {
     @Column(name = "time_ranges", nullable = false)
     private Set<TimeRange> timeRanges;
 
-    @Comment("연관된 event")
-    @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "event_id", updatable = false, nullable = false)
-    private Event event;
+    @Comment("연관된 EventParticipant")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "event_participant_id", updatable = false, nullable = false)
+    private EventParticipant eventParticipant;
 
 
     @SuppressWarnings("unused")
-    protected EventSelectableParticipleTime() {
+    protected EventParticipantAbleTime() {
     }
 
     @SuppressWarnings("unused")
     @Builder
-    public EventSelectableParticipleTime(DayOfWeek week, Set<TimeRange> timeRanges, Event event) {
+    public EventParticipantAbleTime(DayOfWeek week, Set<TimeRange> timeRanges, EventParticipant eventParticipant) {
         this.week = week;
         this.timeRanges = timeRanges;
-        this.event = event;
+        this.eventParticipant = eventParticipant;
     }
 
     public ParticipleTime toParticipleTime() {
@@ -63,12 +63,12 @@ public class EventSelectableParticipleTime extends BaseTimeEntity {
                 .build();
     }
 
-    public static Set<EventSelectableParticipleTime> of(Event event, Set<ParticipleTime> participleTimeSet) {
-        final var resultSet = new HashSet<EventSelectableParticipleTime>(participleTimeSet.size());
+    public static Set<EventParticipantAbleTime> of(EventParticipant eventParticipant, Set<ParticipleTime> participleTimeSet) {
+        final var resultSet = new HashSet<EventParticipantAbleTime>(participleTimeSet.size());
 
         for (final var participleTime : participleTimeSet) {
-            resultSet.add(EventSelectableParticipleTime.builder()
-                    .event(event)
+            resultSet.add(EventParticipantAbleTime.builder()
+                    .eventParticipant(eventParticipant)
                     .week(participleTime.getWeek())
                     .timeRanges(participleTime.getRanges())
                     .build());
