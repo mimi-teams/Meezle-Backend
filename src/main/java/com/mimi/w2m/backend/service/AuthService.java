@@ -1,6 +1,8 @@
 package com.mimi.w2m.backend.service;
 
+import com.mimi.w2m.backend.config.constants.AttributeConstants;
 import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
 import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.config.exception.IllegalAccessException;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Formatter;
 import java.util.Objects;
@@ -26,6 +29,8 @@ public class AuthService {
     private final UserService userService;
     private final EventService eventService;
     private final EventParticipantService eventParticipantService;
+
+    private final HttpServletRequest request;
 
     /**
      * 적절한 이용자의 로그인인지 확인한다
@@ -79,6 +84,21 @@ public class AuthService {
             throw new EntityNotFoundException("[AuthService] There are no login users", "로그인한 이용자가 없습니다");
         }
         return info;
+    }
+
+    /**
+     * 현재 유저 정보 반환
+     *
+     * @author yeh35
+     * @since 2022-12-14
+     */
+    public CurrentUserInfo getCurrentUserInfo() {
+        Object attribute = request.getAttribute(AttributeConstants.CURRENT_USER);
+
+        if (attribute == null) {
+            throw new EntityNotFoundException("[AuthService] There are no login users", "로그인한 이용자가 없습니다");
+        }
+        return (CurrentUserInfo) attribute;
     }
 
     public void logout(HttpSession httpSession) {

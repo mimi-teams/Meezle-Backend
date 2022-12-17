@@ -25,9 +25,8 @@ public class UserRequestDto implements Serializable {
     @Size(min = 1, max = 20)
     @NotNull
     private String name;
-    @Schema(type = "String", description = "사용자 이메일", pattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
     @Email
-    @NotNull
+    @Schema(type = "String", description = "사용자 이메일", pattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
     private String email;
 
     @Builder
@@ -36,6 +35,7 @@ public class UserRequestDto implements Serializable {
         this.email = email;
     }
 
+    @SuppressWarnings("unused")
     protected UserRequestDto() {
     }
 

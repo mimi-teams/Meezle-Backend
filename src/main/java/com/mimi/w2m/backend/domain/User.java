@@ -53,14 +53,12 @@ public class User extends BaseTimeEntity {
         return this;
     }
 
-    public User updateName(String name) {
+    public void updateName(String name) {
         this.name = name;
-        return this;
     }
 
-    public User updateEmail(String email) {
+    public void updateEmail(String email) {
         this.email = email;
-        return this;
     }
 
     @Override

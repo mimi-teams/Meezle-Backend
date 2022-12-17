@@ -106,7 +106,6 @@ public class UserService {
             throw new EntityNotFoundException(msg);
         }
     }
-    // TODO: 2022/12/01 Email 을 변경 가능하도록 수정하기
 
     /**
      * 이용자 정보 변경하기. 현재 Email 을 변경할 수는 없다
@@ -117,6 +116,17 @@ public class UserService {
     @Transactional
     public User update(Long userId, UserRequestDto requestDto) throws EntityNotFoundException {
         final var user = get(userId);
-        return user.updateName(requestDto.getName());
+
+        user.updateName(requestDto.getName());
+
+        if (requestDto.getEmail() != null) {
+            final Optional<User> byEmail = userRepository.findByEmail(requestDto.getEmail());
+            if (byEmail.isPresent()) {
+                throw new InvalidValueException("이미 사용중인 이메일 입니다.");
+            }
+            user.updateEmail(requestDto.getEmail());
+        }
+
+        return user;
     }
 }
