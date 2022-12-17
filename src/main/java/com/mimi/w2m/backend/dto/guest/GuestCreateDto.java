@@ -1,7 +1,5 @@
 package com.mimi.w2m.backend.dto.guest;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.Guest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,17 +11,12 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * GuestRequestDto
- *
- * @author teddy
- * @version 1.0.0
- * @since 2022/11/17
- **/
+ * 게스트 생성에 사용되는 DTO
+ * @since 2022-12-17
+ * @author yeh35
+ */
 @Getter
-@Schema(title = "가입하지 않은 이용자의 요청 정보", description = "이용자의 이름과 비밀번호, 연관된 이벤트 ID를 받음",
-        requiredProperties = {"name", "password", "eventId"},
-        example = "{\"name\":\"guest\",\"password\":\"0308\",\"eventId\":0}")
-public class GuestRequestDto implements Serializable {
+public class GuestCreateDto implements Serializable {
     @Schema(type = "String", description = "이용자 이름", maxLength = 20)
     @Size(min = 1, max = 20)
     @NotNull
@@ -36,21 +29,17 @@ public class GuestRequestDto implements Serializable {
     @PositiveOrZero
     private Long eventId;
 
+    @SuppressWarnings("unused")
     @Builder
-    public GuestRequestDto(String name, String password, Long eventId) {
+    public GuestCreateDto(String name, String password, Long eventId) {
         this.name = name;
         this.password = password;
         this.eventId = eventId;
     }
 
-    protected GuestRequestDto() {
+
+    @SuppressWarnings("unused")
+    protected GuestCreateDto() {
     }
 
-    public Guest to(Event event, String salt, String hashedPw) {
-        return Guest.builder()
-                .name(name)
-                .password(hashedPw)
-                .event(event)
-                .build();
-    }
 }

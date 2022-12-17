@@ -2,12 +2,16 @@ package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import com.mimi.w2m.backend.config.interceptor.Auth;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.event.EventResponseDto;
+import com.mimi.w2m.backend.dto.guest.GuestCreateDto;
+import com.mimi.w2m.backend.dto.guest.GuestLoginRequest;
+import com.mimi.w2m.backend.dto.guest.GuestLoginResponse;
+import com.mimi.w2m.backend.dto.guest.GuestOneResponseDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantResponseDto;
-import com.mimi.w2m.backend.dto.user.UserResponseDto;
 import com.mimi.w2m.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,7 +30,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -102,62 +105,103 @@ public class EventApi {
         authService.isHost(currentUserInfo.userId(), id);
 
         //TODO 한 트렌젝션에서 처리 되도록 수정하자
-        eventParticipantService.deleteAll(eventParticipantService.getAll(id));
-        guestService.deleteAll(guestService.getAllInEvent(id));
-        eventService.deleteReal(id);
+//        eventParticipantService.deleteAll(eventParticipantService.getAll(id));
+//        guestService.deleteAll(guestService.getAllInEvent(id));
+        eventService.deleteNotReal(id);
 
         return ApiCallResponse.ofSuccess(null);
     }
 
-    @Operation(method = "GET",
-            summary = "이벤트 생성자 가져오기",
-            description = "[로그인 O, 인가 O] 이벤트의 생성자를 반환한다. 이벤트에 속한 참여자만 이용 가능하다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @GetMapping(path = "/{id}/host")
-    public @Valid ApiCallResponse<UserResponseDto> getHost(
-            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
+    @Operation(summary = "이벤트 게스트 로그인", description = "없는 유저의 경우 자동으로 등록된다.")
+    @PostMapping("/{eventId}/guests/login")
+    public @Valid ApiCallResponse<GuestLoginResponse> login(
+            @Parameter(description = "이벤트의 ID", required = true) @PositiveOrZero @NotNull @Valid @PathVariable Long eventId,
+            @Valid @RequestBody GuestLoginRequest requestBody
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isInEvent(loginInfo, id);
-        final var event = eventService.get(id);
-        return ApiCallResponse.ofSuccess(UserResponseDto.of(event.getHost()));
+        if (!guestService.isUsedGuestName(eventId, requestBody.getName())) {
+            final var createDto = GuestCreateDto.builder()
+                    .eventId(eventId)
+                    .name(requestBody.getName())
+                    .password(requestBody.getPassword())
+                    .build();
+            guestService.create(createDto);
+        }
+
+        final GuestLoginResponse loginResponse = guestService.login(eventId, requestBody);
+        return ApiCallResponse.ofSuccess(loginResponse);
     }
 
-    @Operation(method = "GET",
-            summary = "모든 참여자 가져오기",
-            description = "[로그인 O, 인가 O] 이벤트에 속한 모든 참여자를 반환한다. 이벤트에 속한 참여자만 이용 가능한다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @GetMapping(path = "/{id}/participants")
-    public @Valid ApiCallResponse<List<EventParticipantResponseDto>> getParticipants(
-            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
+    @Operation(summary = "[인증] 이벤트 게스트의 이벤트 참여")
+    @Auth(Role.GUEST)
+    @PostMapping("/{eventId}/guests/participate")
+    public @Valid ApiCallResponse<GuestOneResponseDto> guestParticipate(
+            @Parameter(description = "이벤트의 ID", required = true) @PositiveOrZero @NotNull @Valid @PathVariable Long eventId,
+            @Valid @RequestBody EventParticipantRequestDto requestDto
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isInEvent(loginInfo, id);
-        final var participants = eventParticipantService.getAll(id)
-                .stream()
-                .map(EventParticipantResponseDto::of)
-                .toList();
-        return ApiCallResponse.ofSuccess(participants);
+        final var currentUserInfo = authService.getCurrentUserInfo();
+
+        final var eventParticipantRequest = EventParticipantRequestDto.builder()
+                .eventId(eventId)
+                .ownerId(currentUserInfo.userId())
+                .ownerType(currentUserInfo.role())
+                .ableDaysAndTimes(requestDto.getAbleDaysAndTimes())
+                .build();
+
+        eventParticipantService.participateGuest(eventParticipantRequest);
+
+        return ApiCallResponse.ofSuccess(null);
     }
 
-    @Operation(method = "GET",
-            summary = "참여자 가져오기",
-            description = "[로그인 O, 인가 O] 이벤트에 속한 ID에 해당하는 참여자를 반환한다. 이벤트에 속한 참여자만 이용 가능한다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @GetMapping(path = "/{eventId}/participants/{id}")
-    public @Valid ApiCallResponse<EventParticipantResponseDto> getParticipant(
-            @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("eventId") Long eventId,
-            @Parameter(name = "id", description = "참여자의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
-    ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isInEvent(loginInfo, eventId);
-        final var participant = eventParticipantService.get(id);
-        return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
-    }
+    //TODO 필요 없는 API
+//    @Operation(method = "GET",
+//            summary = "이벤트 생성자 가져오기",
+//            description = "[로그인 O, 인가 O] 이벤트의 생성자를 반환한다. 이벤트에 속한 참여자만 이용 가능하다",
+//            responses = {@ApiResponse(useReturnTypeSchema = true)})
+//    @GetMapping(path = "/{id}/host")
+//    public @Valid ApiCallResponse<UserResponseDto> getHost(
+//            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
+//    ) {
+//        final var loginInfo = authService.getLoginInfo(httpSession);
+//        authService.isInEvent(loginInfo, id);
+//        final var event = eventService.get(id);
+//        return ApiCallResponse.ofSuccess(UserResponseDto.of(event.getHost()));
+//    }
+//
+//    @Operation(method = "GET",
+//            summary = "모든 참여자 가져오기",
+//            description = "[로그인 O, 인가 O] 이벤트에 속한 모든 참여자를 반환한다. 이벤트에 속한 참여자만 이용 가능한다",
+//            responses = {@ApiResponse(useReturnTypeSchema = true)})
+//    @GetMapping(path = "/{id}/participants")
+//    public @Valid ApiCallResponse<List<EventParticipantResponseDto>> getParticipants(
+//            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
+//    ) {
+//        final var loginInfo = authService.getLoginInfo(httpSession);
+//        authService.isInEvent(loginInfo, id);
+//        final var participants = eventParticipantService.getAll(id)
+//                .stream()
+//                .map(EventParticipantResponseDto::of)
+//                .toList();
+//        return ApiCallResponse.ofSuccess(participants);
+//    }
+//
+//    @Operation(method = "GET",
+//            summary = "참여자 가져오기",
+//            description = "[로그인 O, 인가 O] 이벤트에 속한 ID에 해당하는 참여자를 반환한다. 이벤트에 속한 참여자만 이용 가능한다",
+//            responses = {@ApiResponse(useReturnTypeSchema = true)})
+//    @GetMapping(path = "/{eventId}/participants/{id}")
+//    public @Valid ApiCallResponse<EventParticipantResponseDto> getParticipant(
+//            @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("eventId") Long eventId,
+//            @Parameter(name = "id", description = "참여자의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
+//    ) {
+//        final var loginInfo = authService.getLoginInfo(httpSession);
+//        authService.isInEvent(loginInfo, eventId);
+//        final var participant = eventParticipantService.get(id);
+//        return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
+//    }
 
     @Operation(method = "POST",
             summary = "이벤트에 참여자 등록하기",

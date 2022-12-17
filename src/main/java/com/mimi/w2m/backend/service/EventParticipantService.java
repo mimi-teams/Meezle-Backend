@@ -34,6 +34,39 @@ public class EventParticipantService {
     private final EventParticipantRepository eventParticipantRepository;
 
     /**
+     * 게스트 이벤트에 참가하기
+     *
+     * @author yeh35
+     * @since 2022-11-01
+     */
+    @Transactional
+    public EventParticipant participateGuest(EventParticipantRequestDto requestDto) throws InvalidValueException, EntityNotFoundException, EntityDuplicatedException {
+        final var formatter = new Formatter();
+        final var event = eventService.get(requestDto.getEventId());
+        return switch (requestDto.getOwnerType()) {
+            case USER -> {
+                final var user = userService.get(requestDto.getOwnerId());
+                final var other = eventParticipantRepository.findByUserInEvent(user, event);
+                if (other.isPresent()) {
+                    final var msg = formatter.format(
+                                    "[EventParticipantService] Entity Duplicated(event=%d, id=%d, " + "role=%s)", event.getId(),
+                                    user.getId(), Role.USER.getKey())
+                            .toString();
+                    throw new EntityDuplicatedException(msg);
+                } else {
+                    yield eventParticipantRepository.save(requestDto.to(event, user));
+                }
+            }
+            case GUEST -> {
+                final var msg = formatter.format("[EventParticipantService] Invalid Request(event=%d, role=%s)",
+                                event.getId(), Role.GUEST.getKey())
+                        .toString();
+                throw new InvalidValueException(msg);
+            }
+        };
+    }
+
+    /**
      * 이벤트 참여자 등록
      *
      * @author yeh35

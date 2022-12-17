@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public interface GuestRepository extends JpaRepository<Guest, Long> {
     @Query("SELECT g FROM Guest g WHERE g.name = :name and g.event = :event")
-    Optional<Guest> findByNameInEvent(
+    Optional<Guest> findByNameAndEvent(
             @Param("name") String name,
             @Param("event") Event event
     );
