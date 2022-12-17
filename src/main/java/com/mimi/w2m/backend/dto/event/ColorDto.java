@@ -34,6 +34,7 @@ public class ColorDto implements Serializable {
     @NotNull
     private Integer blue;
 
+    @SuppressWarnings("unused")
     @Builder
     public ColorDto(Integer red, Integer blue, Integer green) {
         this.red = red;
@@ -41,12 +42,13 @@ public class ColorDto implements Serializable {
         this.green = green;
     }
 
+    @SuppressWarnings("unused")
     protected ColorDto() {
     }
 
     public static ColorDto of(String string) {
-        if (!string.matches("^#[0-9a-f]{6}$")) {
-            throw new InvalidValueException("", "올바른 색상정보가 아닙니다");
+        if (!string.matches("^#[0-9a-fA-F]{6}$")) {
+            throw new InvalidValueException("string = " + string, "올바른 색상정보가 아닙니다");
         }
 
         final int red = Integer.parseInt(string.substring(1, 3), 16);
@@ -74,6 +76,6 @@ public class ColorDto implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("#%2X%2X%2X", red, blue, green);
+        return String.format("#%02x%02x%02x", red, blue, green);
     }
 }

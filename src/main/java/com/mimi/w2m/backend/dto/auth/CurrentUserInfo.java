@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @since 2022-12-11
  */
 public record CurrentUserInfo(
-        Long loginId,
+        Long userId,
         Role role
 ) implements Serializable {
 

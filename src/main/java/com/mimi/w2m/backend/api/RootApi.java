@@ -4,7 +4,6 @@ import com.mimi.w2m.backend.config.constants.AttributeConstants;
 import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
-import com.mimi.w2m.backend.service.AuthService;
 import com.mimi.w2m.backend.dto.security.CurrentUserInfoResponseDto;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,16 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @Tag(name = "Root('/') Api", description = "로그인이나 로그아웃 수행 시, Redirect 되는 URI. 현재 로그인한 이용자 정보를 담고 있다")
 @RequiredArgsConstructor
 @RequestMapping(path = "/")
 @RestController
 public class RootApi {
-    private final AuthService authService;
-    private final HttpSession httpSession;
-
     private final HttpServletRequest request;
 
     @Auth
@@ -39,7 +34,7 @@ public class RootApi {
         final var currentUserInfo = (CurrentUserInfo) request.getAttribute(AttributeConstants.CURRENT_USER);
 
         return ApiCallResponse.ofSuccess(CurrentUserInfoResponseDto.builder()
-                .id(currentUserInfo.loginId())
+                .id(currentUserInfo.userId())
                 .role(Role.USER)
                 .build());
     }

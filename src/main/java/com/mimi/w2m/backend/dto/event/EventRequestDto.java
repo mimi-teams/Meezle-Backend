@@ -50,9 +50,11 @@ public class EventRequestDto implements Serializable {
     @Size(max = 1000)
     private String description;
 
+    @SuppressWarnings("unused")
     protected EventRequestDto() {
     }
 
+    @SuppressWarnings("unused")
     @Builder
     public EventRequestDto(String title,
                            @Nullable Set<ParticipleTime> selectableParticipleTimes,
@@ -71,7 +73,7 @@ public class EventRequestDto implements Serializable {
                 .host(user)
                 .selectableDaysAndTimes(selectableParticipleTimes)
                 .dDay(dDay)
-                .color(color.to())
+                .color(color)
                 .description(description)
                 .build();
     }

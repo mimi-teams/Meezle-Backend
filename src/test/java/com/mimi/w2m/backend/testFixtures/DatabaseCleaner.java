@@ -26,7 +26,7 @@ public class DatabaseCleaner implements InitializingBean {
     private Set<String> tableNames;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         final var tableSet = new HashSet<String>();
         entityManager.unwrap(Session.class)
                 .doWork(connection -> {
@@ -42,6 +42,7 @@ public class DatabaseCleaner implements InitializingBean {
         tableNames = tableSet;
     }
 
+    @SuppressWarnings("SqlDialectInspection")
     @Transactional
     public void cleanUp() {
         entityManager.unwrap(Session.class)
@@ -50,7 +51,7 @@ public class DatabaseCleaner implements InitializingBean {
                     final var statement = connection.createStatement();
                     statement.executeUpdate("SET @@foreign_key_checks = 0;");
                     for (final String tableName : tableNames) {
-                        statement.executeUpdate("DROP TABLE IF EXISTS " + tableName);
+                        statement.executeUpdate("DELETE FROM " + tableName);
                     }
                     statement.executeUpdate("SET @@foreign_key_checks = 1;");
                 });

@@ -1,27 +1,22 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.service.*;
-import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.interceptor.Auth;
+import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.event.EventResponseDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantResponseDto;
 import com.mimi.w2m.backend.dto.user.UserResponseDto;
-import com.mimi.w2m.backend.dto.base.ApiCallResponse;
-import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +26,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
-import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,72 +51,62 @@ public class EventApi {
     private final AuthService authService;
     private final HttpSession httpSession;
 
-    @Operation(method = "GET",
-            summary = "이벤트 정보 반환",
-            description = "[로그인 O, 인가 O] ID에 해당하는 이벤트 정보를 반환한다. 이벤트 참여자만 이용할 수 있다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @GetMapping(path = "/{id}")
+    @Operation(summary = "이벤트 정보 반환", description = "ID에 해당하는 이벤트 정보를 반환한다. 이벤트 참여자만 이용할 수 있다")
+    @GetMapping("/{id}")
     public @Valid ApiCallResponse<EventResponseDto> get(
             @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isInEvent(loginInfo, id);
         final var event = eventService.get(id);
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
     }
 
-    @Operation(method = "POST",
-            summary = "새로운 이벤트 등록",
-            description = "[로그인 O, 인가 O] 새로운 이벤트를 등록한다. 가입한 이용자만 이용할 수 있다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @PostMapping(path = "")
-    public @Valid ApiCallResponse<EventResponseDto> post(
+    @Operation(summary = "[인증] 새로운 이벤트 등록", description = "새로운 이벤트를 등록한다. 가입한 이용자만 이용할 수 있다")
+    @Auth
+    @PostMapping("")
+    public @Valid ApiCallResponse<EventResponseDto> createEvent(
             @Valid @RequestBody EventRequestDto requestDto
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isValidLogin(loginInfo, loginInfo.loginId(), Role.USER);
-        final var event = eventService.createEvent(loginInfo.loginId(), requestDto);
+        final var currentUserInfo = authService.getCurrentUserInfo();
+
+        final var event = eventService.createEvent(currentUserInfo.userId(), requestDto);
+
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
     }
 
-    @Operation(method = "PATCH",
-            summary = "이벤트 정보 수정",
-            description = "[로그인 O, 인가 O] ID에 해당하는 이벤트 정보를 수정한다. 이벤트 생성자만 수정 가능한다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
+    @Operation(summary = "[인증] 이벤트 정보 수정", description = "ID에 해당하는 이벤트 정보를 수정한다. 이벤트 생성자만 수정 가능한다")
+    @Auth
     @PatchMapping(path = "/{id}")
     public @Valid ApiCallResponse<EventResponseDto> patch(
             @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
             @Valid @RequestBody EventRequestDto requestDto
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isHost(loginInfo, id);
+        final var currentUserInfo = authService.getCurrentUserInfo();
+        authService.isHost(currentUserInfo.userId(), id);
+
         final var event = eventService.modifyEvent(id, requestDto);
+
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event));
     }
 
-    @Operation(method = "DELETE",
-            summary = "이벤트 삭제",
-            description = "[로그인 O, 인가 O] ID에 해당하는 이벤트를 삭제한다. 이벤트 생성자만 가능하며, 삭제 시 Event 와 연관된 정보가 모두 삭제된다. 삭제 후, " +
-                    "'/'로 Redirect 된다",
-            responses = {@ApiResponse(description = "'/'로 Redirect",
-                    content = {@Content(schema = @Schema(description = "GET '/'"))})})
+    @Operation(summary = "[인증]이벤트 삭제",
+            description = "ID에 해당하는 이벤트를 삭제한다. 이벤트 생성자만 가능하며, 삭제 시 Event 와 연관된 정보가 모두 삭제된다. 삭제 후 처리는 클라이언트에서 해주세요")
+    @Auth
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(
+    public ApiCallResponse<?> delete(
             @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isHost(loginInfo, id);
+        final var currentUserInfo = authService.getCurrentUserInfo();
+        authService.isHost(currentUserInfo.userId(), id);
 
+        //TODO 한 트렌젝션에서 처리 되도록 수정하자
         eventParticipantService.deleteAll(eventParticipantService.getAll(id));
         guestService.deleteAll(guestService.getAllInEvent(id));
         eventService.deleteReal(id);
 
-        final var headers = new HttpHeaders();
-        headers.setLocation(URI.create("/"));
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+        return ApiCallResponse.ofSuccess(null);
     }
 
     @Operation(method = "GET",
@@ -185,8 +169,9 @@ public class EventApi {
             @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
             @Valid @RequestBody EventParticipantRequestDto requestDto
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isHost(loginInfo, id);
+        final var currentUserInfo = authService.getCurrentUserInfo();
+        authService.isHost(currentUserInfo.userId(), id);
+
         final var participant = eventParticipantService.create(requestDto);
         return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
     }
@@ -223,8 +208,9 @@ public class EventApi {
             @NotNull @Pattern(regexp = "^(calculate|modify)$") @Valid @RequestParam String mode,
             @RequestBody @Nullable @Valid EventParticipantRequestDto requestDto
     ) {
-        final var loginInfo = authService.getLoginInfo(httpSession);
-        authService.isHost(loginInfo, id);
+        final var currentUserInfo = authService.getCurrentUserInfo();
+        authService.isHost(currentUserInfo.userId(), id);
+
         if (Objects.equals(mode, "calculate")) {
             final var event = eventParticipantService.calculateSharedTime(id);
             return ApiCallResponse.ofSuccess(EventResponseDto.of(event));

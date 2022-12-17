@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.auth.LoginSuccessResponse;
 import com.mimi.w2m.backend.dto.auth.OAauth2AuthorizationResponse;
 import com.mimi.w2m.backend.config.interceptor.JwtHandler;
@@ -55,7 +56,7 @@ public class AuthApi {
             @RequestParam String code
     ) {
         final User user = oauth2Service.afterAuthorization(OAuth2PlatformType.KAKAO, code);
-        final String token = jwtHandler.createToken(user.getId(), user.getRole());
+        final String token = jwtHandler.createToken(user.getId(), Role.USER);
 
         return ApiCallResponse.ofSuccess(
                 LoginSuccessResponse.builder()
