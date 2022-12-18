@@ -27,9 +27,6 @@ public class Guest extends BaseTimeEntity {
     @Comment("참여자의 이름")
     @Column(name = "name", length = 20, nullable = false, columnDefinition = "VARCHAR(20)")
     private String name;
-    @Comment("Salt")
-    @Column(name = "salt", length = 200)
-    private String salt;
 
     @Comment("참여자 비밀번호(없어도 가능!)")
     @Column(name = "password")
@@ -41,10 +38,9 @@ public class Guest extends BaseTimeEntity {
     private Event event;
 
     @Builder
-    public Guest(String name, String password, String salt, Event event) {
+    public Guest(String name, String password, Event event) {
         this.name = name;
         this.password = password;
-        this.salt = salt;
         this.event = event;
     }
 
@@ -57,7 +53,7 @@ public class Guest extends BaseTimeEntity {
 
     public Guest update(String name, String password, String salt) {
         updateName(name);
-        return updatePassword(password, salt);
+        return updatePassword(password);
     }
 
     public Guest updateName(String name) {
@@ -65,9 +61,8 @@ public class Guest extends BaseTimeEntity {
         return this;
     }
 
-    public Guest updatePassword(String password, String salt) {
+    public Guest updatePassword(String password) {
         this.password = password;
-        this.salt = salt;
         return this;
     }
 
@@ -92,6 +87,6 @@ public class Guest extends BaseTimeEntity {
     public String toString() {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
                 ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "name = " +
-                getName() + ", " + "salt = " + getSalt() + ", " + "password = " + getPassword() + ")";
+                getName() + ", " + "password = " + getPassword() + ")";
     }
 }

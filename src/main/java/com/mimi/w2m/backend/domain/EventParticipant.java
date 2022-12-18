@@ -1,15 +1,9 @@
 package com.mimi.w2m.backend.domain;
 
-import com.mimi.w2m.backend.domain.type.ParticipleTime;
-import com.mimi.w2m.backend.converter.db.SetParticipleTimeConverter;
-import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * EventParticipableTime
@@ -20,19 +14,19 @@ import java.util.Set;
  **/
 @Entity
 @Getter
-@Table(name = "event_participant", uniqueConstraints = {@UniqueConstraint(columnNames = {"event_id", "user_id"}),
-        @UniqueConstraint(columnNames = {"event_id", "guest_id"})})
+@Table(
+        name = "event_participant",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"event_id", "user_id"}),
+                @UniqueConstraint(columnNames = {"event_id", "guest_id"})
+        }
+)
 public class EventParticipant {
 
     @Id
     @Column(name = "event_participant_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Comment("참여 가능한 시간")
-    @Convert(converter = SetParticipleTimeConverter.class)
-    @Column(name = "able_days_and_times")
-    Set<ParticipleTime> ableDaysAndTimes;
 
     @Comment("연관된 event")
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)
@@ -52,38 +46,24 @@ public class EventParticipant {
     protected EventParticipant() {
     }
 
-    @Builder
-    public EventParticipant(Set<ParticipleTime> ableDaysAndTimes, Event event, User user, Guest guest) {
-        this.ableDaysAndTimes = ableDaysAndTimes;
+
+    protected EventParticipant(Event event, User user, Guest guest) {
         this.event = event;
         this.user = user;
         this.guest = guest;
     }
 
-    public EventParticipant update(Set<ParticipleTime> ableDaysAndTimes) {
-        this.ableDaysAndTimes = ableDaysAndTimes;
-        return this;
+    /**
+     * 유저가 이벤트 참여하는 경우
+     */
+    public static EventParticipant ofUser(Event event, User user) {
+        return new EventParticipant(event, user, null);
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        EventParticipant that = (EventParticipant) o;
-        return id != null && Objects.equals(id, that.id);
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + "id = " + id + ", " + "ableDaysAndTimes = " + ableDaysAndTimes + ")";
+    /**
+     * 게스트가 이벤트 참여하는 경우
+     */
+    public static EventParticipant ofGuest(Event event, Guest guest) {
+        return new EventParticipant(event, null, guest);
     }
 }

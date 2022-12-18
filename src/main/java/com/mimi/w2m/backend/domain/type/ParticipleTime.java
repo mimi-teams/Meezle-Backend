@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Objects;
@@ -28,32 +27,30 @@ public class ParticipleTime {
     @Schema(type = "String", description = "월요일(MONDAY) - 일요일(SUNDAY)", example = "MONDAY",
             allowableValues = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", " SATURDAY", "SUNDAY"})
     @NotNull
-    private final DayOfWeek day;
+    private final DayOfWeek week;
     @Schema(type = "Array", description = "참여가능한 시작시간-종료시간의 리스트", example = "[10:00:00-12:00:00,13:00:00-14:00:00]")
     @NotNull
     private final Set<TimeRange> ranges;
 
-    public static ParticipleTime of(String participleTimeStr) throws InvalidValueException {
-        try {
-            final var parsedStrs = participleTimeStr.split("\\[T\\]");
-            if (parsedStrs.length != 2) {
-                throw new IOException();
-            }
-            final var day = DayOfWeek.valueOf(parsedStrs[0]);
-            final var ranges = new HashSet<TimeRange>();
-            for (String s : parsedStrs[1].split("\\|")) {
-                TimeRange of = TimeRange.of(s);
-                ranges.add(of);
-            }
-            return new ParticipleTime(day, ranges);
-        } catch (Exception e) {
+    public static ParticipleTime of(String participleTimeStr) {
+        final var parsedStrs = participleTimeStr.split("\\[T]");
+        if (parsedStrs.length != 2) {
             throw new InvalidValueException("Invalid ParticipleTime : " + participleTimeStr, "유효하지 않은 참여 가능한 시간 형식");
         }
+
+        final var day = DayOfWeek.valueOf(parsedStrs[0]);
+        final var ranges = new HashSet<TimeRange>();
+        for (String s : parsedStrs[1].split("\\|")) {
+            TimeRange of = TimeRange.of(s);
+            ranges.add(of);
+        }
+
+        return new ParticipleTime(day, ranges);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(day, ranges);
+        return Objects.hash(week, ranges);
     }
 
     @Override
@@ -74,7 +71,7 @@ public class ParticipleTime {
     @Override
     public String toString() {
         final var builder = new StringBuilder();
-        final var str = builder.append(day.name())
+        final var str = builder.append(week.name())
                 .append("[T]");
         ranges.forEach(range -> builder.append(range.toString())
                 .append("|"));

@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.dto.guest;
+package com.mimi.w2m.backend.dto.participant.guest;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.Guest;
@@ -49,7 +49,6 @@ public class GuestRequestDto implements Serializable {
     public Guest to(Event event, String salt, String hashedPw) {
         return Guest.builder()
                 .name(name)
-                .salt(salt)
                 .password(hashedPw)
                 .event(event)
                 .build();

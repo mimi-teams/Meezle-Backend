@@ -1,59 +1,64 @@
 package com.mimi.w2m.backend.dto.participant;
 
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
-import com.mimi.w2m.backend.domain.type.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Set;
 
 /**
- * EventParticipantRequestDto
- *
- * @author teddy
- * @version 1.0.0
- * @since 2022/11/17
- **/
+ * 게스트 이벤트 참여하기
+ * 
+ * @since 2022-12-17
+ * @author yeh35
+ */
 @Getter
-@Schema(title = "Event 참여자에 대한 요청 정보", description = "참여자 생성이나 업데이트에 필요한 정보를 받음",
-        requiredProperties = {"ableDaysAndTimes", "eventId", "ownerId", "ownerType"})
-public class EventParticipantRequestDto implements Serializable {
-    @Schema(title = "Event 의 ID", type = "Integer")
+@Schema(title = "게스트가 이벤트 참여요청", description = "")
+public class GuestEventParticipantRequestDto implements Serializable {
+    @Schema(title = "Event 의 ID")
     @NotNull
     @PositiveOrZero
     private Long eventId;
 
-    @Schema(title = "참가자의 실제 ID")
+    @Schema(title = "게스트 이름")
     @NotNull
-    @PositiveOrZero
-    private Long ownerId;
+    @NotBlank
+    private String guestName;
 
-    @Schema(title = "참가자의 실제 유형")
+    @Schema(title = "게스트 비밀번호")
     @NotNull
-    private Role ownerType;
+    @NotBlank
+    private String guestPassword;
 
     @Schema(title = "참여자가 선택한 시간", description = "참여자가 선택한 시간 정보를 받음(null = 모든 선택 가능한 시간이 가능하다고 가정)")
     @Nullable
     @Valid
     private Set<ParticipleTime> ableDaysAndTimes;
 
+
     @SuppressWarnings("unused")
-    protected EventParticipantRequestDto() {
+    protected GuestEventParticipantRequestDto() {
     }
 
     @SuppressWarnings("unused")
     @Builder
-    public EventParticipantRequestDto(Long eventId, Long ownerId, Role ownerType,
-                                      @Nullable Set<ParticipleTime> ableDaysAndTimes) {
+    public GuestEventParticipantRequestDto(
+            Long eventId,
+            String guestName,
+            String guestPassword,
+            @Nullable Set<ParticipleTime> ableDaysAndTimes
+    ) {
         this.eventId = eventId;
-        this.ownerId = ownerId;
-        this.ownerType = ownerType;
+        this.guestName = guestName;
+        this.guestPassword = guestPassword;
         this.ableDaysAndTimes = ableDaysAndTimes;
     }
+
 }

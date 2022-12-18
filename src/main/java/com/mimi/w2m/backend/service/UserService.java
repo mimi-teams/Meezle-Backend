@@ -61,17 +61,17 @@ public class UserService {
      **/
     @Transactional
     public void deleteReal(Long userId) throws EntityNotFoundException {
-        var user = get(userId);
+        var user = getUser(userId);
         userRepository.delete(user);
     }
 
     /**
      * 가입된 이용자 정보 가져오기
      *
-     * @author paul
+     * @author yeh35
      * @since 2022-11-01
      */
-    public User get(Long id) throws EntityNotFoundException {
+    public User getUser(Long id) throws EntityNotFoundException {
         final var user = userRepository.findById(id);
         if (user.isPresent()) {
             return user.get();
@@ -91,7 +91,7 @@ public class UserService {
      **/
     @Transactional
     public void deleteNotReal(Long userId) throws EntityNotFoundException {
-        var user = get(userId);
+        var user = getUser(userId);
         user.delete();
     }
 
@@ -115,7 +115,7 @@ public class UserService {
      **/
     @Transactional
     public User update(Long userId, UserRequestDto requestDto) throws EntityNotFoundException {
-        final var user = get(userId);
+        final var user = getUser(userId);
 
         user.updateName(requestDto.getName());
 

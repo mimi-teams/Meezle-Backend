@@ -5,6 +5,10 @@ import com.mimi.w2m.backend.W2mApplication;
 import com.mimi.w2m.backend.config.interceptor.JwtHandler;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.dto.participant.guest.GuestCreateDto;
+import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
+import com.mimi.w2m.backend.dto.participant.guest.GuestLoginResponse;
+import com.mimi.w2m.backend.service.GuestService;
 import com.mimi.w2m.backend.testFixtures.DatabaseCleaner;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +41,9 @@ public abstract class End2EndTest {
     @Autowired
     protected JwtHandler jwtHandler;
 
+    @Autowired
+    protected GuestService guestService;
+
     @AfterEach
     protected void cleanup() {
         databaseCleaner.cleanUp();
@@ -50,5 +57,15 @@ public abstract class End2EndTest {
      */
     protected String login(User user) {
         return jwtHandler.createToken(user.getId(), Role.USER);
+    }
+
+    protected String loginGuest(GuestCreateDto guestCreateDto) {
+        guestService.create(guestCreateDto);
+        final GuestLoginResponse loginResponse = guestService.login(guestCreateDto.getEventId(), GuestLoginRequest.builder()
+                .name(guestCreateDto.getName())
+                .password(guestCreateDto.getPassword())
+                .build());
+
+        return loginResponse.token();
     }
 }

@@ -1,13 +1,12 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.repository.EventParticipantRepository;
-import com.mimi.w2m.backend.repository.EventRepository;
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.EventParticipant;
-import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.EventSelectableParticipleTime;
+import com.mimi.w2m.backend.domain.type.ParticipleTime;
+import com.mimi.w2m.backend.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.repository.EventRepository;
+import com.mimi.w2m.backend.repository.EventSelectableParticipleTimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 이벤트 처리를 책임지는 서비스
@@ -29,10 +30,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventService {
+    private final Logger logger = LoggerFactory.getLogger(EventService.class.getName());
     private final UserService userService;
     private final EventRepository eventRepository;
-    private final EventParticipantRepository eventParticipantRepository;
-    private final Logger logger = LoggerFactory.getLogger(EventService.class.getName());
+    private final EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository;
 
     /**
      * 이벤트 생성(Host 는 EventParticipant 에 추가된다)
@@ -42,14 +43,11 @@ public class EventService {
      */
     @Transactional
     public Event createEvent(Long hostId, EventRequestDto requestDto) throws EntityNotFoundException {
-        final var host = userService.get(hostId);
+        final var host = userService.getUser(hostId);
         final var event = eventRepository.save(requestDto.to(host));
-        final var participant = EventParticipant.builder()
-                .event(event)
-                .user(host)
-                .build();
 
-        eventParticipantRepository.save(participant);
+        final var selectableParticipleTimes = EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes());
+        eventSelectableParticipleTimeRepository.saveAll(selectableParticipleTimes);
 
         return event;
     }
@@ -62,68 +60,57 @@ public class EventService {
      */
     @Transactional
     public Event modifyEvent(Long eventId, EventRequestDto requestDto) throws EntityNotFoundException {
-        var event = get(eventId);
-        return event.update(
+        var event = getEvent(eventId);
+        event.update(
                 requestDto.getTitle(),
                 requestDto.getDDay(),
-                requestDto.getSelectableParticipleTimes(),
                 requestDto.getColor(),
                 requestDto.getDescription()
         );
+
+        eventSelectableParticipleTimeRepository.deleteByEvent(event);
+        eventSelectableParticipleTimeRepository.saveAll(EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes()));
+
+        return event;
     }
 
     /**
      * @author yeh35
      * @since 2022-11-05
      */
-    public Event get(Long id) throws EntityNotFoundException {
-        final var event = eventRepository.findById(id);
-        if (event.isPresent()) {
-            return event.get();
-        } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[EventService] Entity Not Found(id=%d)", id)
-                    .toString();
-            throw new EntityNotFoundException(msg);
-        }
+    public Event getEvent(Long id) throws EntityNotFoundException {
+        return eventRepository.findById(id).orElseThrow(() -> {
+            throw new EntityNotFoundException(String.format("[EventService] Entity Not Found(id=%d)", id));
+        });
     }
 
     /**
-     * Host 가 직접 event 의 참여 시간을 수정한다
-     *
-     * @author teddy
-     * @since 2022/11/21
-     **/
-    @Transactional
-    public Event modifySelectedDaysAndTimesDirectly(EventParticipantRequestDto requestDto)
-            throws EntityNotFoundException, InvalidValueException {
-        final var event = get(requestDto.getEventId());
-        event.setSelectedDaysAndTimes(requestDto.getAbleDaysAndTimes());
-        return event;
+     * @author yeh35
+     * @since 2022-11-05
+     */
+    public Set<ParticipleTime> getEventSelectableParticipleTimes(Long eventId) throws EntityNotFoundException {
+        final var event = getEvent(eventId);
+
+        return eventSelectableParticipleTimeRepository.findByEvent(event)
+                .stream()
+                .map(EventSelectableParticipleTime::toParticipleTime)
+                .collect(Collectors.toSet());
+
     }
 
+
     /**
-     * 이벤트 삭제하기(진짜)
+     * 이벤트 삭제하기,
      *
      * @author teddy
      * @since 2022/11/27
      **/
     @Transactional
-    public void deleteReal(Long eventId) throws EntityNotFoundException {
-        final var event = get(eventId);
+    public void delete(Long eventId) throws EntityNotFoundException {
+        final var event = getEvent(eventId);
+
+        eventSelectableParticipleTimeRepository.deleteByEvent(event);
         eventRepository.delete(event);
-    }
-
-    /**
-     * 이벤트 삭제하기(deletedAt 설정하기)
-     *
-     * @author teddy
-     * @since 2022/11/27
-     **/
-    @Transactional
-    public void deleteNotReal(Long eventId) throws EntityNotFoundException {
-        final var event = get(eventId);
-        event.delete();
     }
 
     /**
@@ -156,7 +143,7 @@ public class EventService {
      * @since 2022/11/21
      **/
     public List<Event> getAllByHost(Long hostId) throws EntityNotFoundException {
-        final var user = userService.get(hostId);
+        final var user = userService.getUser(hostId);
         final var events = eventRepository.findAllByHost(user);
         if (events.isEmpty()) {
             final var formatter = new Formatter();

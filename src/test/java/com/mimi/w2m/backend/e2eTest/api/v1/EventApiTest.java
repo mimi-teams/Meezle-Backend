@@ -5,14 +5,19 @@ import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
+import com.mimi.w2m.backend.service.GuestService;
 import com.mimi.w2m.backend.testFixtures.EventTestFixture;
+import com.mimi.w2m.backend.testFixtures.GuestTestFixture;
 import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Set;
 
@@ -25,9 +30,10 @@ public class EventApiTest extends End2EndTest {
 
     @Autowired
     protected UserRepository userRepository;
-
     @Autowired
     protected EventRepository eventRepository;
+    @Autowired
+    protected GuestService guestService;
 
     @Test
     void 이벤트_등록() throws Exception {
@@ -59,10 +65,9 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(requestDto.getTitle()))
-                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
-                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
         ;
     }
 
@@ -83,10 +88,10 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(event.getTitle()))
-                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
-                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.color").value(event.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
+                .andExpect(jsonPath("$.data.eventParticipants").exists())
         ;
     }
 
@@ -123,10 +128,9 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(requestDto.getTitle()))
-                .andExpect(jsonPath("$.data.event.selectableParticipleTimes").exists())
-                .andExpect(jsonPath("$.data.event.selectedParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
         ;
     }
 
@@ -151,4 +155,90 @@ public class EventApiTest extends End2EndTest {
         ;
     }
 
+    @Test
+    void 이벤트_게스트_로그인_DB에_없는_경우() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+
+        final var loginRequest = GuestLoginRequest.builder()
+                .name("테스트 게스트")
+                .password("1234")
+                .build();
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/events/{eventId}/guests/login", event.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").value(loginRequest.getName()))
+                .andExpect(jsonPath("$.data.token").exists())
+        ;
+    }
+
+    @Test
+    void 이벤트_게스트_로그인() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        final var guestCreateDto = GuestTestFixture.createGuestCreateDto(event);
+        guestService.create(guestCreateDto);
+
+        final var loginRequest = GuestLoginRequest.builder()
+                .name(guestCreateDto.getName())
+                .password(guestCreateDto.getPassword())
+                .build();
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/events/{eventId}/guests/login", event.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").value(guestCreateDto.getName()))
+                .andExpect(jsonPath("$.data.token").exists())
+        ;
+    }
+
+    @Test
+    void 이벤트_게스트_이벤트_참여() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        final var guestCreateDto = GuestTestFixture.createGuestCreateDto(event);
+        String token = loginGuest(guestCreateDto);
+
+
+        final var request = new EventParticipantRequest(Set.of(
+                ParticipleTime.of("MONDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                ParticipleTime.of("TUESDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                ParticipleTime.of("THURSDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|")
+        ));
+
+        //when & then
+        mockMvc.perform(
+                        post("/v1/events/{eventId}/guests/participate", event.getId())
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+        ;
+    }
 }

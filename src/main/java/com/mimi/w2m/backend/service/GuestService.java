@@ -1,24 +1,22 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.repository.EventParticipantRepository;
-import com.mimi.w2m.backend.repository.GuestRepository;
-import com.mimi.w2m.backend.domain.type.Role;
-import com.mimi.w2m.backend.domain.EventParticipant;
-import com.mimi.w2m.backend.domain.Guest;
-import com.mimi.w2m.backend.dto.guest.GuestRequestDto;
-import com.mimi.w2m.backend.dto.security.LoginInfo;
-import com.mimi.w2m.backend.config.exception.EntityDuplicatedException;
 import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.config.interceptor.JwtHandler;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.Guest;
+import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.dto.participant.guest.GuestCreateDto;
+import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
+import com.mimi.w2m.backend.dto.participant.guest.GuestLoginResponse;
+import com.mimi.w2m.backend.repository.GuestRepository;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.utility.RandomString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.util.Formatter;
-import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Guest 를 관리하는 서비스
@@ -32,35 +30,12 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class GuestService {
     private final GuestRepository guestRepository;
-    private final EventParticipantRepository eventParticipantRepository;
     private final EventService eventService;
-    private final HttpSession httpSession;
 
-    public List<Guest> getAllInEvent(Long eventId) throws EntityNotFoundException {
-        final var event = eventService.get(eventId);
-        final var guests = guestRepository.findAllByEvent(event);
-        if (guests.isEmpty()) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[GuestService] Entity Not Found(event=%d)", eventId)
-                    .toString();
-            throw new EntityNotFoundException(msg);
-        } else {
-            return guests;
-        }
-    }
+    private final JwtHandler jwtHandler;
 
-    /**
-     * Guest 정보 수정하기
-     *
-     * @author teddy
-     * @since 2022/12/01
-     **/
-    @Transactional
-    public Guest update(Long id, GuestRequestDto requestDto) throws EntityNotFoundException, EntityDuplicatedException {
-        final var guest = get(id);
-        updateName(guest, requestDto.getName(), requestDto.getEventId());
-        return updatePassword(guest, requestDto.getPassword());
-    }
+    private final PasswordEncoder passwordEncoder;
+
 
     /**
      * 참여자 가져오기
@@ -68,7 +43,7 @@ public class GuestService {
      * @author yeh35
      * @since 2022-11-01
      */
-    public Guest get(Long id) throws EntityNotFoundException {
+    public Guest getGuest(Long id) throws EntityNotFoundException {
         final var guest = guestRepository.findById(id);
         if (guest.isPresent()) {
             return guest.get();
@@ -81,122 +56,59 @@ public class GuestService {
     }
 
     /**
-     * update() 에 엮여있는 method 이므로 동일한 Transaction 이어야 한다
-     *
-     * @author teddy
-     * @since 2022/11/19
-     **/
-    protected Guest updateName(Guest guest, String name, Long eventId)
-            throws EntityNotFoundException, EntityDuplicatedException {
-        final var event = eventService.get(eventId);
-        if (Objects.equals(guest.getName(), name)) {
-            return guest;
-        } else {
-            final var other = guestRepository.findByNameInEvent(name, event);
-            if (other.isEmpty()) {
-                return guest.updateName(name);
-            } else {
-                final var formatter = new Formatter();
-                final var msg = formatter.format("[GuestService] Entity Duplicated(name=%s, event=%d)", name, eventId)
-                        .toString();
-                throw new EntityDuplicatedException(msg);
-            }
-        }
+     * 사용중인 유저 이름인지
+     * @return 사용중이라면 true, 아니라면 false
+     */
+    public boolean isUsedGuestName(Long eventId, String guestName) {
+        final Event event = eventService.getEvent(eventId);
+        Optional<Guest> byNameAndEvent = guestRepository.findByNameAndEvent(guestName, event);
+        return byNameAndEvent.isPresent();
     }
 
     /**
-     * Salt 와 HashedPw 를 만들어 저장한다
-     *
-     * @author teddy
-     * @since 2022/11/19
-     **/
-    protected Guest updatePassword(Guest guest, String password) {
-        final var salt = generateSalt(Guest.getSaltLength());
-        final var hashedPw = generateHashedPw(salt, password);
-        return guest.updatePassword(hashedPw, salt);
-    }
-
-    private String generateSalt(Integer length) {
-        return RandomString.make(length);
-    }
-
-    private String generateHashedPw(String salt, String password) {
-        StringBuilder hashedPw = password == null ? null : new StringBuilder(password);
-        final var pepper = 5;
-        for (int i = 0; i < pepper; i++) {
-            hashedPw = (hashedPw == null ? new StringBuilder("null") : hashedPw).append(salt);
-            hashedPw = new StringBuilder(String.valueOf(hashedPw.toString()
-                    .hashCode()));
-        }
-        return hashedPw.toString();
-    }
-
-    /**
-     * 참여자 로그인 처리하기(참여자 정보가 없다면, 새롭게 생성한다). Session 에 ParticipantSession 정보를 저장한다
-     *
-     * @author teddy
-     * @since 2022/11/19
-     **/
-    @Transactional
-    public Guest login(GuestRequestDto requestDto)
-            throws EntityDuplicatedException, EntityNotFoundException, InvalidValueException {
-        final var event = eventService.get(requestDto.getEventId());
-        final var guest = guestRepository.findByNameInEvent(requestDto.getName(), event)
-                .orElse(create(requestDto));
-        final var storedPw = guest.getPassword();
-        final var storedSalt = guest.getSalt();
-        final var receivedPw = generateHashedPw(storedSalt, requestDto.getPassword());
-        if (storedPw.equals(receivedPw)) {
-            final var info = new LoginInfo(guest.getId(), Role.GUEST);
-            httpSession.setAttribute(LoginInfo.key, info);
-            return guest;
-        } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[GuestService] Invalid Password(salt=%s, stored=%s, received(origin)" +
-                                    "=%s, received(hashed)=%s)", storedSalt, storedPw,
-                            requestDto.getPassword(), receivedPw)
-                    .toString();
-            throw new InvalidValueException(msg);
-        }
-    }
-
-    /**
-     * 참여자 생성(Participant 에 참여자를 추가한다)
+     * 게스트 로그인
      *
      * @author yeh35
-     * @since 2022-11-01
+     * @since 2022-12-17
+     */
+    public GuestLoginResponse login(Long eventId, GuestLoginRequest loginDto) {
+        final Event event = eventService.getEvent(eventId);
+
+        Optional<Guest> byNameAndEvent = guestRepository.findByNameAndEvent(loginDto.getName(), event);
+        if (byNameAndEvent.isEmpty()) {
+            throw new InvalidValueException("존재하지 않는 게스트입니다.");
+        }
+        final Guest guest = byNameAndEvent.get();
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), guest.getPassword())) {
+            throw new InvalidValueException("올바르지 비밀번호입니다.");
+        }
+
+        final String token = jwtHandler.createToken(guest.getId(), Role.GUEST);
+
+        return new GuestLoginResponse(guest.getName(), token);
+    }
+
+    /**
+     * 게스트 생성
+     *
+     * @author yeh35
+     * @since 2022-12-17
      */
     @Transactional
-    protected Guest create(GuestRequestDto requestDto) throws EntityDuplicatedException, EntityNotFoundException {
-        final var event = eventService.get(requestDto.getEventId());
-        final var other = guestRepository.findByNameInEvent(requestDto.getName(), event);
-        if (other.isPresent()) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[GuestService] Entity Duplicated(event=%d, name=%s)", event.getId(),
-                            requestDto.getName())
-                    .toString();
-            throw new EntityDuplicatedException(msg);
-        } else {
-            final var salt = generateSalt(Guest.getSaltLength());
-            final var hashedPw = generateHashedPw(salt, requestDto.getPassword());
-            final var guest = guestRepository.save(requestDto.to(event, salt, hashedPw));
+    public Guest create(GuestCreateDto createDto) {
+        final Event event = eventService.getEvent(createDto.getEventId());
 
-            final var participant = EventParticipant.builder()
-                    .event(event)
-                    .guest(guest)
-                    .build();
-            eventParticipantRepository.save(participant);
-            return guest;
-        }
-    }
+        // 비밀번호 헤슁
+        final String password = passwordEncoder.encode(createDto.getPassword());
 
-    @Transactional
-    public void deleteAll(List<Guest> guests) {
-        guestRepository.deleteAll(guests);
-    }
+        final var guest = Guest.builder()
+                .name(createDto.getName())
+                .password(password)
+                .event(event)
+                .build();
+        guestRepository.save(guest);
 
-    @Transactional
-    public void delete(Guest guest) {
-        guestRepository.delete(guest);
+        return guest;
     }
 }
