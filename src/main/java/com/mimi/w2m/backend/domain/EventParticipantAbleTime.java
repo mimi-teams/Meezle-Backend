@@ -63,6 +63,14 @@ public class EventParticipantAbleTime extends BaseTimeEntity {
                 .build();
     }
 
+    public static EventParticipantAbleTime ofDayOfWeek(EventParticipant eventParticipant, DayOfWeek week, Set<TimeRange> timeRanges) {
+        return EventParticipantAbleTime.builder()
+                .eventParticipant(eventParticipant)
+                .week(week)
+                .timeRanges(timeRanges)
+                .build();
+    }
+
     public static Set<EventParticipantAbleTime> of(EventParticipant eventParticipant, Set<ParticipleTime> participleTimeSet) {
         final var resultSet = new HashSet<EventParticipantAbleTime>(participleTimeSet.size());
 

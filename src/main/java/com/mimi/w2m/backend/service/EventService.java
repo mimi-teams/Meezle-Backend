@@ -2,11 +2,9 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.EventParticipant;
 import com.mimi.w2m.backend.domain.EventSelectableParticipleTime;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.EventSelectableParticipleTimeRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +30,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventService {
+    private final Logger logger = LoggerFactory.getLogger(EventService.class.getName());
     private final UserService userService;
     private final EventRepository eventRepository;
     private final EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository;
-    private final EventParticipantRepository eventParticipantRepository;
-    private final Logger logger = LoggerFactory.getLogger(EventService.class.getName());
 
     /**
      * 이벤트 생성(Host 는 EventParticipant 에 추가된다)
@@ -46,17 +43,11 @@ public class EventService {
      */
     @Transactional
     public Event createEvent(Long hostId, EventRequestDto requestDto) throws EntityNotFoundException {
-        final var host = userService.get(hostId);
+        final var host = userService.getUser(hostId);
         final var event = eventRepository.save(requestDto.to(host));
 
-        eventSelectableParticipleTimeRepository.saveAll(EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes()));
-
-        //TODO 이건 왜 있는거지?
-        final var participant = EventParticipant.builder()
-                .event(event)
-                .user(host)
-                .build();
-        eventParticipantRepository.save(participant);
+        final var selectableParticipleTimes = EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes());
+        eventSelectableParticipleTimeRepository.saveAll(selectableParticipleTimes);
 
         return event;
     }
@@ -163,7 +154,7 @@ public class EventService {
      * @since 2022/11/21
      **/
     public List<Event> getAllByHost(Long hostId) throws EntityNotFoundException {
-        final var user = userService.get(hostId);
+        final var user = userService.getUser(hostId);
         final var events = eventRepository.findAllByHost(user);
         if (events.isEmpty()) {
             final var formatter = new Formatter();

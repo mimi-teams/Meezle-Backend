@@ -1,12 +1,6 @@
 package com.mimi.w2m.backend.dto.participant;
 
-import com.mimi.w2m.backend.config.exception.InvalidValueException;
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.EventParticipant;
-import com.mimi.w2m.backend.domain.Guest;
-import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
-import com.mimi.w2m.backend.domain.type.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -65,23 +59,6 @@ public class GuestEventParticipantRequestDto implements Serializable {
         this.guestName = guestName;
         this.guestPassword = guestPassword;
         this.ableDaysAndTimes = ableDaysAndTimes;
-    }
-
-
-    public EventParticipant to(Event event, User user) throws InvalidValueException {
-        return EventParticipant.builder()
-                .event(event)
-                .user(user)
-                .ableDaysAndTimes(ableDaysAndTimes)
-                .build();
-    }
-
-    public EventParticipant to(Event event, Guest guest) throws InvalidValueException {
-        return EventParticipant.builder()
-                .event(event)
-                .guest(guest)
-                .ableDaysAndTimes(ableDaysAndTimes)
-                .build();
     }
 
 }

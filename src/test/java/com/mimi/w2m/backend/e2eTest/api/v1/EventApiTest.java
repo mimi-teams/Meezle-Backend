@@ -17,6 +17,7 @@ import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Set;
 
@@ -235,6 +236,7 @@ public class EventApiTest extends End2EndTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
         ;
     }

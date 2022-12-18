@@ -5,6 +5,7 @@ import com.mimi.w2m.backend.domain.EventParticipant;
 import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -34,4 +35,19 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
             @Param("guest") Guest guest,
             @Param("event") Event event
     );
+
+
+    @Query("SELECT t FROM EventParticipant t WHERE t.event = :event AND (t.user.id = :userId OR t.guest.id = :guestId)")
+    Optional<EventParticipant> findByEventAndUserOrGuest(
+            @Param("event") Event event,
+            @Param("userId") Long userId,
+            @Param("guestId") Long guestId
+    );
+
+
+    @Modifying
+//    @Query("DELETE FROM EventParticipantAbleTime t WHERE t.eventParticipant.id = :#{participant.id}")
+    @Query("DELETE FROM EventParticipant t WHERE t = :participant")
+    void deleteByEventParticipant(@Param("participant") EventParticipant participant);
+
 }

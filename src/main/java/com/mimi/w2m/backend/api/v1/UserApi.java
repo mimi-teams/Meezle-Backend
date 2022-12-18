@@ -40,7 +40,7 @@ public class UserApi {
     public @Valid ApiCallResponse<UserResponseDto> get() {
         final CurrentUserInfo currentUserInfo = authService.getCurrentUserInfo();
 
-        final var user = userService.get(currentUserInfo.userId());
+        final var user = userService.getUser(currentUserInfo.userId());
 
         return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
     }

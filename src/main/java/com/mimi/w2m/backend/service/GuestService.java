@@ -43,7 +43,7 @@ public class GuestService {
      * @author yeh35
      * @since 2022-11-01
      */
-    public Guest get(Long id) throws EntityNotFoundException {
+    public Guest getGuest(Long id) throws EntityNotFoundException {
         final var guest = guestRepository.findById(id);
         if (guest.isPresent()) {
             return guest.get();

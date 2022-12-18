@@ -9,6 +9,7 @@ import com.mimi.w2m.backend.dto.guest.GuestCreateDto;
 import com.mimi.w2m.backend.dto.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.dto.guest.GuestLoginResponse;
 import com.mimi.w2m.backend.dto.guest.GuestOneResponseDto;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantResponseDto;
 import com.mimi.w2m.backend.service.*;
@@ -48,7 +49,6 @@ public class EventApi {
 
     private final EventService eventService;
     private final AuthService authService;
-    private final HttpSession httpSession;
 
     @Operation(summary = "이벤트 정보 반환", description = "ID에 해당하는 이벤트 정보를 반환한다. 이벤트 참여자만 이용할 수 있다")
     @GetMapping("/{id}")
@@ -135,7 +135,7 @@ public class EventApi {
     @PostMapping("/{eventId}/guests/participate")
     public @Valid ApiCallResponse<GuestOneResponseDto> guestParticipate(
             @Parameter(description = "이벤트의 ID", required = true) @PositiveOrZero @NotNull @Valid @PathVariable Long eventId,
-            @Valid @RequestBody EventParticipantRequestDto requestDto
+            @Valid @RequestBody EventParticipantRequest requestDto
     ) {
         final var currentUserInfo = authService.getCurrentUserInfo();
 
@@ -146,7 +146,7 @@ public class EventApi {
                 .ableDaysAndTimes(requestDto.getAbleDaysAndTimes())
                 .build();
 
-        eventParticipantService.participateGuest(eventParticipantRequest);
+        eventParticipantService.participate(eventParticipantRequest);
 
         return ApiCallResponse.ofSuccess(null);
     }
@@ -202,22 +202,22 @@ public class EventApi {
 //        return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
 //    }
 
-    @Operation(method = "POST",
-            summary = "이벤트에 참여자 등록하기",
-            description = "[로그인 O, 인가 O] 이벤트에 참여자를 등록시칸다. 이벤트 생성자만 가능하다",
-            responses = {@ApiResponse(useReturnTypeSchema = true)})
-    @PostMapping(path = "/{id}/participants")
-    public @Valid ApiCallResponse<EventParticipantResponseDto> joinEvent(
-            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
-            @Valid @RequestBody EventParticipantRequestDto requestDto
-    ) {
-        final var currentUserInfo = authService.getCurrentUserInfo();
-        authService.isHost(currentUserInfo.userId(), id);
-
-        final var participant = eventParticipantService.create(requestDto);
-        return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
-    }
+//    @Operation(method = "POST",
+//            summary = "이벤트에 참여자 등록하기",
+//            description = "[로그인 O, 인가 O] 이벤트에 참여자를 등록시칸다. 이벤트 생성자만 가능하다",
+//            responses = {@ApiResponse(useReturnTypeSchema = true)})
+//    @PostMapping(path = "/{id}/participants")
+//    public @Valid ApiCallResponse<EventParticipantResponseDto> joinEvent(
+//            @Parameter(name = "id", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
+//            @PositiveOrZero @NotNull @Valid @PathVariable("id") Long id,
+//            @Valid @RequestBody EventParticipantRequestDto requestDto
+//    ) {
+//        final var currentUserInfo = authService.getCurrentUserInfo();
+//        authService.isHost(currentUserInfo.userId(), id);
+//
+//        final var participant = eventParticipantService.create(requestDto);
+//        return ApiCallResponse.ofSuccess(EventParticipantResponseDto.of(participant));
+//    }
 
 //    @Operation(method = "PATCH",
 //            summary = "이벤트 참여자 정보 수정하기",
