@@ -9,7 +9,7 @@ class ColorDtoTest {
 
     @Test
     void test() {
-        final var colorString = "#FFEECC11";
+        final var colorString = "#ffeecc";
 
         ColorDto colorDto = ColorDto.of(colorString);
 

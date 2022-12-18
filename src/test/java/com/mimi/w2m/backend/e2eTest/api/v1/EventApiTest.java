@@ -91,6 +91,7 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(jsonPath("$.data.event.color").value(event.getColor().toString()))
                 .andExpect(jsonPath("$.data.event.dday").exists())
                 .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
+                .andExpect(jsonPath("$.data.eventParticipants").exists())
         ;
     }
 

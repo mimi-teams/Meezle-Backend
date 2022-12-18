@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,22 +32,20 @@ public class ParticipleTime {
     @NotNull
     private final Set<TimeRange> ranges;
 
-    public static ParticipleTime of(String participleTimeStr) throws InvalidValueException {
-        try {
-            final var parsedStrs = participleTimeStr.split("\\[T]");
-            if (parsedStrs.length != 2) {
-                throw new IOException();
-            }
-            final var day = DayOfWeek.valueOf(parsedStrs[0]);
-            final var ranges = new HashSet<TimeRange>();
-            for (String s : parsedStrs[1].split("\\|")) {
-                TimeRange of = TimeRange.of(s);
-                ranges.add(of);
-            }
-            return new ParticipleTime(day, ranges);
-        } catch (Exception e) {
+    public static ParticipleTime of(String participleTimeStr) {
+        final var parsedStrs = participleTimeStr.split("\\[T]");
+        if (parsedStrs.length != 2) {
             throw new InvalidValueException("Invalid ParticipleTime : " + participleTimeStr, "유효하지 않은 참여 가능한 시간 형식");
         }
+
+        final var day = DayOfWeek.valueOf(parsedStrs[0]);
+        final var ranges = new HashSet<TimeRange>();
+        for (String s : parsedStrs[1].split("\\|")) {
+            TimeRange of = TimeRange.of(s);
+            ranges.add(of);
+        }
+
+        return new ParticipleTime(day, ranges);
     }
 
     @Override
