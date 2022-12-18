@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.testFixtures;
 
 import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.dto.guest.GuestCreateDto;
+import com.mimi.w2m.backend.dto.participant.guest.GuestCreateDto;
 
 public class GuestTestFixture {
 

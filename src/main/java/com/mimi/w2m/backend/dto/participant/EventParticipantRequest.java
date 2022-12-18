@@ -34,20 +34,4 @@ public class EventParticipantRequest implements Serializable {
         this.ableDaysAndTimes = ableDaysAndTimes;
     }
 
-//    public EventParticipant to(Event event, User user) throws InvalidValueException {
-//        return EventParticipant.builder()
-//                .event(event)
-//                .user(user)
-//                .ableDaysAndTimes(ableDaysAndTimes)
-//                .build();
-//    }
-//
-//    public EventParticipant to(Event event, Guest guest) throws InvalidValueException {
-//        return EventParticipant.builder()
-//                .event(event)
-//                .guest(guest)
-//                .ableDaysAndTimes(ableDaysAndTimes)
-//                .build();
-//    }
-
 }

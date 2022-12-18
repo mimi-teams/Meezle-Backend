@@ -98,30 +98,19 @@ public class EventService {
 
     }
 
+
     /**
-     * 이벤트 삭제하기(진짜)
+     * 이벤트 삭제하기,
      *
      * @author teddy
      * @since 2022/11/27
      **/
     @Transactional
-    public void deleteReal(Long eventId) throws EntityNotFoundException {
+    public void delete(Long eventId) throws EntityNotFoundException {
         final var event = getEvent(eventId);
 
         eventSelectableParticipleTimeRepository.deleteByEvent(event);
         eventRepository.delete(event);
-    }
-
-    /**
-     * 이벤트 삭제하기(deletedAt 설정하기)
-     *
-     * @author teddy
-     * @since 2022/11/27
-     **/
-    @Transactional
-    public void deleteNotReal(Long eventId) throws EntityNotFoundException {
-        final var event = getEvent(eventId);
-        event.delete();
     }
 
     /**

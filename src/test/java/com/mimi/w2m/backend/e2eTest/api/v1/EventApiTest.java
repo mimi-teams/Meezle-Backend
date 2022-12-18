@@ -5,7 +5,7 @@ import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.dto.guest.GuestLoginRequest;
+import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.EventRepository;

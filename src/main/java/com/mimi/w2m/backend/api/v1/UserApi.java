@@ -87,41 +87,4 @@ public class UserApi {
         return ApiCallResponse.ofSuccess(null);
     }
 
-
-    //TODO 이 API가 존재하는 이유가 뭐지?
-//    @Operation(method = "GET",
-//            summary = "이메일에 해당하는 이용자 정보 반환",
-//            description = "[로그인 O, 인가 X] Email에 해당하는 이용자를 반환한다",
-//            responses = {@ApiResponse(useReturnTypeSchema = true)})
-//    @GetMapping(path = "")
-//    public @Valid ApiCallResponse<UserResponseDto> getByEmail(
-//            @Parameter(name = "email",
-//                    description = "검색에 사용하는 email",
-//                    in = ParameterIn.QUERY,
-//                    required = true,
-//                    schema = @Schema(pattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) @Email @NotNull @Valid
-//            @RequestParam String email
-//    ) {
-//        final var loginInfo = authService.getLoginInfo(httpSession);
-//        final var user = userService.getByEmail(email);
-//        return ApiCallResponse.ofSuccess(UserResponseDto.of(user));
-//    }
-//
-//    @Operation(method = "GET",
-//            summary = "플랫폼을 이용한 로그인",
-//            description = "[로그인 X] Google 이나 Kakao 계정을 이용해 로그인한다. 로그인된 이용자가 있다면 로그아웃을 수행한다. 가입된 Email 이 없는 경우, " +
-//                    "이용자를 새로 등록한다. 로그인 후, '/'로 Redirect 된다",
-//            responses = {@ApiResponse(description = "'/'로 Redirect",
-//                    content = {@Content(schema = @Schema(description = "GET '/'"))})})
-//    @GetMapping(path = "/login")
-//    public ResponseEntity<?> loginWithOauth2(
-//            @Parameter(name = "platform", description = "로그인할 계정의 플랫폼", in = ParameterIn.QUERY, required = true)
-//            @NotNull @Pattern(regexp = "^(kakao|google)$") @Valid @RequestParam String platform
-//    ) {
-//        authService.logoutToken("");
-//        final var headers = new HttpHeaders();
-//        headers.setLocation(URI.create("/oauth2/authorization/" + platform));
-//        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-//    }
-
 }

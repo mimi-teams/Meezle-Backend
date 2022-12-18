@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.dto.guest;
+package com.mimi.w2m.backend.dto.participant.guest;
 
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.Guest;

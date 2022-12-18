@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.dto.participant;
 
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
-import com.mimi.w2m.backend.dto.guest.GuestResponseDto;
+import com.mimi.w2m.backend.dto.participant.guest.GuestResponseDto;
 import com.mimi.w2m.backend.dto.user.UserResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

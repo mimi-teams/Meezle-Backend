@@ -44,9 +44,7 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
             @Param("guestId") Long guestId
     );
 
-
     @Modifying
-//    @Query("DELETE FROM EventParticipantAbleTime t WHERE t.eventParticipant.id = :#{participant.id}")
     @Query("DELETE FROM EventParticipant t WHERE t = :participant")
     void deleteByEventParticipant(@Param("participant") EventParticipant participant);
 
