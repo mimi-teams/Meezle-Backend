@@ -35,7 +35,7 @@ public class Oauth2Service {
     protected String kakaoOauth2ClientId;
     @Value("${oauth2.kakao.client-secret}")
     protected String kakaoOauth2ClientSecret;
-    @Value("${oauth2.kakao.redirect_uri}")
+    @Value("${oauth2.kakao.redirect-url}")
     protected String kakaoOauth2RedirectUri;
 
     private final KaKaoAuthApiClient kaKaoAuthApiClient;
