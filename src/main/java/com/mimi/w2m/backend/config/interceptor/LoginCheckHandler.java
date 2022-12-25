@@ -29,7 +29,7 @@ public class LoginCheckHandler {
 
     public LoginInfo loadLoginInfo(HttpServletRequest request) {
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authorization.isBlank()) {
+        if (authorization == null || authorization.isBlank()) {
             throw new UnauthorizedException("Authorization 헤더가 존재하지 않습니다");
         }
 
