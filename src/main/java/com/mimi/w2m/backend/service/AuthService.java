@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.config.constants.AttributeConstants;
+import com.mimi.w2m.backend.config.constants.Constants;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
@@ -85,7 +85,7 @@ public class AuthService {
      * @since 2022-12-14
      */
     public CurrentUserInfo getCurrentUserInfo() {
-        Object attribute = request.getAttribute(AttributeConstants.CURRENT_USER);
+        Object attribute = request.getAttribute(Constants.CURRENT_USER);
 
         if (attribute == null) {
             throw new EntityNotFoundException("[AuthService] There are no login users", "로그인한 이용자가 없습니다");
