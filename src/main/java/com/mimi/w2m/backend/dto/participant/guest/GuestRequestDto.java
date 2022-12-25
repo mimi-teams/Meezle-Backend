@@ -8,9 +8,9 @@ import lombok.Getter;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * GuestRequestDto
@@ -28,16 +28,17 @@ public class GuestRequestDto implements Serializable {
     @Size(min = 1, max = 20)
     @NotNull
     private String name;
+
     @Schema(type = "String", description = "password 는 Null 이어도 된다", maxLength = 20)
     @Nullable
     private String password;
+
     @Schema(type = "Integer", description = "이용자가 속한 Event 의 ID")
     @NotNull
-    @PositiveOrZero
-    private Long eventId;
+    private UUID eventId;
 
     @Builder
-    public GuestRequestDto(String name, String password, Long eventId) {
+    public GuestRequestDto(String name, String password, UUID eventId) {
         this.name = name;
         this.password = password;
         this.eventId = eventId;

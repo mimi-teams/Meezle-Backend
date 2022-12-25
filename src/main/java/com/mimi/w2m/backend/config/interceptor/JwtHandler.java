@@ -6,12 +6,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mimi.w2m.backend.domain.type.Role;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * JWT를 생성하고 인증을 담당하는 서비스
@@ -42,10 +42,10 @@ public class JwtHandler {
      * @author yeh35
      * @since 2022-12-04
      */
-    public String createToken(long userid, Role role) {
+    public String createToken(UUID userid, Role role) {
         return JWT.create()
                 .withIssuer(ISSUER)
-                .withClaim(CLAIM_USER, userid)
+                .withClaim(CLAIM_USER, userid.toString())
                 .withClaim(CLAIM_USER_ROLE, role.getKey())
                 .sign(algorithm);
     }
@@ -69,7 +69,7 @@ public class JwtHandler {
 
             decodedJWT = verifier.verify(token);
 
-            final var userId = decodedJWT.getClaim(CLAIM_USER).asLong();
+            final var userId = UUID.fromString(decodedJWT.getClaim(CLAIM_USER).asString());
             final var role = Role.ofKey(decodedJWT.getClaim(CLAIM_USER_ROLE).asString());
 
             return Optional.of(new TokenInfo(userId, role));
@@ -80,10 +80,10 @@ public class JwtHandler {
     }
 
     public static class TokenInfo {
-        public final long userId;
+        public final UUID userId;
         public final Role role;
 
-        public TokenInfo(long id, Role role) {
+        public TokenInfo(UUID id, Role role) {
             this.userId = id;
             this.role = role;
         }

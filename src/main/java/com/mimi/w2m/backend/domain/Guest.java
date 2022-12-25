@@ -4,9 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Guest
@@ -21,9 +23,10 @@ import java.util.Objects;
 public class Guest extends BaseTimeEntity {
 
     @Id
-    @Column(name = "guest_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GenericGenerator(name="sequential_uuid", strategy="com.mimi.w2m.backend.domain.generator.SequentialUUIDGenerator")
+    @GeneratedValue(generator="sequential_uuid")
+    @Column(name = "guest_id", columnDefinition = "BINARY(16)")
+    private UUID id;
     @Comment("참여자의 이름")
     @Column(name = "name", length = 20, nullable = false, columnDefinition = "VARCHAR(20)")
     private String name;

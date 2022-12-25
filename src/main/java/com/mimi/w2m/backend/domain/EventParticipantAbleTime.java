@@ -6,11 +6,13 @@ import com.mimi.w2m.backend.domain.type.TimeRange;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * 이벤트 참여 가능한 시간
@@ -25,9 +27,10 @@ import java.util.Set;
 public class EventParticipantAbleTime extends BaseTimeEntity {
 
     @Id
-    @Column(name = "event_selectable_participle_time_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GenericGenerator(name="sequential_uuid", strategy="com.mimi.w2m.backend.domain.generator.SequentialUUIDGenerator")
+    @GeneratedValue(generator="sequential_uuid")
+    @Column(name = "event_selectable_participle_time_id", columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Comment("삭제 일자, 삭제가 안되었으면 null")
     @Column(name = "week")

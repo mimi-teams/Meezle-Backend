@@ -4,10 +4,12 @@ import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * User
@@ -22,9 +24,10 @@ import java.util.Objects;
 public class User extends BaseTimeEntity {
 
     @Id
-    @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GenericGenerator(name = "sequential_uuid", strategy = "com.mimi.w2m.backend.domain.generator.SequentialUUIDGenerator")
+    @GeneratedValue(generator = "sequential_uuid")
+    @Column(name = "user_id", columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Comment("가입한 사용자 이름(중복O)")
     @Column(name = "name", length = 200, nullable = false)

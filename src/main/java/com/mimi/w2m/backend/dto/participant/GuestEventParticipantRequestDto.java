@@ -9,7 +9,6 @@ import org.springframework.lang.Nullable;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -24,7 +23,6 @@ import java.util.Set;
 public class GuestEventParticipantRequestDto implements Serializable {
     @Schema(title = "Event 의 ID")
     @NotNull
-    @PositiveOrZero
     private Long eventId;
 
     @Schema(title = "게스트 이름")

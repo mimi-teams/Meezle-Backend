@@ -22,8 +22,7 @@ public class UserApiTest extends End2EndTest {
     @Test
     void 이용자_정보_반환() throws Exception {
         // given
-        User user = UserTestFixture.createUser("가나다");
-        userRepository.save(user);
+        User user = userRepository.save(UserTestFixture.createUser("가나다"));
 
         final String token = login(user);
 
@@ -34,7 +33,7 @@ public class UserApiTest extends End2EndTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(user.getId()))
+                .andExpect(jsonPath("$.data.id").value(user.getId().toString()))
                 .andExpect(jsonPath("$.data.name").value(user.getName()))
                 .andExpect(jsonPath("$.data.email").value(user.getEmail()))
         ;
@@ -43,8 +42,7 @@ public class UserApiTest extends End2EndTest {
     @Test
     void 이용자_정보_업데이트() throws Exception {
         // given
-        User user = UserTestFixture.createUser("가나");
-        userRepository.save(user);
+        User user = userRepository.save(UserTestFixture.createUser("가나"));
 
         final String token = login(user);
 
@@ -58,7 +56,7 @@ public class UserApiTest extends End2EndTest {
                                 .content(objectMapper.writeValueAsString(userRequestDto))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(user.getId()))
+                .andExpect(jsonPath("$.data.id").value(user.getId().toString()))
                 .andExpect(jsonPath("$.data.name").value(userRequestDto.getName()))
                 .andExpect(jsonPath("$.data.email").value(user.getEmail()))
         ;
@@ -67,8 +65,7 @@ public class UserApiTest extends End2EndTest {
     @Test
     void 이용자_정보_업데이트_이메일까지() throws Exception {
         // given
-        User user = UserTestFixture.createUser("가나");
-        userRepository.save(user);
+        User user = userRepository.save(UserTestFixture.createUser("가나"));
 
         final String token = login(user);
 
@@ -82,7 +79,7 @@ public class UserApiTest extends End2EndTest {
                                 .content(objectMapper.writeValueAsString(userRequestDto))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(user.getId()))
+                .andExpect(jsonPath("$.data.id").value(user.getId().toString()))
                 .andExpect(jsonPath("$.data.name").value(userRequestDto.getName()))
                 .andExpect(jsonPath("$.data.email").value(userRequestDto.getEmail()))
         ;
@@ -91,8 +88,7 @@ public class UserApiTest extends End2EndTest {
     @Test
     void 이용자_로그아웃() throws Exception {
         // given
-        User user = UserTestFixture.createUser("가나");
-        userRepository.save(user);
+        User user = userRepository.save(UserTestFixture.createUser("가나"));
 
         final String token = login(user);
 
@@ -111,8 +107,7 @@ public class UserApiTest extends End2EndTest {
     @Test
     void 이용자_탈퇴() throws Exception {
         // given
-        User user = UserTestFixture.createUser("가나");
-        userRepository.save(user);
+        User user = userRepository.save(UserTestFixture.createUser("가나"));
 
         final String token = login(user);
 

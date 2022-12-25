@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = W2mApplication.class)
+@SpringBootTest(classes = W2mApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class End2EndTest {
 
     @Autowired

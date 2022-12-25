@@ -10,12 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @since 2022-12-17
  * @author yeh35
  */
-public interface EventParticipantAbleTimeRepository extends JpaRepository<EventParticipantAbleTime, Long> {
+public interface EventParticipantAbleTimeRepository extends JpaRepository<EventParticipantAbleTime, UUID> {
 
     /**
      * 이벤트에 해당되는 모든 선택 가능한 시간을 가져온다.

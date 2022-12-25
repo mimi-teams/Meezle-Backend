@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * GuestRepository
@@ -17,7 +18,7 @@ import java.util.Optional;
  * @since 2022/11/17
  **/
 
-public interface GuestRepository extends JpaRepository<Guest, Long> {
+public interface GuestRepository extends JpaRepository<Guest, UUID> {
     @Query("SELECT g FROM Guest g WHERE g.name = :name and g.event = :event")
     Optional<Guest> findByNameAndEvent(
             @Param("name") String name,

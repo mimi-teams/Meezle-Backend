@@ -28,3 +28,5 @@ spring:
 
 auth:
   token.secret: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM=
+  
+

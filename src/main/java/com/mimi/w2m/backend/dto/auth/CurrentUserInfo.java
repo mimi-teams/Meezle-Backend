@@ -4,6 +4,7 @@ import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * 현재 유저 정보
@@ -12,7 +13,7 @@ import java.io.Serializable;
  * @since 2022-12-11
  */
 public record CurrentUserInfo(
-        Long userId,
+        UUID userId,
         Role role
 ) implements Serializable {
 

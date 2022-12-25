@@ -6,6 +6,7 @@ import com.mimi.w2m.backend.domain.type.Role;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +16,7 @@ class JwtHandlerTest {
     void test() {
         JwtHandler service = new JwtHandler("FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM=");
 
-        final int userid = 100;
+        final UUID userid = UUID.randomUUID();
         final String token = service.createToken(userid, Role.USER);
         Optional<TokenInfo> optionalTokenInfo = service.verify(token);
 

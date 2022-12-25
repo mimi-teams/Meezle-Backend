@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
+import java.util.UUID;
+
 /**
  * 이벤트 참여자 정보, Query용 VO
  * @since 2022-12-18
@@ -17,7 +19,7 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class EventParticipantQueryVo {
 
-    private long id;
+    private UUID id;
 
     @Nullable
     private String userName;

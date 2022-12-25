@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Formatter;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +39,7 @@ public class EventService {
      * @since 2022-10-31
      */
     @Transactional
-    public Event createEvent(Long hostId, EventRequestDto requestDto) throws EntityNotFoundException {
+    public Event createEvent(UUID hostId, EventRequestDto requestDto) throws EntityNotFoundException {
         final var host = userService.getUser(hostId);
         final var event = eventRepository.save(requestDto.to(host));
 
@@ -59,7 +56,7 @@ public class EventService {
      * @since 2022-10-31
      */
     @Transactional
-    public Event modifyEvent(Long eventId, EventRequestDto requestDto) throws EntityNotFoundException {
+    public Event modifyEvent(UUID eventId, EventRequestDto requestDto) throws EntityNotFoundException {
         var event = getEvent(eventId);
         event.update(
                 requestDto.getTitle(),
@@ -78,7 +75,7 @@ public class EventService {
      * @author yeh35
      * @since 2022-11-05
      */
-    public Event getEvent(Long id) throws EntityNotFoundException {
+    public Event getEvent(UUID id) throws EntityNotFoundException {
         return eventRepository.findById(id).orElseThrow(() -> {
             throw new EntityNotFoundException(String.format("[EventService] Entity Not Found(id=%d)", id));
         });
@@ -88,7 +85,7 @@ public class EventService {
      * @author yeh35
      * @since 2022-11-05
      */
-    public Set<ParticipleTime> getEventSelectableParticipleTimes(Long eventId) throws EntityNotFoundException {
+    public Set<ParticipleTime> getEventSelectableParticipleTimes(UUID eventId) throws EntityNotFoundException {
         final var event = getEvent(eventId);
 
         return eventSelectableParticipleTimeRepository.findByEvent(event)
@@ -106,7 +103,7 @@ public class EventService {
      * @since 2022/11/27
      **/
     @Transactional
-    public void delete(Long eventId) throws EntityNotFoundException {
+    public void delete(UUID eventId) throws EntityNotFoundException {
         final var event = getEvent(eventId);
 
         eventSelectableParticipleTimeRepository.deleteByEvent(event);
@@ -142,7 +139,7 @@ public class EventService {
      * @author teddy
      * @since 2022/11/21
      **/
-    public List<Event> getAllByHost(Long hostId) throws EntityNotFoundException {
+    public List<Event> getAllByHost(UUID hostId) throws EntityNotFoundException {
         final var user = userService.getUser(hostId);
         final var events = eventRepository.findAllByHost(user);
         if (events.isEmpty()) {

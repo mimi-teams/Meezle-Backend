@@ -158,11 +158,8 @@ public class EventApiTest extends End2EndTest {
     @Test
     void 이벤트_게스트_로그인_DB에_없는_경우() throws Exception {
         // given
-        final User user = UserTestFixture.createUser();
-        userRepository.save(user);
-
-        final Event event = EventTestFixture.createEvent(user);
-        eventRepository.save(event);
+        final User user = userRepository.save(UserTestFixture.createUser());
+        final Event event = eventRepository.save(EventTestFixture.createEvent(user));
 
 
         final var loginRequest = GuestLoginRequest.builder()
@@ -185,11 +182,8 @@ public class EventApiTest extends End2EndTest {
     @Test
     void 이벤트_게스트_로그인() throws Exception {
         // given
-        final User user = UserTestFixture.createUser();
-        userRepository.save(user);
-
-        final Event event = EventTestFixture.createEvent(user);
-        eventRepository.save(event);
+        final User user = userRepository.save(UserTestFixture.createUser());
+        final Event event = eventRepository.save(EventTestFixture.createEvent(user));
 
         final var guestCreateDto = GuestTestFixture.createGuestCreateDto(event);
         guestService.create(guestCreateDto);
@@ -214,11 +208,8 @@ public class EventApiTest extends End2EndTest {
     @Test
     void 이벤트_게스트_이벤트_참여() throws Exception {
         // given
-        final User user = UserTestFixture.createUser();
-        userRepository.save(user);
-
-        final Event event = EventTestFixture.createEvent(user);
-        eventRepository.save(event);
+        final User user = userRepository.save(UserTestFixture.createUser());
+        final Event event = eventRepository.save(EventTestFixture.createEvent(user));
 
         final var guestCreateDto = GuestTestFixture.createGuestCreateDto(event);
         String token = loginGuest(guestCreateDto);
