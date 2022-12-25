@@ -1,5 +1,7 @@
 package com.mimi.w2m.backend.dto.base;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * 우리 서비스에서 사용 가능한 HTTP Status를 규정한다. <br>
  * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">HTTP status</a>
@@ -23,5 +25,9 @@ public enum ApiHttpStatus {
 
     ApiHttpStatus(int httpStatus) {
         this.httpStatus = httpStatus;
+    }
+
+    public HttpStatus toHttpStatus() {
+        return HttpStatus.valueOf(httpStatus);
     }
 }

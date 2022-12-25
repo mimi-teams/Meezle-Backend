@@ -37,40 +37,48 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * 요청된 정보가 중복된 것일 때
      */
     @ExceptionHandler({EntityDuplicatedException.class})
-    protected ApiCallResponse<Void> handleEntityDuplicatedException(EntityDuplicatedException e) {
+    protected ResponseEntity<ApiCallResponse<?>> handleEntityDuplicatedException(EntityDuplicatedException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
         logger.warn(log);
-        return ApiCallResponse.of(ApiResultCode.ENTITY_DUPLICATED, e.messageToClient, null);
+
+        final var response = ApiCallResponse.of(ApiResultCode.ENTITY_DUPLICATED, e.messageToClient, null);
+        return new ResponseEntity<>(response, e.apiResultCode.httpStatus.toHttpStatus());
     }
 
     /**
      * 요청된 정보가 없을 때
      */
     @ExceptionHandler({EntityNotFoundException.class})
-    protected ApiCallResponse<Void> handleEntityNotFoundException(EntityNotFoundException e) {
+    protected ResponseEntity<ApiCallResponse<?>> handleEntityNotFoundException(EntityNotFoundException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
         logger.warn(log);
-        return ApiCallResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
+
+        final var response = ApiCallResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
+        return new ResponseEntity<>(response, e.apiResultCode.httpStatus.toHttpStatus());
     }
 
     /**
      * 잘못된 값으로 요청할 때
      */
     @ExceptionHandler({InvalidValueException.class})
-    protected ApiCallResponse<Void> handleInvalidValueException(InvalidValueException e) {
+    protected ResponseEntity<ApiCallResponse<?>> handleInvalidValueException(InvalidValueException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
         logger.warn(log);
-        return ApiCallResponse.of(ApiResultCode.BAD_REQUEST, e.messageToClient, null);
+
+        final var response = ApiCallResponse.of(ApiResultCode.BAD_REQUEST, e.messageToClient, null);
+        return new ResponseEntity<>(response, e.apiResultCode.httpStatus.toHttpStatus());
     }
 
     /**
      * 권한 없는 이용자가 요청할 때
      */
     @ExceptionHandler({IllegalAccessException.class})
-    protected ApiCallResponse<Void> handleUnauthorizedException(IllegalAccessException e) {
+    protected ResponseEntity<ApiCallResponse<?>> handleUnauthorizedException(IllegalAccessException e) {
         final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
         logger.warn(log);
-        return ApiCallResponse.of(ApiResultCode.ILLEGAL_ACCESS, e.messageToClient, null);
+
+        final var response = ApiCallResponse.of(ApiResultCode.ILLEGAL_ACCESS, e.messageToClient, null);
+        return new ResponseEntity<>(response, e.apiResultCode.httpStatus.toHttpStatus());
     }
 
     /**
@@ -78,9 +86,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ConstraintViolationException.class})
-    protected ApiCallResponse<Void> handleMethodArgumentNotValid(ConstraintViolationException e) {
+    protected ResponseEntity<ApiCallResponse<?>> handleMethodArgumentNotValid(ConstraintViolationException e) {
         logger.warn("400 Exception occurs. " + e.getMessage());
-        return ApiCallResponse.of(ApiResultCode.BAD_REQUEST, null);
+
+        final var response = ApiCallResponse.of(ApiResultCode.BAD_REQUEST, e.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -101,6 +111,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * 서버 내부의 문제일 때
      */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class})
     protected ApiCallResponse<Void> handleBaseException(Exception e) {
         logger.error("Unexpected Exception occurs", e);
