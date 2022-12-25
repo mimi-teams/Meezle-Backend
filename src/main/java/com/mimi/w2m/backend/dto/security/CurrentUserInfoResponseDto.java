@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Schema(title = "현재 이용자 정보", description = "로그인 성공 시, 얻을 수 있다", example = "{\"id\":0, \"role\":\"ROLE_USER\"}",
@@ -15,13 +15,13 @@ import java.io.Serializable;
 public class CurrentUserInfoResponseDto implements Serializable {
     @Schema(description = "로그인한 이용자의 ID")
     @NotNull
-    @PositiveOrZero
-    private Long id;
+    private UUID id;
+
     @NotNull
     private Role role;
 
     @Builder
-    public CurrentUserInfoResponseDto(Long id, Role role) {
+    public CurrentUserInfoResponseDto(UUID id, Role role) {
         this.id = id;
         this.role = role;
     }

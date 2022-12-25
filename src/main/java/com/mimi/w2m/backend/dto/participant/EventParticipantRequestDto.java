@@ -9,9 +9,9 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * EventParticipantRequestDto
@@ -26,13 +26,11 @@ import java.util.Set;
 public class EventParticipantRequestDto implements Serializable {
     @Schema(title = "Event 의 ID", type = "Integer")
     @NotNull
-    @PositiveOrZero
-    private Long eventId;
+    private UUID eventId;
 
     @Schema(title = "참가자의 실제 ID")
     @NotNull
-    @PositiveOrZero
-    private Long ownerId;
+    private UUID ownerId;
 
     @Schema(title = "참가자의 실제 유형")
     @NotNull
@@ -49,7 +47,7 @@ public class EventParticipantRequestDto implements Serializable {
 
     @SuppressWarnings("unused")
     @Builder
-    public EventParticipantRequestDto(Long eventId, Long ownerId, Role ownerType,
+    public EventParticipantRequestDto(UUID eventId, UUID ownerId, Role ownerType,
                                       @Nullable Set<ParticipleTime> ableDaysAndTimes) {
         this.eventId = eventId;
         this.ownerId = ownerId;

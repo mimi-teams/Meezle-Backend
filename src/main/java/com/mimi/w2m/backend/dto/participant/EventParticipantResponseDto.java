@@ -10,7 +10,6 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -28,7 +27,6 @@ public class EventParticipantResponseDto implements Serializable {
 
     @Schema(title = "Event 의 ID", type = "Integer")
     @NotNull
-    @PositiveOrZero
     private Long eventId;
 
     @Schema(title = "참여자의 정보(User)")

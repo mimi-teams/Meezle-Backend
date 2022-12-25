@@ -7,9 +7,9 @@ import lombok.Getter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * UserResponseDto
@@ -25,9 +25,8 @@ import java.io.Serializable;
 public class UserResponseDto implements Serializable {
 
     @Schema(type = "Integer", description = "이용자의 Unique ID")
-    @PositiveOrZero
     @NotNull
-    private Long id;
+    private UUID id;
 
     @Schema(type = "String", description = "사용지 이름", maxLength = 20)
     @Size(max = 20)
@@ -39,7 +38,7 @@ public class UserResponseDto implements Serializable {
     private String email;
 
     @Builder
-    public UserResponseDto(Long id, String name, String email) {
+    public UserResponseDto(UUID id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;

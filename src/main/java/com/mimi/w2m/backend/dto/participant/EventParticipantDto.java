@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Set;
+import java.util.UUID;
 
 @SuppressWarnings("FieldMayBeFinal")
 @Getter
@@ -13,7 +14,7 @@ import java.util.Set;
 public class EventParticipantDto {
 
     @Schema(description = "참여자 번호")
-    private Long id;
+    private UUID id;
     @Schema(description = "이름")
     private String name;
 
@@ -21,7 +22,7 @@ public class EventParticipantDto {
     private Set<ParticipleTime> ableDaysAndTimes;
 
     @Builder
-    public EventParticipantDto(Long id, String name, Set<ParticipleTime> ableDaysAndTimes) {
+    public EventParticipantDto(UUID id, String name, Set<ParticipleTime> ableDaysAndTimes) {
         this.id = id;
         this.name = name;
         this.ableDaysAndTimes = ableDaysAndTimes;

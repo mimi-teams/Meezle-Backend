@@ -9,11 +9,11 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * `Entity`와 1 대 1 매칭되는 Dto
@@ -27,12 +27,12 @@ public class EventDto implements Serializable {
 
     @Schema(title = "Event 의 ID", type = "Integer")
     @NotNull
-    @PositiveOrZero
-    private Long id;
+    private UUID id;
+
     @Schema(title = "Event 의 Host ID", type = "Integer", description = "이벤트 생성자의 ID")
     @NotNull
-    @PositiveOrZero
-    private Long hostId;
+    private UUID hostId;
+
     @Schema(title = "Event 의 제목", type = "String", minLength = 1, maxLength = 50, description = "이벤트 이름")
     @Size(min = 1, max = 50)
     @NotNull
@@ -57,8 +57,8 @@ public class EventDto implements Serializable {
     @SuppressWarnings("unused")
     @Builder
     public EventDto(
-            Long id,
-            Long hostId,
+            UUID id,
+            UUID hostId,
             String title,
             @Nullable LocalDateTime dDay,
             ColorDto color,

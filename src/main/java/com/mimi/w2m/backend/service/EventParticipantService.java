@@ -96,7 +96,7 @@ public class EventParticipantService {
         return eventParticipant;
     }
 
-    public EventParticipant get(Long id) throws EntityNotFoundException {
+    public EventParticipant get(UUID id) throws EntityNotFoundException {
         final var participant = eventParticipantRepository.findById(id);
         if (participant.isPresent()) {
             return participant.get();
@@ -114,7 +114,7 @@ public class EventParticipantService {
      * @author yeh35
      * @since 2022-11-01
      */
-    public EventParticipant get(Long eventId, Long roleId, Role role) throws EntityNotFoundException {
+    public EventParticipant get(UUID eventId, UUID roleId, Role role) throws EntityNotFoundException {
         final var event = eventService.getEvent(eventId);
         final var formatter = new Formatter();
         final var msg = formatter.format("[EventParticipantService] Entity Not Found(event=%d, id=%d, role=%s)",
@@ -131,7 +131,7 @@ public class EventParticipantService {
     }
 
     @Transactional
-    public void deleteAboutEvent(Long eventId) {
+    public void deleteAboutEvent(UUID eventId) {
         final Event event = eventService.getEvent(eventId);
 
         final List<EventParticipant> participantList = eventParticipantRepository.findAllInEvent(event);
@@ -147,15 +147,15 @@ public class EventParticipantService {
      * @since 2022-10-31
      */
     @SuppressWarnings("DuplicatedCode")
-    public List<EventParticipantDto> getEventParticipants(Long eventId) {
+    public List<EventParticipantDto> getEventParticipants(UUID eventId) {
         final var event = eventService.getEvent(eventId);
         final var participants = eventParticipantRepository.findAllInEvent(event);
-        final var eventParticipantDtoMap = new HashMap<Long, List<EventParticipantQueryVo>>(participants.size());
+        final var eventParticipantDtoMap = new HashMap<UUID, List<EventParticipantQueryVo>>(participants.size());
 
         // 참여자 정보 가져오기
         final List<EventParticipantQueryVo> userQueryVos = eventParticipantAbleTimeRepository.findByEvent(event);
         for (final var participantQueryVo : userQueryVos) {
-            final long key = participantQueryVo.getId();
+            final UUID key = participantQueryVo.getId();
 
             if (!eventParticipantDtoMap.containsKey(key)) {
                 eventParticipantDtoMap.put(key, new ArrayList<>(userQueryVos.size() / participants.size()));
@@ -167,7 +167,7 @@ public class EventParticipantService {
 
         //데이터 형식 맞추기
         final var resultList = new ArrayList<EventParticipantDto>(participants.size());
-        for (final Long participantId : eventParticipantDtoMap.keySet()) {
+        for (final UUID participantId : eventParticipantDtoMap.keySet()) {
             final List<EventParticipantQueryVo> queryVos = eventParticipantDtoMap.get(participantId);
 
             final String name;

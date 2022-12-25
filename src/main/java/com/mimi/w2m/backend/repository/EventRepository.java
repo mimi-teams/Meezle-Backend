@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * EventRepository
@@ -16,7 +17,7 @@ import java.util.List;
  * @since 2022/11/17
  **/
 
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query("SELECT e FROM Event e WHERE e.title = :title")
     List<Event> findAllByTitle(
             @Param("title") String title

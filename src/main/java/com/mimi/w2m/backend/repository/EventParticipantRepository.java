@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * EventParticipantRepository
@@ -20,7 +21,7 @@ import java.util.Optional;
  * @since 2022/11/17
  **/
 
-public interface EventParticipantRepository extends JpaRepository<EventParticipant, Long> {
+public interface EventParticipantRepository extends JpaRepository<EventParticipant, UUID> {
     @Query("SELECT t FROM EventParticipant t WHERE t.user = :user and t.event = :event")
     Optional<EventParticipant> findByUserInEvent(
             @Param("user") User user,
@@ -40,8 +41,8 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
     @Query("SELECT t FROM EventParticipant t WHERE t.event = :event AND (t.user.id = :userId OR t.guest.id = :guestId)")
     Optional<EventParticipant> findByEventAndUserOrGuest(
             @Param("event") Event event,
-            @Param("userId") Long userId,
-            @Param("guestId") Long guestId
+            @Param("userId") UUID userId,
+            @Param("guestId") UUID guestId
     );
 
     @Modifying

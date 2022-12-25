@@ -2,8 +2,10 @@ package com.mimi.w2m.backend.domain;
 
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 /**
  * EventParticipableTime
@@ -24,9 +26,10 @@ import javax.persistence.*;
 public class EventParticipant {
 
     @Id
-    @Column(name = "event_participant_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GenericGenerator(name="sequential_uuid", strategy="com.mimi.w2m.backend.domain.generator.SequentialUUIDGenerator")
+    @GeneratedValue(generator="sequential_uuid")
+    @Column(name = "event_participant_id", columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Comment("연관된 event")
     @ManyToOne(targetEntity = Event.class, fetch = FetchType.LAZY, optional = false)

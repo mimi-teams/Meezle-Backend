@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * EventApi
@@ -51,7 +51,7 @@ public class EventApi {
     @GetMapping("/{eventId}")
     public @Valid ApiCallResponse<EventGetResponse> get(
             @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("eventId") Long eventId
+            @NotNull @Valid @PathVariable("eventId") UUID eventId
     ) {
         final var event = eventService.getEvent(eventId);
         final var eventSelectableParticipleTimes = eventService.getEventSelectableParticipleTimes(eventId);
@@ -79,7 +79,7 @@ public class EventApi {
     @PatchMapping(path = "/{eventId}")
     public @Valid ApiCallResponse<EventResponseDto> patch(
             @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("eventId") Long eventId,
+             @NotNull @Valid @PathVariable("eventId") UUID eventId,
             @Valid @RequestBody EventRequestDto requestDto
     ) {
         final var currentUserInfo = authService.getCurrentUserInfo();
@@ -97,7 +97,7 @@ public class EventApi {
     @DeleteMapping(path = "/{eventId}")
     public ApiCallResponse<?> delete(
             @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-            @PositiveOrZero @NotNull @Valid @PathVariable("eventId") Long eventId
+            @NotNull @Valid @PathVariable("eventId") UUID eventId
     ) {
         final var currentUserInfo = authService.getCurrentUserInfo();
         authService.isHost(currentUserInfo.userId(), eventId);
@@ -112,7 +112,7 @@ public class EventApi {
     @Operation(summary = "이벤트 게스트 로그인", description = "없는 유저의 경우 자동으로 등록된다.")
     @PostMapping("/{eventId}/guests/login")
     public @Valid ApiCallResponse<GuestLoginResponse> login(
-            @Parameter(description = "이벤트의 ID", required = true) @PositiveOrZero @NotNull @Valid @PathVariable Long eventId,
+            @Parameter(description = "이벤트의 ID", required = true) @NotNull @Valid @PathVariable UUID eventId,
             @Valid @RequestBody GuestLoginRequest requestBody
     ) {
         if (!guestService.isUsedGuestName(eventId, requestBody.getName())) {
@@ -132,7 +132,7 @@ public class EventApi {
     @Auth(Role.GUEST)
     @PostMapping("/{eventId}/guests/participate")
     public @Valid ApiCallResponse<GuestOneResponseDto> guestParticipate(
-            @Parameter(description = "이벤트의 ID", required = true) @PositiveOrZero @NotNull @Valid @PathVariable Long eventId,
+            @Parameter(description = "이벤트의 ID", required = true) @NotNull @Valid @PathVariable UUID eventId,
             @Valid @RequestBody EventParticipantRequest requestDto
     ) {
         final var currentUserInfo = authService.getCurrentUserInfo();
@@ -153,7 +153,7 @@ public class EventApi {
     @Auth(Role.USER)
     @PostMapping("/{eventId}/user/participate")
     public @Valid ApiCallResponse<GuestOneResponseDto> userParticipate(
-            @Parameter(description = "이벤트의 ID", required = true) @PositiveOrZero @NotNull @Valid @PathVariable Long eventId,
+            @Parameter(description = "이벤트의 ID", required = true) @NotNull @Valid @PathVariable UUID eventId,
             @Valid @RequestBody EventParticipantRequest requestDto
     ) {
         final var currentUserInfo = authService.getCurrentUserInfo();

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Formatter;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Guest 를 관리하는 서비스
@@ -43,7 +44,7 @@ public class GuestService {
      * @author yeh35
      * @since 2022-11-01
      */
-    public Guest getGuest(Long id) throws EntityNotFoundException {
+    public Guest getGuest(UUID id) throws EntityNotFoundException {
         final var guest = guestRepository.findById(id);
         if (guest.isPresent()) {
             return guest.get();
@@ -59,7 +60,7 @@ public class GuestService {
      * 사용중인 유저 이름인지
      * @return 사용중이라면 true, 아니라면 false
      */
-    public boolean isUsedGuestName(Long eventId, String guestName) {
+    public boolean isUsedGuestName(UUID eventId, String guestName) {
         final Event event = eventService.getEvent(eventId);
         Optional<Guest> byNameAndEvent = guestRepository.findByNameAndEvent(guestName, event);
         return byNameAndEvent.isPresent();
@@ -71,7 +72,7 @@ public class GuestService {
      * @author yeh35
      * @since 2022-12-17
      */
-    public GuestLoginResponse login(Long eventId, GuestLoginRequest loginDto) {
+    public GuestLoginResponse login(UUID eventId, GuestLoginRequest loginDto) {
         final Event event = eventService.getEvent(eventId);
 
         Optional<Guest> byNameAndEvent = guestRepository.findByNameAndEvent(loginDto.getName(), event);

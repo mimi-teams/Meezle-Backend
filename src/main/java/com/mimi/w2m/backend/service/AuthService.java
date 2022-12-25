@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Formatter;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * AuthService(Authorization 확인)
@@ -38,7 +39,7 @@ public class AuthService {
      * @author teddy
      * @since 2022/12/01
      **/
-    public void isValidLogin(LoginInfo info, Long id, Role role) throws IllegalAccessException {
+    public void isValidLogin(LoginInfo info, UUID id, Role role) throws IllegalAccessException {
         if (Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
             final var formatter = new Formatter();
             final var msg = formatter.format("[AuthService] Illegal Access(id=%d, role=%s)", id, role)
@@ -47,7 +48,7 @@ public class AuthService {
         }
     }
 
-    public void isInEvent(LoginInfo info, Long eventId) throws IllegalAccessException {
+    public void isInEvent(LoginInfo info, UUID eventId) throws IllegalAccessException {
         try {
             eventParticipantService.get(eventId, info.loginId(), info.role());
         } catch (RuntimeException e) {
@@ -59,7 +60,7 @@ public class AuthService {
         }
     }
 
-    public void isHost(Long userId, Long eventId) throws IllegalAccessException {
+    public void isHost(UUID userId, UUID eventId) throws IllegalAccessException {
         final var event = eventService.getEvent(eventId);
         final var user = userService.getUser(userId);
 

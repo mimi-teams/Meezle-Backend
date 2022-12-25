@@ -7,10 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Event
@@ -26,9 +28,10 @@ import java.util.Objects;
 public class Event extends BaseTimeEntity {
 
     @Id
-    @Column(name = "event_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GenericGenerator(name="sequential_uuid", strategy="com.mimi.w2m.backend.domain.generator.SequentialUUIDGenerator")
+    @GeneratedValue(generator="sequential_uuid")
+    @Column(name = "event_id", columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Comment("이벤트 제목. 최대 길이는 200")
     @Column(name = "title", length = 200, nullable = false, columnDefinition = "VARCHAR(200)")

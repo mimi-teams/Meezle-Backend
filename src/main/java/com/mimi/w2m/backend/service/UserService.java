@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Formatter;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * 유저 정보 처리
@@ -60,7 +61,7 @@ public class UserService {
      * @since 2022/11/19
      **/
     @Transactional
-    public void deleteReal(Long userId) throws EntityNotFoundException {
+    public void deleteReal(UUID userId) throws EntityNotFoundException {
         var user = getUser(userId);
         userRepository.delete(user);
     }
@@ -71,7 +72,7 @@ public class UserService {
      * @author yeh35
      * @since 2022-11-01
      */
-    public User getUser(Long id) throws EntityNotFoundException {
+    public User getUser(UUID id) throws EntityNotFoundException {
         final var user = userRepository.findById(id);
         if (user.isPresent()) {
             return user.get();
@@ -90,7 +91,7 @@ public class UserService {
      * @since 2022/11/27
      **/
     @Transactional
-    public void deleteNotReal(Long userId) throws EntityNotFoundException {
+    public void deleteNotReal(UUID userId) throws EntityNotFoundException {
         var user = getUser(userId);
         user.delete();
     }
@@ -114,7 +115,7 @@ public class UserService {
      * @since 2022/11/19
      **/
     @Transactional
-    public User update(Long userId, UserRequestDto requestDto) throws EntityNotFoundException {
+    public User update(UUID userId, UserRequestDto requestDto) throws EntityNotFoundException {
         final var user = getUser(userId);
 
         user.updateName(requestDto.getName());
