@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.api;
 
-import com.mimi.w2m.backend.config.constants.AttributeConstants;
+import com.mimi.w2m.backend.config.constants.Constants;
 import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
@@ -31,7 +31,7 @@ public class RootApi {
     public ApiCallResponse<CurrentUserInfoResponseDto> get() {
 
         //인증 정보 꺼내 쓰기
-        final var currentUserInfo = (CurrentUserInfo) request.getAttribute(AttributeConstants.CURRENT_USER);
+        final var currentUserInfo = (CurrentUserInfo) request.getAttribute(Constants.CURRENT_USER);
 
         return ApiCallResponse.ofSuccess(CurrentUserInfoResponseDto.builder()
                 .id(currentUserInfo.userId())
