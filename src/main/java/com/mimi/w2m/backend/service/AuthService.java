@@ -1,11 +1,13 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.config.constants.Constants;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.IllegalAccessException;
+import com.mimi.w2m.backend.domain.BlockedJwt;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
-import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.config.exception.IllegalAccessException;
+import com.mimi.w2m.backend.repository.BlockedJwtRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class AuthService {
     private final UserService userService;
     private final EventService eventService;
     private final EventParticipantService eventParticipantService;
+    private final BlockedJwtRepository blockedJwtRepository;
 
     private final HttpServletRequest request;
 
@@ -42,7 +45,7 @@ public class AuthService {
     public void isValidLogin(LoginInfo info, UUID id, Role role) throws IllegalAccessException {
         if (Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
             final var formatter = new Formatter();
-            final var msg = formatter.format("[AuthService] Illegal Access(id=%d, role=%s)", id, role)
+            final var msg = formatter.format("[AuthService] Illegal Access(id=%s, role=%s)", id, role)
                     .toString();
             throw new IllegalAccessException(msg);
         }
@@ -53,7 +56,7 @@ public class AuthService {
             eventParticipantService.get(eventId, info.loginId(), info.role());
         } catch (RuntimeException e) {
             final var formatter = new Formatter();
-            final var msg = formatter.format("[AuthService] Illegal Access(id=%d, role=%s, event=%d)", info.loginId(),
+            final var msg = formatter.format("[AuthService] Illegal Access(id=%s, role=%s, event=%s)", info.loginId(),
                             info.role(), eventId)
                     .toString();
             throw new IllegalAccessException(msg);
@@ -65,7 +68,7 @@ public class AuthService {
         final var user = userService.getUser(userId);
 
         if (!Objects.equals(event.getHost(), user)) {
-            throw new IllegalAccessException(String.format("[AuthService] Illegal Access(id=%d, event=%d)", userId,  eventId));
+            throw new IllegalAccessException(String.format("[AuthService] Illegal Access(id=%s, event=%s)", userId,  eventId));
         }
     }
 
@@ -94,6 +97,8 @@ public class AuthService {
     }
 
     public void logoutToken(String token) {
-        // TODO 나중에 다시 구현, 로그아웃된 토큰을 DB에 저장하는 방식으로
+        if(blockedJwtRepository.findById(token).isEmpty()) {
+            blockedJwtRepository.save(new BlockedJwt(token));
+        }
     }
 }
