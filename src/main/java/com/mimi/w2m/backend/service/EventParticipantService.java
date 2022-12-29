@@ -66,9 +66,7 @@ public class EventParticipantService {
                 final Guest guest = guestService.getGuest(requestDto.getOwnerId());
                 eventParticipant = EventParticipant.ofGuest(event, guest);
             }
-            default -> {
-                throw new InvalidValueException("정의되지 않은 유저타입입니다. type = " + requestDto.getOwnerType());
-            }
+            default -> throw new InvalidValueException("정의되지 않은 유저타입입니다. type = " + requestDto.getOwnerType());
         }
         eventParticipantRepository.save(eventParticipant);
 
@@ -101,9 +99,7 @@ public class EventParticipantService {
         if (participant.isPresent()) {
             return participant.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[EventParticipantService] Entity Not Found(id=%d)", id)
-                    .toString();
+            final var msg = String.format("[EventParticipantService] Entity Not Found(id=%s)", id);
             throw new EntityNotFoundException(msg);
         }
     }
@@ -116,10 +112,8 @@ public class EventParticipantService {
      */
     public EventParticipant get(UUID eventId, UUID roleId, Role role) throws EntityNotFoundException {
         final var event = eventService.getEvent(eventId);
-        final var formatter = new Formatter();
-        final var msg = formatter.format("[EventParticipantService] Entity Not Found(event=%d, id=%d, role=%s)",
-                        eventId, roleId, role)
-                .toString();
+        final var msg = String.format("[EventParticipantService] Entity Not Found(event=%s, id=%s, role=%s)",
+                eventId, roleId, role);
         return switch (role) {
             case USER -> eventParticipantRepository.findByUserInEvent(userService.getUser(roleId), event)
                     .orElseThrow(() -> new EntityNotFoundException(msg));

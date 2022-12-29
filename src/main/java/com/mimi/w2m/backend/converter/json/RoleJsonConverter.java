@@ -3,14 +3,13 @@ package com.mimi.w2m.backend.converter.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.domain.type.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
-import java.util.Formatter;
 import java.util.Objects;
 
 /**
@@ -31,9 +30,7 @@ public class RoleJsonConverter {
             try {
                 gen.writeString(value.getKey());
             } catch (IOException e) {
-                final var formatter = new Formatter();
-                final var msg = formatter.format("Serialize Failed")
-                        .toString();
+                final var msg = "Serialize Failed";
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
@@ -55,9 +52,7 @@ public class RoleJsonConverter {
                     throw new IOException();
                 }
             } catch (IOException e) {
-                final var formatter = new Formatter();
-                final var msg = formatter.format("Deserialize Failed")
-                        .toString();
+                final var msg = "Deserialize Failed";
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }

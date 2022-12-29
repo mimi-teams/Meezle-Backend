@@ -1,18 +1,17 @@
 package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.config.constants.Constants;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.IllegalAccessException;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.auth.CurrentUserInfo;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
-import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
-import com.mimi.w2m.backend.config.exception.IllegalAccessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Formatter;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -41,9 +40,7 @@ public class AuthService {
      **/
     public void isValidLogin(LoginInfo info, UUID id, Role role) throws IllegalAccessException {
         if (Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[AuthService] Illegal Access(id=%d, role=%s)", id, role)
-                    .toString();
+            final var msg = String.format("[AuthService] Illegal Access(id=%s, role=%s)", id, role);
             throw new IllegalAccessException(msg);
         }
     }
@@ -52,10 +49,8 @@ public class AuthService {
         try {
             eventParticipantService.get(eventId, info.loginId(), info.role());
         } catch (RuntimeException e) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[AuthService] Illegal Access(id=%d, role=%s, event=%d)", info.loginId(),
-                            info.role(), eventId)
-                    .toString();
+            final var msg = String.format("[AuthService] Illegal Access(id=%s, role=%s, event=%s)", info.loginId(),
+                    info.role(), eventId);
             throw new IllegalAccessException(msg);
         }
     }
@@ -65,7 +60,7 @@ public class AuthService {
         final var user = userService.getUser(userId);
 
         if (!Objects.equals(event.getHost(), user)) {
-            throw new IllegalAccessException(String.format("[AuthService] Illegal Access(id=%d, event=%d)", userId,  eventId));
+            throw new IllegalAccessException(String.format("[AuthService] Illegal Access(id=%s, event=%s)", userId, eventId));
         }
     }
 

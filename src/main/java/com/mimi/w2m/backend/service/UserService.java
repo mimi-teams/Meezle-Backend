@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Formatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -92,9 +91,7 @@ public class UserService {
         if (user.isPresent()) {
             return user.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[UserService] Entity Not Found" + "(id=%s)", id)
-                    .toString();
+            final var msg = String.format("[UserService] Entity Not Found" + "(id=%s)", id);
             throw new EntityNotFoundException(msg);
         }
     }
@@ -116,9 +113,7 @@ public class UserService {
         if (user.isPresent()) {
             return user.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[UserService] Entity Not Found" + "(email=%s)", email)
-                    .toString();
+            final var msg = String.format("[UserService] Entity Not Found" + "(email=%s)", email);
             throw new EntityNotFoundException(msg);
         }
     }
