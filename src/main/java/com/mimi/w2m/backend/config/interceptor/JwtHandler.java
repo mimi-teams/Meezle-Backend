@@ -8,19 +8,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.repository.BlockedJwtRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * JWT를 생성하고 인증을 담당하는 서비스
@@ -29,8 +22,6 @@ import java.util.concurrent.TimeUnit;
  * @since 2022-12-04
  */
 @Service
-@EnableAsync
-@EnableScheduling
 @Transactional(readOnly = true)
 public class JwtHandler {
 
@@ -95,19 +86,6 @@ public class JwtHandler {
             // Invalid signature/claims
             return Optional.empty();
         }
-    }
-
-    /**
-     * Logout 된 Jwt Token 을 정기적으로 삭제시키기
-     *
-     * @author teddy
-     * @since 2022/12/28
-     **/
-    @Async
-    @Scheduled(timeUnit = TimeUnit.HOURS, fixedDelay = 24)
-    @Transactional
-    public void deleteBlockedToken() {
-        blockedJwtRepository.deleteByCreatedDateBefore(LocalDateTime.now().minus(12, ChronoUnit.HOURS));
     }
 
 

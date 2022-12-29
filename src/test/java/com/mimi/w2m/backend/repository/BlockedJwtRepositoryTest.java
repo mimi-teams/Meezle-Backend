@@ -38,11 +38,10 @@ class BlockedJwtRepositoryTest {
         //given
         var token1 = "jwt1";
         var token2 = "jwt2";
-        blockedJwtRepository.save(new BlockedJwt(token1));
+        blockedJwtRepository.save(new BlockedJwt(token1, LocalDateTime.now().minus(12, ChronoUnit.HOURS)));
+        blockedJwtRepository.save(new BlockedJwt(token2, LocalDateTime.now()));
         //when
-        Thread.sleep(2000);
-        blockedJwtRepository.save(new BlockedJwt(token2));
-        blockedJwtRepository.deleteByCreatedDateBefore(LocalDateTime.now().minus(1000, ChronoUnit.MILLIS));
+        blockedJwtRepository.deleteByExpiredDateBefore(LocalDateTime.now().minus(12, ChronoUnit.HOURS));
         //then
         assertThat(blockedJwtRepository.findById(token1)).isEmpty();
         assertThat(blockedJwtRepository.findById(token2)).isPresent();

@@ -16,6 +16,6 @@ import java.time.LocalDateTime;
  **/
 public interface BlockedJwtRepository extends JpaRepository<BlockedJwt, String> {
     @Modifying
-    void deleteByCreatedDateBefore(@Param("threshold") LocalDateTime threshold);
+    void deleteByExpiredDateBefore(@Param("threshold") LocalDateTime threshold);
 
 }

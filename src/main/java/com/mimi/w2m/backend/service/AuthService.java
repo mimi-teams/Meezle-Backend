@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.Formatter;
 import java.util.Objects;
 import java.util.UUID;
@@ -68,7 +69,7 @@ public class AuthService {
         final var user = userService.getUser(userId);
 
         if (!Objects.equals(event.getHost(), user)) {
-            throw new IllegalAccessException(String.format("[AuthService] Illegal Access(id=%s, event=%s)", userId,  eventId));
+            throw new IllegalAccessException(String.format("[AuthService] Illegal Access(id=%s, event=%s)", userId, eventId));
         }
     }
 
@@ -97,8 +98,13 @@ public class AuthService {
     }
 
     public void logoutToken(String token) {
-        if(!blockedJwtRepository.existsById(token)) {
-            blockedJwtRepository.save(new BlockedJwt(token));
+        if (!blockedJwtRepository.existsById(token)) {
+            blockedJwtRepository.save(BlockedJwt
+                    .builder()
+                    .token(token)
+                    .expiredDate(LocalDateTime.now())
+                    .build()
+            );
         }
     }
 }
