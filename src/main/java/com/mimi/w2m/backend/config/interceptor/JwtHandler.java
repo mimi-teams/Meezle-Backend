@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.mimi.w2m.backend.domain.BlockedJwt;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.repository.BlockedJwtRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,9 +75,9 @@ public class JwtHandler {
         final DecodedJWT decodedJWT;
 
         try {
-            blockedJwtRepository.findById(token).ifPresent((BlockedJwt jwt) -> {
+            if (blockedJwtRepository.existsById(token)) {
                 throw new JWTVerificationException("Blocked Jwt Token");
-            });
+            }
 
             JWTVerifier verifier = JWT.require(algorithm)
                     // specify a specific claim validations
@@ -105,16 +104,10 @@ public class JwtHandler {
      * @since 2022/12/28
      **/
     @Async
-    @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 30)
+    @Scheduled(timeUnit = TimeUnit.HOURS, fixedDelay = 24)
     @Transactional
     public void deleteBlockedToken() {
-        var tokens = blockedJwtRepository.findAll().stream()
-                .filter((BlockedJwt blockedJwt) ->
-                        LocalDateTime.now().isAfter(
-                                blockedJwt.getCreatedDate().plus(25, ChronoUnit.MINUTES)
-                        ))
-                .toList();
-        blockedJwtRepository.deleteAll(tokens);
+        blockedJwtRepository.deleteByCreatedDateBefore(LocalDateTime.now().minus(12, ChronoUnit.HOURS));
     }
 
 
