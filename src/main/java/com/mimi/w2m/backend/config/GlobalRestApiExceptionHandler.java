@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.config;
 
-import com.mimi.w2m.backend.config.exception.*;
 import com.mimi.w2m.backend.config.exception.IllegalAccessException;
+import com.mimi.w2m.backend.config.exception.*;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import com.mimi.w2m.backend.dto.base.ApiResultCode;
 import org.junit.jupiter.api.Order;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
-import java.util.Formatter;
 
 /**
  * Exception Handler 요청 시 발생 가능한 예외 사항에 대한 반환 값을 다룬다
@@ -26,15 +25,13 @@ import java.util.Formatter;
 @RestControllerAdvice
 public class GlobalRestApiExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalRestApiExceptionHandler.class.getName());
-    private final Formatter formatter = new Formatter();
-
     /**
      * 요청된 정보가 중복된 것일 때
      */
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @ExceptionHandler(EntityDuplicatedException.class)
     public ResponseEntity<ApiCallResponse<?>> handleEntityDuplicatedException(EntityDuplicatedException e) {
-        final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
+        final var log = String.format("[%s] : %s", e.getClass(), e.message);
         logger.warn(log);
 
         final var response = ApiCallResponse.of(ApiResultCode.ENTITY_DUPLICATED, e.messageToClient, null);
@@ -47,7 +44,7 @@ public class GlobalRestApiExceptionHandler {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiCallResponse<?>> handleEntityNotFoundException(EntityNotFoundException e) {
-        final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
+        final var log = String.format("[%s] : %s", e.getClass(), e.message);
         logger.warn(log);
 
         final var response = ApiCallResponse.of(ApiResultCode.ENTITY_NOT_FOUND, e.messageToClient, null);
@@ -60,7 +57,7 @@ public class GlobalRestApiExceptionHandler {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @ExceptionHandler(InvalidValueException.class)
     public ResponseEntity<ApiCallResponse<?>> handleInvalidValueException(InvalidValueException e) {
-        final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
+        final var log = String.format("[%s] : %s", e.getClass(), e.message);
         logger.warn(log);
 
         final var response = ApiCallResponse.of(ApiResultCode.BAD_REQUEST, e.messageToClient, null);
@@ -73,7 +70,7 @@ public class GlobalRestApiExceptionHandler {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @ExceptionHandler(IllegalAccessException.class)
     public ResponseEntity<ApiCallResponse<?>> handleUnauthorizedException(IllegalAccessException e) {
-        final var log = formatter.format("[%s] : %s", e.getClass(), e.message).toString();
+        final var log = String.format("[%s] : %s", e.getClass(), e.message);
         logger.warn(log);
 
         final var response = ApiCallResponse.of(ApiResultCode.ILLEGAL_ACCESS, e.messageToClient, null);

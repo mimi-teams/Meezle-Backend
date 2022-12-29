@@ -1,11 +1,10 @@
 package com.mimi.w2m.backend.converter.db;
 
-import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.domain.type.Role;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.util.Formatter;
 
 /**
  * RoleConverter
@@ -29,9 +28,7 @@ public class RoleConverter implements AttributeConverter<Role, String> {
         } else if (dbData.equals(Role.USER.getKey())) {
             return Role.USER;
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("Invalid Role String : %s", dbData)
-                    .toString();
+            final var msg = String.format("Invalid Role String : %s", dbData);
             throw new InvalidValueException(msg);
         }
     }

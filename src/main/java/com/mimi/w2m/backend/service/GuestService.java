@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Formatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,9 +48,7 @@ public class GuestService {
         if (guest.isPresent()) {
             return guest.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[GuestService] Entity Not Found(id=%d)", id)
-                    .toString();
+            final var msg = String.format("[GuestService] Entity Not Found(id=%s)", id);
             throw new EntityNotFoundException(msg);
         }
     }

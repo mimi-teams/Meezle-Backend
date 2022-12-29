@@ -3,14 +3,13 @@ package com.mimi.w2m.backend.converter.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
-import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.dto.event.ColorDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
-import java.util.Formatter;
 
 @JsonComponent
 public class ColorJsonConverter {
@@ -23,9 +22,7 @@ public class ColorJsonConverter {
             try {
                 gen.writeString(value.toString());
             } catch (IOException e) {
-                final var formatter = new Formatter();
-                final var msg = formatter.format("Serialize Failed")
-                        .toString();
+                final var msg = "Serialize Failed";
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
@@ -40,9 +37,7 @@ public class ColorJsonConverter {
                         .readTree(p);
                 return ColorDto.of(jsonNode.asText());
             } catch (IOException e) {
-                final var formatter = new Formatter();
-                final var msg = formatter.format("Deserialize Failed")
-                        .toString();
+                final var msg = "Deserialize Failed";
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
