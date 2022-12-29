@@ -97,7 +97,7 @@ public class AuthService {
     }
 
     public void logoutToken(String token) {
-        if(blockedJwtRepository.findById(token).isEmpty()) {
+        if(!blockedJwtRepository.existsById(token)) {
             blockedJwtRepository.save(new BlockedJwt(token));
         }
     }

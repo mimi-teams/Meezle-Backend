@@ -4,13 +4,14 @@ import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.user.UserRequestDto;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.UserRepository;
-import org.junit.jupiter.api.Test;
 import com.mimi.w2m.backend.testFixtures.UserTestFixture;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings({"unused", "NonAsciiCharacters"})
 public class UserApiTest extends End2EndTest {
