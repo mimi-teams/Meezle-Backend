@@ -6,8 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mimi.w2m.backend.domain.type.Role;
+import com.mimi.w2m.backend.repository.BlockedJwtRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.UUID;
  * @since 2022-12-04
  */
 @Service
+@Transactional(readOnly = true)
 public class JwtHandler {
 
     private final static String ISSUER = "mezzle";
@@ -27,10 +30,12 @@ public class JwtHandler {
     private final static String CLAIM_USER_ROLE = "USER_ROLE";
 
     private final Algorithm algorithm;
+    private final BlockedJwtRepository blockedJwtRepository;
 
     public JwtHandler(
-            @Value("${auth.token.secret}") String secretKeyString
-    ) {
+            @Value("${auth.token.secret}") String secretKeyString,
+            BlockedJwtRepository blockedJwtRepository) {
+        this.blockedJwtRepository = blockedJwtRepository;
         byte[] secretKey = Base64Utils.decodeFromString(secretKeyString);
         assert secretKey.length == 32 : "secret key 길이는 32byte 여야 합니다.";
         this.algorithm = Algorithm.HMAC256(secretKey);
@@ -61,6 +66,10 @@ public class JwtHandler {
         final DecodedJWT decodedJWT;
 
         try {
+            if (blockedJwtRepository.existsById(token)) {
+                throw new JWTVerificationException("Blocked Jwt Token");
+            }
+
             JWTVerifier verifier = JWT.require(algorithm)
                     // specify a specific claim validations
                     .withIssuer(ISSUER)
@@ -78,6 +87,7 @@ public class JwtHandler {
             return Optional.empty();
         }
     }
+
 
     public static class TokenInfo {
         public final UUID userId;
