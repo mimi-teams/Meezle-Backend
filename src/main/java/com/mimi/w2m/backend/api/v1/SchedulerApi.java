@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "Scheduler Api", description = "Backend Scheduling 과 관련된 Api. Client 에서는 무시해도 괜찮습니다.")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping(path = "/v1/schedulers")
+@RequestMapping(path = "/v1/batch")
 @RestController
 public class SchedulerApi {
     private final SchedulerService schedulerService;
