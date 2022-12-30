@@ -43,7 +43,7 @@ class SchedulerApiTest extends End2EndTest {
 
         //when&then
         mockMvc.perform(
-                        post("/v1/schedulers/clean?data=LOGOUT_TOKEN")
+                        post("/v1/batch/clean?data=LOGOUT_TOKEN")
                 )
                 .andExpect(status().isOk());
         assertThat(blockedJwtRepository.findById("token1")).isEmpty();
