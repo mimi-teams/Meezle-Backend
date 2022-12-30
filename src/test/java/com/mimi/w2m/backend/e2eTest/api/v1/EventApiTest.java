@@ -5,8 +5,8 @@ import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
+import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
@@ -14,13 +14,16 @@ import com.mimi.w2m.backend.service.GuestService;
 import com.mimi.w2m.backend.testFixtures.EventTestFixture;
 import com.mimi.w2m.backend.testFixtures.GuestTestFixture;
 import com.mimi.w2m.backend.testFixtures.UserTestFixture;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Set;
+import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -230,6 +233,30 @@ public class EventApiTest extends End2EndTest {
                 )
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
+        ;
+    }
+
+    @Test
+    @DisplayName("이용자가 생성한 모든 이벤트 반환")
+    void getAllByHost() throws Exception {
+        //given
+        final var user = userRepository.save(UserTestFixture.createUser());
+        final var events = IntStream.iterate(1, i -> i + 1).limit(10)
+                .mapToObj(i -> EventTestFixture.createEvent(user))
+                .toList();
+        eventRepository.saveAll(events);
+
+        final var token = login(user);
+
+        //when & then
+        mockMvc.perform(
+                        get("/v1/events/host")
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(10)))
         ;
     }
 }

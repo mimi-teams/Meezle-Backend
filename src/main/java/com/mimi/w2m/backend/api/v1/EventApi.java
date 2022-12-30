@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.config.interceptor.Auth;
+import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipant;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
@@ -8,13 +9,16 @@ import com.mimi.w2m.backend.dto.event.EventGetResponse;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.event.EventResponseDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantDto;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
+import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
 import com.mimi.w2m.backend.dto.participant.guest.GuestCreateDto;
 import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.dto.participant.guest.GuestLoginResponse;
 import com.mimi.w2m.backend.dto.participant.guest.GuestOneResponseDto;
-import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
-import com.mimi.w2m.backend.dto.participant.EventParticipantRequestDto;
-import com.mimi.w2m.backend.service.*;
+import com.mimi.w2m.backend.service.AuthService;
+import com.mimi.w2m.backend.service.EventParticipantService;
+import com.mimi.w2m.backend.service.EventService;
+import com.mimi.w2m.backend.service.GuestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -60,6 +64,21 @@ public class EventApi {
         return ApiCallResponse.ofSuccess(EventGetResponse.of(event, eventSelectableParticipleTimes, eventParticipants));
     }
 
+    @Operation(summary = "[인증]이용자가 생성한 모든 이벤트 반환", description = "이용자가 생성한 모든 이벤트 정보를 반환한다. 해당 이용자만 가능하다.")
+    @Auth
+    @GetMapping("/host")
+    public @Valid ApiCallResponse<List<EventGetResponse>> getAllByHost() {
+        final var currentUserInfo = authService.getCurrentUserInfo();
+        final var eventGetResponses = eventService.getAllByHost(currentUserInfo.userId()).stream()
+                .map((Event event) -> {
+                    final var eventSelectableParticipleTimes = eventService.getEventSelectableParticipleTimes(event.getId());
+                    final var eventParticipants = eventParticipantService.getEventParticipants(event.getId());
+                    return EventGetResponse.of(event, eventSelectableParticipleTimes, eventParticipants);
+                })
+                .toList();
+        return ApiCallResponse.ofSuccess(eventGetResponses);
+    }
+
     @Operation(summary = "[인증] 새로운 이벤트 등록", description = "새로운 이벤트를 등록한다. 가입한 이용자만 이용할 수 있다")
     @Auth
     @PostMapping("")
@@ -79,7 +98,7 @@ public class EventApi {
     @PatchMapping(path = "/{eventId}")
     public @Valid ApiCallResponse<EventResponseDto> patch(
             @Parameter(name = "eventId", description = "이벤트의 ID", in = ParameterIn.PATH, required = true)
-             @NotNull @Valid @PathVariable("eventId") UUID eventId,
+            @NotNull @Valid @PathVariable("eventId") UUID eventId,
             @Valid @RequestBody EventRequestDto requestDto
     ) {
         final var currentUserInfo = authService.getCurrentUserInfo();
