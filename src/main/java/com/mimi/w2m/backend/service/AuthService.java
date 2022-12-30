@@ -11,7 +11,6 @@ import com.mimi.w2m.backend.repository.BlockedJwtRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
@@ -45,9 +44,7 @@ public class AuthService {
      **/
     public void isValidLogin(LoginInfo info, UUID id, Role role) throws IllegalAccessException {
         if (Objects.isNull(info) || !Objects.equals(info.loginId(), id) || !Objects.equals(info.role(), role)) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[AuthService] Illegal Access(id=%s, role=%s)", id, role)
-                    .toString();
+            final var msg = String.format("[AuthService] Illegal Access(id=%s, role=%s)", id, role);
             throw new IllegalAccessException(msg);
         }
     }
@@ -56,10 +53,8 @@ public class AuthService {
         try {
             eventParticipantService.get(eventId, info.loginId(), info.role());
         } catch (RuntimeException e) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[AuthService] Illegal Access(id=%s, role=%s, event=%s)", info.loginId(),
-                            info.role(), eventId)
-                    .toString();
+            final var msg = String.format("[AuthService] Illegal Access(id=%s, role=%s, event=%s)", info.loginId(),
+                    info.role(), eventId);
             throw new IllegalAccessException(msg);
         }
     }

@@ -71,7 +71,11 @@ public class UserApi {
 
         return ApiCallResponse.ofSuccess(null);
     }
-
+    /**
+     * 회원탈퇴 만들기
+     * @author teddy
+     * @since 2022/12/28
+    **/
     @Operation(summary = "회원 탈퇴",
             description = "[인증] 이용자를 삭제한다, 삭제 후에는 클라이언트에서 처리해주세요.")
     @Auth
@@ -80,10 +84,7 @@ public class UserApi {
         final CurrentUserInfo currentUserInfo = authService.getCurrentUserInfo();
 
         authService.logoutToken("");
-        userService.deleteNotReal(currentUserInfo.userId());
-
-        logger.info("유저 탈퇴 : userId = " + currentUserInfo.userId());
-
+        userService.deleteReal(currentUserInfo.userId());
         return ApiCallResponse.ofSuccess(null);
     }
 

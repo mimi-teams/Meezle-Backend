@@ -1,17 +1,17 @@
 package com.mimi.w2m.backend.service;
 
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
-import com.mimi.w2m.backend.repository.UserRepository;
+import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.dto.user.UserRequestDto;
-import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Formatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +29,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EventRepository eventRepository;
+    private final EventParticipantRepository eventParticipantRepository;
+    private final EventParticipantAbleTimeRepository eventParticipantAbleTimeRepository;
+    private final EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository;
+    private final GuestRepository guestRepository;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Optional<User> getUserByEmail(String email) {
@@ -62,7 +67,16 @@ public class UserService {
      **/
     @Transactional
     public void deleteReal(UUID userId) throws EntityNotFoundException {
-        var user = getUser(userId);
+        final var user = getUser(userId);
+        final var eventsCreatedByUser = eventRepository.findAllByHost(user);
+        eventsCreatedByUser.forEach((Event event)-> {
+            eventSelectableParticipleTimeRepository.deleteByEvent(event);
+            final var participants = eventParticipantRepository.findAllInEvent(event);
+            eventParticipantAbleTimeRepository.deleteByEventParticipantList(participants);
+            eventParticipantRepository.deleteAll(participants);
+            guestRepository.deleteAll(guestRepository.findAllByEvent(event));
+        });
+        eventRepository.deleteAll(eventsCreatedByUser);
         userRepository.delete(user);
     }
 
@@ -77,9 +91,7 @@ public class UserService {
         if (user.isPresent()) {
             return user.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[UserService] Entity Not Found" + "(id=%d)", id)
-                    .toString();
+            final var msg = String.format("[UserService] Entity Not Found" + "(id=%s)", id);
             throw new EntityNotFoundException(msg);
         }
     }
@@ -101,9 +113,7 @@ public class UserService {
         if (user.isPresent()) {
             return user.get();
         } else {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[UserService] Entity Not Found" + "(email=%s)", email)
-                    .toString();
+            final var msg = String.format("[UserService] Entity Not Found" + "(email=%s)", email);
             throw new EntityNotFoundException(msg);
         }
     }

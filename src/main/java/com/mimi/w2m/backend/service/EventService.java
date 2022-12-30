@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -77,7 +80,7 @@ public class EventService {
      */
     public Event getEvent(UUID id) throws EntityNotFoundException {
         return eventRepository.findById(id).orElseThrow(() -> {
-            throw new EntityNotFoundException(String.format("[EventService] Entity Not Found(id=%d)", id));
+            throw new EntityNotFoundException(String.format("[EventService] Entity Not Found(id=%s)", id));
         });
     }
 
@@ -124,9 +127,7 @@ public class EventService {
                                 LocalDateTime.now()))
                 .toList();
         if (events.isEmpty()) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[EventService] Entity Not Found(title=%s)", title)
-                    .toString();
+            final var msg = String.format("[EventService] Entity Not Found(title=%s)", title);
             throw new EntityNotFoundException(msg);
         } else {
             return events;
@@ -143,9 +144,7 @@ public class EventService {
         final var user = userService.getUser(hostId);
         final var events = eventRepository.findAllByHost(user);
         if (events.isEmpty()) {
-            final var formatter = new Formatter();
-            final var msg = formatter.format("[EventService] Entity Not Found(host=%d)", hostId)
-                    .toString();
+            final var msg = String.format("[EventService] Entity Not Found(host=%s)", hostId);
             throw new EntityNotFoundException(msg);
         } else {
             return events;

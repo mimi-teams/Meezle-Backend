@@ -6,14 +6,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.mimi.w2m.backend.dto.base.ApiResultCode;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.dto.base.ApiResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
  * @author yeh35
@@ -31,9 +30,7 @@ public class ApiResultCodeJsonConverter {
             try {
                 gen.writeString(String.valueOf(value.code));
             } catch (IOException e) {
-                final var formatter = new Formatter();
-                final var msg = formatter.format("Serialize Failed")
-                        .toString();
+                final var msg = "Serialize Failed";
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
@@ -48,9 +45,7 @@ public class ApiResultCodeJsonConverter {
                 final var code = Integer.parseInt(valueAsString);
                 return ApiResultCode.ofCode(code);
             } catch (Exception e) {
-                final var formatter = new Formatter();
-                final var msg = formatter.format("Deserialize Failed")
-                        .toString();
+                final var msg = "Deserialize Failed";
                 logger.error(msg);
                 throw new InvalidValueException(msg);
             }
