@@ -46,7 +46,7 @@ public class EventService {
         final var host = userService.getUser(hostId);
         final var event = eventRepository.save(requestDto.to(host));
 
-        final var selectableParticipleTimes = EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes());
+        final var selectableParticipleTimes = EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes().toParticipleTimeSet());
         eventSelectableParticipleTimeRepository.saveAll(selectableParticipleTimes);
 
         return event;
@@ -69,7 +69,7 @@ public class EventService {
         );
 
         eventSelectableParticipleTimeRepository.deleteByEvent(event);
-        eventSelectableParticipleTimeRepository.saveAll(EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes()));
+        eventSelectableParticipleTimeRepository.saveAll(EventSelectableParticipleTime.of(event, requestDto.getSelectableParticipleTimes().toParticipleTimeSet()));
 
         return event;
     }
