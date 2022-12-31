@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @since 2022/11/17
  **/
 @Getter
-@Schema(title = "색상 정보", type = "String", example = "#FFFFFFFF", description = "이벤트 색상 정보", pattern = "^#[0-9a-f]{6}$")
+@Schema(title = "색상 정보", type = "String", example = "#FFFFFF", description = "이벤트 색상 정보", pattern = "^#[0-9a-f]{6}$")
 public class ColorDto implements Serializable {
     @Min(0)
     @Max(255)
