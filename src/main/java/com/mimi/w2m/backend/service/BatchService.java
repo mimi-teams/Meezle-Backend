@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SchedulerService {
+public class BatchService {
     private final BlockedJwtRepository blockedJwtRepository;
 
     /**
