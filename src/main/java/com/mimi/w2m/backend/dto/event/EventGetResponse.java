@@ -25,7 +25,7 @@ public class EventGetResponse implements Serializable {
     private EventDto event;
 
     @Schema(description = "선택 가능한 시간")
-    private Set<ParticipleTime> selectableParticipleTimes;
+    private SelectableParticipleTimeDto selectableParticipleTimes;
 
 
     @Schema(name = "이벤트 참여자 정보들")
@@ -44,7 +44,7 @@ public class EventGetResponse implements Serializable {
                 .color(entity.getColor())
                 .description(entity.getDescription())
                 .build();
-        responseDto.selectableParticipleTimes = selectableParticipleTime;
+        responseDto.selectableParticipleTimes = SelectableParticipleTimeDto.of(selectableParticipleTime);
         responseDto.eventParticipants = eventParticipants;
         return responseDto;
     }

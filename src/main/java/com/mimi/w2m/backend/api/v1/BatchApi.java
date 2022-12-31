@@ -1,8 +1,8 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.domain.type.SchedulerDataType;
+import com.mimi.w2m.backend.domain.type.BatchActionType;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
-import com.mimi.w2m.backend.service.SchedulerService;
+import com.mimi.w2m.backend.service.BatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -29,17 +29,17 @@ import javax.validation.constraints.NotNull;
 @Validated
 @RequestMapping(path = "/v1/batch")
 @RestController
-public class SchedulerApi {
-    private final SchedulerService schedulerService;
+public class BatchApi {
+    private final BatchService batchService;
 
     @Operation(summary = "만료된 정보 정리", description = "[인증X] 더이상 이용되지 않는 정보를 정리한다.")
     @PostMapping(path = "/clean")
     public @Valid ApiCallResponse<?> clean(
             @Parameter(name = "data", description = "정리할 데이터", in = ParameterIn.QUERY, required = true)
-            @Valid @NotNull @RequestParam SchedulerDataType data
+            @Valid @NotNull @RequestParam BatchActionType data
     ) {
         switch (data) {
-            case LOGOUT_TOKEN -> schedulerService.cleanLogoutJwtTokens();
+            case LOGOUT_TOKEN -> batchService.cleanLogoutJwtTokens();
         }
         return ApiCallResponse.ofSuccess(null);
     }

@@ -5,6 +5,7 @@ import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
+import com.mimi.w2m.backend.dto.event.SelectableParticipleTimeDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
 import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
@@ -18,13 +19,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,11 +48,15 @@ public class EventApiTest extends End2EndTest {
         final String token = login(user);
         final var requestDto = EventRequestDto.builder()
                 .title("아아 테스트")
-                .selectableParticipleTimes(Set.of(
-                        ParticipleTime.of("MONDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
-                        ParticipleTime.of("TUESDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
-                        ParticipleTime.of("THURSDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|")
-                ))
+                .selectableParticipleTimes(
+                        SelectableParticipleTimeDto.of(
+                                Set.of(
+                                        ParticipleTime.of("MONDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                                        ParticipleTime.of("TUESDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                                        ParticipleTime.of("THURSDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|")
+                                )
+                        )
+                )
                 .dDay(null)
                 .color(ColorDto.of("#ffffff"))
                 .description("테스트입니다람쥐")
@@ -88,6 +93,7 @@ public class EventApiTest extends End2EndTest {
                         get("/v1/events/{id}", event.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(event.getTitle()))
@@ -111,10 +117,14 @@ public class EventApiTest extends End2EndTest {
 
         final var requestDto = EventRequestDto.builder()
                 .title("수정된 테스트 이벤트")
-                .selectableParticipleTimes(Set.of(
-                        ParticipleTime.of("SATURDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
-                        ParticipleTime.of("SUNDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|")
-                ))
+                .selectableParticipleTimes(
+                        SelectableParticipleTimeDto.of(
+                                Set.of(
+                                        ParticipleTime.of("SATURDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|"),
+                                        ParticipleTime.of("SUNDAY[T]10:00:00-12:00:00|13:00:00-14:00:00|")
+                                )
+                        )
+                )
                 .dDay(null)
                 .color(ColorDto.of("#ffffff"))
                 .description("수정되었습니다람쥐")
@@ -231,7 +241,7 @@ public class EventApiTest extends End2EndTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk())
         ;
     }
@@ -254,7 +264,7 @@ public class EventApiTest extends End2EndTest {
                                 .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(10)))
         ;

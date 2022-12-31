@@ -1,3 +1,10 @@
+create table blocked_jwt (
+                             token varchar(255) not null,
+                             created_date datetime(6) not null,
+                             last_modified_date datetime(6) not null,
+                             expired_date datetime(6) not null,
+                             primary key (token)
+) engine=InnoDB;
 
 create table event (
                        event_id BINARY(16) not null,

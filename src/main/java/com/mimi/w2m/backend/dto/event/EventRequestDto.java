@@ -1,6 +1,5 @@
 package com.mimi.w2m.backend.dto.event;
 
-import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  * EventRequestDto
@@ -34,7 +32,7 @@ public class EventRequestDto implements Serializable {
     @Schema(title = "참여자들이 선택 가능한 시간", description = "이벤트 참여자들이 선택할 수 있는 시간의 범위를 지정")
     @NotNull
     @Valid
-    private Set<ParticipleTime> selectableParticipleTimes;
+    private SelectableParticipleTimeDto selectableParticipleTimes;
 
     @Schema(title = "시간 투표 종료일", description = "이벤트 참여자들이 이벤트 시간을 확정하기 위한 투표를 할 수 있는 마지막 시간을 지정",
             example = "2022-12-01T00:00:00")
@@ -57,7 +55,7 @@ public class EventRequestDto implements Serializable {
     @SuppressWarnings("unused")
     @Builder
     public EventRequestDto(String title,
-                           @Nullable Set<ParticipleTime> selectableParticipleTimes,
+                           @Nullable SelectableParticipleTimeDto selectableParticipleTimes,
                            @Nullable LocalDateTime dDay, ColorDto color,
                            @Nullable String description) {
         this.title = title;

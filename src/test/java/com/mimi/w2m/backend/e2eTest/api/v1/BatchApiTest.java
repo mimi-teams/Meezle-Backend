@@ -14,15 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * SchedulerApiTest
- *
- * @author teddy
- * @version 1.0.0
- * @since 2022/12/29
- **/
-@SuppressWarnings({"unused", "NonAsciiCharacters"})
-class SchedulerApiTest extends End2EndTest {
+@SuppressWarnings({"unused"})
+class BatchApiTest extends End2EndTest {
     @Autowired
     protected BlockedJwtRepository blockedJwtRepository;
 
