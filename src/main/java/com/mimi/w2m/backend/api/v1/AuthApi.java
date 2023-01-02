@@ -53,9 +53,10 @@ public class AuthApi {
     @Operation(summary = "Kakao OAuth2 로그인 이후 리다이렉션", description = "로그인 이후 완료 처리된다.")
     @GetMapping(path = "/oauth2/authorization/redirect/kakao")
     public ApiCallResponse<LoginSuccessResponse> oauth2Authorization(
-            @RequestParam String code
+            @RequestParam String code,
+            @RequestParam String requestUrl
     ) {
-        final User user = oauth2Service.afterAuthorization(OAuth2PlatformType.KAKAO, code);
+        final User user = oauth2Service.afterAuthorization(OAuth2PlatformType.KAKAO, code, requestUrl);
         final String token = jwtHandler.createToken(user.getId(), Role.USER);
 
         return ApiCallResponse.ofSuccess(

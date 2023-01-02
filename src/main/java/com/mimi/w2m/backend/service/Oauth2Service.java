@@ -80,9 +80,10 @@ public class Oauth2Service {
     @Transactional
     public User afterAuthorization(
             OAuth2PlatformType platformType,
-            String authorizationCode
+            String authorizationCode,
+            String requestUrl
     ) {
-        final OAuth2TokenInfo tokenInfo = loadToken(platformType, authorizationCode);
+        final OAuth2TokenInfo tokenInfo = loadToken(platformType, authorizationCode, requestUrl);
         final OAuth2UserInfo OAuth2UserInfo = loadOAuth2UserInfo(tokenInfo);
         //당장은 뭔가 하는게 없어서 Oauth2 Token을 저장하지 않고 날린다.
 
@@ -105,14 +106,15 @@ public class Oauth2Service {
      */
     protected OAuth2TokenInfo loadToken(
             OAuth2PlatformType platformType,
-            String authorizationCode
+            String authorizationCode,
+            String requestUrl
     ) {
         switch (platformType) {
             case KAKAO -> {
                 final var tokenRequest = KakaoTokenRequest.builder()
                         .clientId(kakaoOauth2ClientId)
                         .clientSecret(kakaoOauth2ClientSecret)
-                        .redirectUri(kakaoOauth2RedirectUri)
+                        .redirectUri(requestUrl)
                         .code(authorizationCode)
                         .build();
 
