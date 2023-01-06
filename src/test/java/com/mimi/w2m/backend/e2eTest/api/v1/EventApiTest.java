@@ -1,7 +1,6 @@
 package com.mimi.w2m.backend.e2eTest.api.v1;
 
-import com.mimi.w2m.backend.domain.Event;
-import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.*;
 import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.dto.event.ColorDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
@@ -9,17 +8,22 @@ import com.mimi.w2m.backend.dto.event.SelectableParticipleTimeDto;
 import com.mimi.w2m.backend.dto.participant.EventParticipantRequest;
 import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.e2eTest.End2EndTest;
+import com.mimi.w2m.backend.repository.EventParticipantAbleTimeRepository;
+import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.service.GuestService;
 import com.mimi.w2m.backend.testFixtures.EventTestFixture;
 import com.mimi.w2m.backend.testFixtures.GuestTestFixture;
+import com.mimi.w2m.backend.testFixtures.ParticipleTimeFixture;
 import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -36,6 +40,14 @@ public class EventApiTest extends End2EndTest {
     protected UserRepository userRepository;
     @Autowired
     protected EventRepository eventRepository;
+
+    @Autowired
+    protected EventParticipantRepository eventParticipantRepository;
+
+    @Autowired
+    protected EventParticipantAbleTimeRepository eventParticipantAbleTimeRepository;
+
+
     @Autowired
     protected GuestService guestService;
 
@@ -157,6 +169,35 @@ public class EventApiTest extends End2EndTest {
 
         final Event event = EventTestFixture.createEvent(user);
         eventRepository.save(event);
+
+        //when & then
+        mockMvc.perform(
+                        delete("/v1/events/{id}", event.getId())
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+        ;
+    }
+
+    @Test
+    void 이벤트_삭제_참가한_사람이_있는_경우() throws Exception {
+        // given
+        final User user = UserTestFixture.createUser();
+        userRepository.save(user);
+
+        final String token = login(user);
+
+        final Event event = EventTestFixture.createEvent(user);
+        eventRepository.save(event);
+
+        final var guestCreateDto = GuestTestFixture.createGuestCreateDto(event);
+        Guest guest = guestService.create(guestCreateDto);
+
+        EventParticipant eventParticipant = eventParticipantRepository.save(EventParticipant.ofGuest(event, guest));
+
+        Set<EventParticipantAbleTime> ableTimes = EventParticipantAbleTime.of(eventParticipant, new HashSet<>(ParticipleTimeFixture.createParticipleTime()));
+        eventParticipantAbleTimeRepository.saveAll(ableTimes);
 
         //when & then
         mockMvc.perform(
