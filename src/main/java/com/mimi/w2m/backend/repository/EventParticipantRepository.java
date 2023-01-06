@@ -49,4 +49,5 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
     @Query("DELETE FROM EventParticipant t WHERE t = :participant")
     void deleteByEventParticipant(@Param("participant") EventParticipant participant);
 
+    void deleteByEvent(Event event);
 }
