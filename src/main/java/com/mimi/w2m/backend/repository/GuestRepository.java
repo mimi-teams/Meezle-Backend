@@ -27,4 +27,6 @@ public interface GuestRepository extends JpaRepository<Guest, UUID> {
 
     @Query("SELECT g FROM Guest g WHERE g.event = :event")
     List<Guest> findAllByEvent(@Param("event") Event event);
+
+    int deleteByEvent(Event event);
 }
