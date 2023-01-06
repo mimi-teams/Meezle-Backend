@@ -24,5 +24,7 @@ Meezle 은 모임 일정을 편리하게 관리할 수 있도록 돕습니다. <
 </p>
 
 <h3 align=left> Tech Stack </h3>
+<p>
 <img src="https://img.shields.io/badge/-spring%20boot-gray?style=flat&logo=Spring Boot&logoColor=#6DB33F" alt="Spring Boot"/>
 <img src="https://img.shields.io/badge/-gcp-gray?style=flat&logo=Google Cloud&logoColor=#4285F4" alt="GCP" />
+</p>
