@@ -3,6 +3,9 @@
 <h2 align=center> Introduction </h2>
 
 <h3 align=left> What is Meezle? </h3>
+<p align=center>
+<img src="https://user-images.githubusercontent.com/58219267/211015242-ee2789c8-aaeb-4219-b791-d94d776f70e4.png" alt="Example"/>
+</p>
 <p align=left>
 동호회, 스터디 등의 모임에서 가장 중요하고, 또 어려운 것은 무엇일까요? <br />
 바로 <strong>🕐 시간을 정하는 것</strong> 입니다. <br /> <br />
