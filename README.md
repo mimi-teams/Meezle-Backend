@@ -17,12 +17,13 @@ Meezle 은 모임 일정을 편리하게 관리할 수 있도록 돕습니다. <
 <p align=left>
 <strong>예상오</strong> <br />
 <ul>
-  <li> Job &nbsp;&nbsp; : Project Leader, Senior Engineer </li>
+  <li> Job &nbsp;&nbsp; : Project Leader, Backend Engineer </li>
+  <li> Profile : <a href=https://github.com/yeh35> Github </a> </li>
 </ul>
 <strong>윤영로</strong> <br />
 <ul>
-  <li> Job &nbsp;&nbsp;&nbsp;&nbsp; : Junior Engineer </li>
-  <li> Profile : <a href=https://github.com/YeongRoYun> YeongRoYun </a> </li>
+  <li> Job &nbsp;&nbsp;&nbsp;&nbsp; : Backend Engineer </li>
+  <li> Profile : <a href=https://github.com/YeongRoYun> Github </a> </li>
 </ul>
 </p>
 
