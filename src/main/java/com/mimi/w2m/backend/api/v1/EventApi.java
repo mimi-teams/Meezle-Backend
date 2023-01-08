@@ -1,5 +1,7 @@
 package com.mimi.w2m.backend.api.v1;
 
+import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalenderListResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
 import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipant;
@@ -15,10 +17,7 @@ import com.mimi.w2m.backend.dto.participant.guest.GuestCreateDto;
 import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.dto.participant.guest.GuestLoginResponse;
 import com.mimi.w2m.backend.dto.participant.guest.GuestOneResponseDto;
-import com.mimi.w2m.backend.service.AuthService;
-import com.mimi.w2m.backend.service.EventParticipantService;
-import com.mimi.w2m.backend.service.EventService;
-import com.mimi.w2m.backend.service.GuestService;
+import com.mimi.w2m.backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -27,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -50,6 +50,7 @@ public class EventApi {
 
     private final EventService eventService;
     private final AuthService authService;
+    private final Oauth2Service oauth2Service;
 
     @Operation(summary = "이벤트 정보 반환", description = "ID에 해당하는 이벤트 정보를 반환한다. 이벤트 참여자만 이용할 수 있다")
     @GetMapping("/{eventId}")
@@ -187,5 +188,18 @@ public class EventApi {
         eventParticipantService.participate(eventParticipantRequest);
 
         return ApiCallResponse.ofSuccess(null);
+    }
+
+    @Operation(summary = "[인증] 카카오 캘린더 조회", description = "카카오 캘린더 정보를 조회한다.")
+    @Auth(Role.USER)
+    @GetMapping("/kakao")
+    public @Valid ApiCallResponse<KakaoCalenderListResponse> getKakaoCalendars(
+            HttpServletRequest request,
+            @RequestParam(value = "filter", required = false) KakaoCalendarType filter
+    ) {
+        final var currentUser = authService.getCurrentUserInfo();
+        final var oAuth2TokenInfo = oauth2Service.getToken(currentUser.userId());
+        final var calendars = eventService.getKakaoCalendars(oAuth2TokenInfo.getAccessToken(), filter);
+        return ApiCallResponse.ofSuccess(calendars);
     }
 }

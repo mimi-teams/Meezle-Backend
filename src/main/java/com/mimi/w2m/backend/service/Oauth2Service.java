@@ -2,18 +2,22 @@ package com.mimi.w2m.backend.service;
 
 import com.mimi.w2m.backend.client.kakao.KaKaoApiClient;
 import com.mimi.w2m.backend.client.kakao.KaKaoAuthApiClient;
-import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenRequest;
-import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenResponse;
-import com.mimi.w2m.backend.client.kakao.dto.KakaoUserInfoResponse;
+import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenRequest;
+import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenResponse;
+import com.mimi.w2m.backend.client.kakao.dto.user.KakaoUserInfoResponse;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.domain.User;
+import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
 import com.mimi.w2m.backend.dto.auth.OAuth2TokenInfo;
 import com.mimi.w2m.backend.dto.auth.OAuth2UserInfo;
-import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.repository.Oauth2Repository;
 import com.mimi.w2m.backend.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 /**
  * OAuth2 관련 처리를 해주는 서비스
@@ -27,6 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class Oauth2Service {
 
+    private final KaKaoAuthApiClient kaKaoAuthApiClient;
+    private final KaKaoApiClient kaoApiClient;
+    private final UserService userService;
+    private final Oauth2Repository oauth2Repository;
     @Value("${external.client.kakao.oauth2.profile.base-url}")
     protected String kakaoOauth2BaseUrl;
     @Value("${external.client.kakao.oauth2.profile.authorization-uri}")
@@ -37,10 +45,6 @@ public class Oauth2Service {
     protected String kakaoOauth2ClientSecret;
     @Value("${oauth2.kakao.redirect-url}")
     protected String kakaoOauth2RedirectUri;
-
-    private final KaKaoAuthApiClient kaKaoAuthApiClient;
-    private final KaKaoApiClient kaoApiClient;
-    private final UserService userService;
 
     /**
      * OAuth2 로그인 URL
@@ -61,6 +65,8 @@ public class Oauth2Service {
                         .append(kakaoOauth2RedirectUri)
                         .append("&")
                         .append("response_type=code")
+                        .append("&")
+                        .append("scope=talk_message,talk_calendar")
                         .toString();
             }
             default -> {
@@ -84,17 +90,19 @@ public class Oauth2Service {
             String requestUrl
     ) {
         final OAuth2TokenInfo tokenInfo = loadToken(platformType, authorizationCode, requestUrl);
-        final OAuth2UserInfo OAuth2UserInfo = loadOAuth2UserInfo(tokenInfo);
-        //당장은 뭔가 하는게 없어서 Oauth2 Token을 저장하지 않고 날린다.
+        final OAuth2UserInfo oAuth2UserInfo = loadOAuth2UserInfo(tokenInfo);
+
 
         //noinspection UnnecessaryLocalVariable
-        final User user = userService.getUserByEmail(OAuth2UserInfo.getEmail()).orElseGet(() -> {
+        final User user = userService.getUserByEmail(oAuth2UserInfo.getEmail()).orElseGet(() -> {
             /*
              * 회원가입 처리
              */
-            return userService.registerUser(OAuth2UserInfo.getName(), OAuth2UserInfo.getEmail());
+            return userService.registerUser(oAuth2UserInfo.getName(), oAuth2UserInfo.getEmail());
         });
-
+        //캘린더를 이용하기 위해 Kakao Oauth2 Token 을 저장한다.
+        oauth2Repository.findByUser(user).ifPresent(oauth2Repository::delete);
+        oauth2Repository.save(tokenInfo.to(user));
         return user;
     }
 
@@ -148,4 +156,16 @@ public class Oauth2Service {
         }
     }
 
+    /**
+     * Oauth2 Token 가져오기
+     *
+     * @author teddy
+     * @since 2023/01/08
+     **/
+    public OAuth2TokenInfo getToken(UUID userId) {
+        final var user = userService.getUser(userId);
+        final var oauth2Token = oauth2Repository.findByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("[Oauth2Service] There are no token for %s", user), "이용자의 Oauth Token 이 없습니다."));
+        return OAuth2TokenInfo.of(oauth2Token);
+    }
 }

@@ -40,6 +40,7 @@ public class AuthApi {
     /**
      * Kakao Oauth2 과정에서 인가 과정에서 사용된 Redirect URL 과 Access Token 을 발급할 때 사용된 것은 동일해야 한다.
      * 또한, 이 Redirect URL 은 KaKao App 의 Redirect Url 에 등록되어 있어야 한다.
+     * + 캘린더 및 메시지 권한을 획득할 수 있도록 추가
      * @author teddy
      * @since 2023/01/07
      *

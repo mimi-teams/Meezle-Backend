@@ -1,6 +1,6 @@
 package com.mimi.w2m.backend.client.kakao;
 
-import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenResponse;
+import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenResponse;
 import com.mimi.w2m.backend.config.exception.BadGatewayException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

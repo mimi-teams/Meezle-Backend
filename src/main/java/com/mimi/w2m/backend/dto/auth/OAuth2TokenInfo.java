@@ -1,6 +1,8 @@
 package com.mimi.w2m.backend.dto.auth;
 
-import com.mimi.w2m.backend.client.kakao.dto.KakaoTokenResponse;
+import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenResponse;
+import com.mimi.w2m.backend.domain.Oauth2Token;
+import com.mimi.w2m.backend.domain.User;
 import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,4 +54,24 @@ public class OAuth2TokenInfo {
                 .build();
     }
 
+    public static OAuth2TokenInfo of(Oauth2Token oauth2Token) {
+        return OAuth2TokenInfo.builder()
+                .platformType(oauth2Token.getPlatformType())
+                .accessToken(oauth2Token.getAccessToken())
+                .accessTokenExpires(oauth2Token.getAccessTokenExpires())
+                .refreshToken(oauth2Token.getRefreshToken())
+                .refreshTokenExpires(oauth2Token.getRefreshTokenExpires())
+                .build();
+    }
+
+    public Oauth2Token to(User user) {
+        return Oauth2Token.builder()
+                .user(user)
+                .platformType(platformType)
+                .accessToken(accessToken)
+                .accessTokenExpires(accessTokenExpires)
+                .refreshToken(refreshToken)
+                .refreshTokenExpires(refreshTokenExpires)
+                .build();
+    }
 }
