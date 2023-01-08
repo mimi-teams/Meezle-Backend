@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
@@ -20,8 +21,10 @@ public class W2mApplication {
     @PostConstruct
     public void started() {
         // timezone UTC 셋팅
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC+9"));
-        logger.info("start time : " + ZonedDateTime.now());
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        logger.info("start time");
+        logger.info("ZonedDateTime now : " + ZonedDateTime.now());
+        logger.info("LocalDateTime now : " + LocalDateTime.now());
     }
 
     public static void main(String[] args) {
