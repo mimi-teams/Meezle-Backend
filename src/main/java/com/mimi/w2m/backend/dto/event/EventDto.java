@@ -67,7 +67,7 @@ public class EventDto implements Serializable {
         this.id = id;
         this.hostId = hostId;
         this.title = title;
-        this.dDay = Objects.requireNonNullElse(dDay, LocalDateTime.of(9999, 12, 31, 23, 59, 59));
+        this.dDay = dDay;
         this.color = color;
         this.description = Objects.requireNonNullElse(description, "");
     }
