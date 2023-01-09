@@ -1,8 +1,5 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.client.kakao.KaKaoApiClient;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalenderListResponse;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
 import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventSelectableParticipleTime;
@@ -12,7 +9,6 @@ import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.EventSelectableParticipleTimeRepository;
 import com.mimi.w2m.backend.repository.GuestRepository;
-import com.mimi.w2m.backend.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +32,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventService {
-    private final Logger logger = LoggerFactory.getLogger(EventService.class.getName());
-    private final KaKaoApiClient kakaoApiClient;
-    private final UserService userService;
-    private final EventRepository eventRepository;
-    private final EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository;
-    private final GuestRepository guestRepository;
-    private final EventParticipantRepository eventParticipantRepository;
+    protected final Logger logger = LoggerFactory.getLogger(EventService.class.getName());
+    protected final UserService userService;
+    protected final EventRepository eventRepository;
+    protected final EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository;
+    protected final GuestRepository guestRepository;
+    protected final EventParticipantRepository eventParticipantRepository;
 
     /**
      * 이벤트 생성(Host 는 EventParticipant 에 추가된다)
@@ -164,9 +159,5 @@ public class EventService {
 
     public void deleteAll(List<Event> events) {
         eventRepository.deleteAll(events);
-    }
-
-    public KakaoCalenderListResponse getKakaoCalendars(String accessToken, KakaoCalendarType filter) {
-        return kakaoApiClient.getCalenders(HttpUtils.withBearerToken(accessToken), filter);
     }
 }

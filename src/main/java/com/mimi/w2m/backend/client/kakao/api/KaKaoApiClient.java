@@ -1,7 +1,10 @@
-package com.mimi.w2m.backend.client.kakao;
+package com.mimi.w2m.backend.client.kakao.api;
 
+import com.mimi.w2m.backend.client.kakao.config.KaKaoFeignConfig;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalenderListResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalenderPostResponse;
 import com.mimi.w2m.backend.client.kakao.dto.user.KakaoUserInfoResponse;
 import com.mimi.w2m.backend.config.exception.BadGatewayException;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -37,4 +40,13 @@ public interface KaKaoApiClient {
              */
             @RequestParam(name = "filter", required = false) KakaoCalendarType filter
     );
+
+    @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
+    @PostMapping("/v2/api/calendar/create/calendar")
+    KakaoCalenderPostResponse createCalendar(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "color", required = false) KakaoCalendarColor color,
+            @RequestParam(name = "reminder", required = false) Integer reminder,
+            @RequestParam(name = "reminder_all_day", required = false) Integer reminderAllDay);
 }

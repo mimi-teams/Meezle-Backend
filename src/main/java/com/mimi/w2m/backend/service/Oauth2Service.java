@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.service;
 
-import com.mimi.w2m.backend.client.kakao.KaKaoApiClient;
-import com.mimi.w2m.backend.client.kakao.KaKaoAuthApiClient;
+import com.mimi.w2m.backend.client.kakao.api.KaKaoApiClient;
+import com.mimi.w2m.backend.client.kakao.api.KaKaoAuthApiClient;
 import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenRequest;
 import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenResponse;
 import com.mimi.w2m.backend.client.kakao.dto.user.KakaoUserInfoResponse;
@@ -13,6 +13,8 @@ import com.mimi.w2m.backend.dto.auth.OAuth2UserInfo;
 import com.mimi.w2m.backend.repository.Oauth2Repository;
 import com.mimi.w2m.backend.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ import java.util.UUID;
 @Service
 public class Oauth2Service {
 
+    private final Logger logger = LoggerFactory.getLogger("Oauth2Service");
     private final KaKaoAuthApiClient kaKaoAuthApiClient;
     private final KaKaoApiClient kaoApiClient;
     private final UserService userService;
@@ -100,8 +103,17 @@ public class Oauth2Service {
              */
             return userService.registerUser(oAuth2UserInfo.getName(), oAuth2UserInfo.getEmail());
         });
-        //캘린더를 이용하기 위해 Kakao Oauth2 Token 을 저장한다.
-        oauth2Repository.findByUser(user).ifPresent(oauth2Repository::delete);
+        /*
+          Oauth2 Token 저장.
+          Problem 1 : Delete -> Insert 를 수행할 때, Duplicated Entity Error 가 발생.
+          Problem 2 : Delete -> Find -> Insert 를 수행할 때, 정상 동작.
+          Reason : Hibernate 에서 The order of operations 가 정의됨(https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/event/internal/AbstractFlushingEventListener.html)
+                 : 즉, Insert -> Update -> Delete 순서로 실행되며, 중간에 Find 를 수행할 때, 내부적으로 Flush 가 실행되며 정상 동작한 것이었다.
+          Resolve : Delete -> Flush -> Insert 로 변경
+         */
+        var tokens = oauth2Repository.findByUser(user);
+        oauth2Repository.deleteAll(tokens);
+        oauth2Repository.flush();
         oauth2Repository.save(tokenInfo.to(user));
         return user;
     }
@@ -164,8 +176,10 @@ public class Oauth2Service {
      **/
     public OAuth2TokenInfo getToken(UUID userId) {
         final var user = userService.getUser(userId);
-        final var oauth2Token = oauth2Repository.findByUser(user)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("[Oauth2Service] There are no token for %s", user), "이용자의 Oauth Token 이 없습니다."));
-        return OAuth2TokenInfo.of(oauth2Token);
+        final var oauth2Token = oauth2Repository.findByUser(user);
+        if (oauth2Token.isEmpty()) {
+            throw new EntityNotFoundException(String.format("[Oauth2Service] There are no token for %s", user), "이용자의 Oauth Token 이 없습니다.");
+        }
+        return OAuth2TokenInfo.of(oauth2Token.get(0));
     }
 }

@@ -1,7 +1,9 @@
 package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalenderListResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
+import com.mimi.w2m.backend.client.kakao.service.KakaoService;
 import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipant;
@@ -26,9 +28,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +51,7 @@ public class EventApi {
     private final EventParticipantService eventParticipantService;
 
     private final EventService eventService;
+    private final KakaoService kakaoService;
     private final AuthService authService;
     private final Oauth2Service oauth2Service;
 
@@ -194,12 +197,27 @@ public class EventApi {
     @Auth(Role.USER)
     @GetMapping("/kakao")
     public @Valid ApiCallResponse<KakaoCalenderListResponse> getKakaoCalendars(
-            HttpServletRequest request,
             @RequestParam(value = "filter", required = false) KakaoCalendarType filter
     ) {
         final var currentUser = authService.getCurrentUserInfo();
         final var oAuth2TokenInfo = oauth2Service.getToken(currentUser.userId());
-        final var calendars = eventService.getKakaoCalendars(oAuth2TokenInfo.getAccessToken(), filter);
+        final var calendars = kakaoService.getKakaoCalendars(oAuth2TokenInfo.getAccessToken(), filter);
         return ApiCallResponse.ofSuccess(calendars);
+    }
+
+    @Operation(summary = "[인증] 카카오 캘린더 생성", description = "Meezle 에서 생성된 이벤트를 등록하기 위한 카카오 서브 캘린더를 생성한다. 캘린더가 이미 생성된 경우, 에러를 반환한다.")
+    @Auth(Role.USER)
+    @PostMapping("/kakao")
+    public @Valid ApiCallResponse<String> createKakaoCalendar(
+            @Size(min = 1, max = 50) @NotNull @RequestParam(value = "name") String name,
+            @RequestParam(value = "color", required = false) KakaoCalendarColor color,
+            @RequestParam(value = "reminder", required = false) Integer reminder,
+            @RequestParam(value = "reminder_all_day", required = false) Integer reminderAllDay
+    ) {
+        final var currentUser = authService.getCurrentUserInfo();
+        final var oAuth2TokenInfo = oauth2Service.getToken(currentUser.userId());
+        final var calendarId = kakaoService.createKakaoCalendar(oAuth2TokenInfo.getAccessToken(), name, color, reminder, reminderAllDay);
+//        final var calendar = kakaoService.getCalendar(calendarId);
+        return ApiCallResponse.ofSuccess(calendarId);
     }
 }

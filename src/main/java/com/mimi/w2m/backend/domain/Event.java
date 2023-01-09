@@ -57,7 +57,7 @@ public class Event extends BaseTimeEntity {
 
     @Comment("이벤트를 생성한 사용자")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "host_id", updatable = false)
+    @JoinColumn(name = "host_id", updatable = false, nullable = false)
     private User host;
 
     protected Event() {
