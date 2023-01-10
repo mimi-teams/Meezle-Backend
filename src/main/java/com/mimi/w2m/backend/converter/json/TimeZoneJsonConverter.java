@@ -36,7 +36,7 @@ public class TimeZoneJsonConverter {
         }
     }
 
-    public static class Deserialize extends JsonDeserializer<TimeZone> {
+    public static class Deserializer extends JsonDeserializer<TimeZone> {
 
         @Override
         public TimeZone deserialize(JsonParser p, DeserializationContext ctxt) throws InvalidValueException {

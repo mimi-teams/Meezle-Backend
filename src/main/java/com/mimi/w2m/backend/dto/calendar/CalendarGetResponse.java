@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendar;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarEvent;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.event.KakaoCalendarEvent;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import lombok.Builder;
 

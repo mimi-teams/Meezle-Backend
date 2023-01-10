@@ -26,8 +26,10 @@ public class RRuleJsonConverter {
         @Override
         public void serialize(RRule value, JsonGenerator gen, SerializerProvider serializers) throws InvalidValueException {
             try {
-                gen.writeString(String.format("FREQ=%s;", value.freq().getValue()));
                 final var builder = new StringBuilder();
+                builder.append(String.format("FREQ=%s;", value.freq().getValue()));
+                builder.append(("BYDAY="));
+
                 value.byDay().forEach(day -> {
                     switch (day) {
                         case SUNDAY -> builder.append("SU,");
@@ -40,7 +42,7 @@ public class RRuleJsonConverter {
                     }
                 });
                 builder.replace(builder.lastIndexOf(","), builder.lastIndexOf(",") + 1, ";");
-                gen.writeString(String.format("BYDAY=%s", builder));
+                gen.writeString(builder.toString());
             } catch (IOException e) {
                 final var msg = "Serializer failed";
                 throw new InvalidValueException((msg));

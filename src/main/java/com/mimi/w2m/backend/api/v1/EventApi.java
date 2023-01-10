@@ -214,7 +214,10 @@ public class EventApi {
             case KAKAO -> {
                 final var kakaoCalendars = kakaoService.getKakaoCalendars(oAuth2TokenInfo.getAccessToken(), KakaoCalendarType.USER);
                 calendars = kakaoCalendars.calendars().stream()
-                        .map(kakaoCalendar -> CalendarGetResponse.of(kakaoCalendar, null)).toList();
+                        .map(kakaoCalendar -> {
+
+                            return CalendarGetResponse.of(kakaoCalendar, null);
+                        }).toList();
             }
             default -> {
                 throw new InvalidValueException(String.format("Undefined platform : %s", platform.getKey()), "유효하지 않은 플랫폼입니다.");

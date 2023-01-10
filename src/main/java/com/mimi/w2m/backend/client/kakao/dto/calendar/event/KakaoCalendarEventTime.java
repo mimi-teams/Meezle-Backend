@@ -1,11 +1,12 @@
 package com.mimi.w2m.backend.client.kakao.dto.calendar.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mimi.w2m.backend.dto.calendar.CalendarEventTime;
 import lombok.Builder;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.TimeZone;
 
 /**
@@ -18,13 +19,14 @@ import java.util.TimeZone;
 @Builder
 public record KakaoCalendarEventTime(
         /*
-        all_day = true 인 경우, start_at = end_at = yyyy-mm-ddT00:00:00Z 으로 설정 되어야 한다.
+        all_day = true 인 경우, start_at = end_at = yyyy-mm-ddT00:00:00 으로 설정 되어야 한다.
+        JsonFormat 과 DateTimeFormat 이 모두 있는 경우, JsonFormat 이 우선시 되며, ObjectMapper 로 변환 시, JsonFormat 을 이용해야 한다.
          */
         @JsonProperty(value = "start_at")
-        @DateTimeFormat(pattern = "yyyy-MM-dd`T`HH:mm:ss`Z`")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime startAt,
         @JsonProperty(value = "end_at")
-        @DateTimeFormat(pattern = "yyyy-MM-dd`T`HH:mm:ss`Z`")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime endAt,
         @JsonProperty(value = "time_zone")
         TimeZone timeZone,
@@ -37,8 +39,8 @@ public record KakaoCalendarEventTime(
 ) {
     public static KakaoCalendarEventTime of(CalendarEventTime eventTime) {
         return KakaoCalendarEventTime.builder()
-                .startAt(eventTime.startAt())
-                .endAt(eventTime.endAt())
+                .startAt(eventTime.startAt().minus(eventTime.timeZone().getRawOffset(), ChronoUnit.MILLIS))
+                .endAt(eventTime.endAt().minus(eventTime.timeZone().getRawOffset(), ChronoUnit.MILLIS))
                 .timeZone(eventTime.timeZone())
                 .allDay(eventTime.allDay())
                 .lunar(eventTime.lunar())
