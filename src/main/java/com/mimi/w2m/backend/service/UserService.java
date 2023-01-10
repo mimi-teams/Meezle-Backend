@@ -49,7 +49,7 @@ public class UserService {
     @Transactional
     protected User registerUser(String name, String email) {
         if (getUserByEmail(email).isPresent()) {
-            throw new InvalidValueException(String.format("이미 등록된 유저입니다: email=%s", email));
+            throw new InvalidValueException(String.format("이미 등록된 유저입니다: email=%s", email), "이미 등록된 유저입니다");
         }
 
         final var user = User.builder()
@@ -133,7 +133,7 @@ public class UserService {
         if (requestDto.getEmail() != null) {
             final Optional<User> byEmail = userRepository.findByEmail(requestDto.getEmail());
             if (byEmail.isPresent()) {
-                throw new InvalidValueException("이미 사용중인 이메일 입니다.");
+                throw new InvalidValueException("이미 사용중인 이메일 입니다.", "이미 사용중인 이메일 입니다.");
             }
             user.updateEmail(requestDto.getEmail());
         }

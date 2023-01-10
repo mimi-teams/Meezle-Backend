@@ -74,12 +74,12 @@ public class GuestService {
 
         Optional<Guest> byNameAndEvent = guestRepository.findByNameAndEvent(loginDto.getName(), event);
         if (byNameAndEvent.isEmpty()) {
-            throw new InvalidValueException("존재하지 않는 게스트입니다.");
+            throw new InvalidValueException("존재하지 않는 게스트입니다.", "존재하지 않는 게스트입니다.");
         }
         final Guest guest = byNameAndEvent.get();
 
         if (!passwordEncoder.matches(loginDto.getPassword(), guest.getPassword())) {
-            throw new InvalidValueException("올바르지 비밀번호입니다.");
+            throw new InvalidValueException("올바르지 비밀번호입니다.", "올바르지 비밀번호입니다.");
         }
 
         final String token = jwtHandler.createToken(guest.getId(), Role.GUEST);

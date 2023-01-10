@@ -13,7 +13,8 @@ public record TimeRange(LocalTime beginTime,
         final var parsedSplit = timeRangeStr.split(delimiter());
 
         if (parsedSplit.length != 2) {
-            throw new InvalidValueException("잘못된 형식의 값입니다.: timeRangeStr = " + timeRangeStr);
+            String message = "잘못된 형식의 값입니다.: timeRangeStr = " + timeRangeStr;
+            throw new InvalidValueException(message, message);
         }
 
         final var begTime = LocalTime.from(formatter().parse(parsedSplit[0]));
