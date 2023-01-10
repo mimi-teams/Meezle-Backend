@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.domain.type;
 
 import lombok.Getter;
 
-public enum OAuth2PlatformType {
+public enum LoginPlatformType {
 
     /**
      * 카카오 간변 로그인
@@ -11,7 +11,7 @@ public enum OAuth2PlatformType {
     @Getter
     private final String key;
 
-    OAuth2PlatformType(String key) {
+    LoginPlatformType(String key) {
         this.key = key;
     }
 

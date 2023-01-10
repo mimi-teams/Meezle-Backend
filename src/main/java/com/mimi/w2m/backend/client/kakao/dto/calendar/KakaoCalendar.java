@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.client.kakao.dto.calendar.type;
+package com.mimi.w2m.backend.client.kakao.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

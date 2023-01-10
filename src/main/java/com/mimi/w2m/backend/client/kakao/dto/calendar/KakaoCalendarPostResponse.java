@@ -1,15 +1,15 @@
-package com.mimi.w2m.backend.client.kakao.dto.calendar.type;
+package com.mimi.w2m.backend.client.kakao.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * KakaoCalenderPostResponse
+ * KakaoCalendarPostResponse
  *
  * @author teddy
  * @version 1.0.0
  * @since 2023/01/09
  **/
-public record KakaoCalenderPostResponse(
+public record KakaoCalendarPostResponse(
         @JsonProperty("calendar_id") String id
 ) {
 }

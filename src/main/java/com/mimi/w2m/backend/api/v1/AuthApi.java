@@ -2,7 +2,7 @@ package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.config.interceptor.JwtHandler;
 import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.domain.type.LoginPlatformType;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.auth.LoginSuccessResponse;
 import com.mimi.w2m.backend.dto.auth.OAauth2AuthorizationResponse;
@@ -52,7 +52,7 @@ public class AuthApi {
     @GetMapping(path = "/oauth2/authorization")
     public ApiCallResponse<OAauth2AuthorizationResponse> oauth2Authorization(
             @Parameter(name = "platform", description = "로그인할 계정의 플랫폼", in = ParameterIn.QUERY, required = true)
-            @Valid @NotNull @RequestParam OAuth2PlatformType platform
+            @Valid @NotNull @RequestParam LoginPlatformType platform
     ) {
         final String authorizationUrl = oauth2Service.getOauthAuthorizationUrl(platform);
         final var response = OAauth2AuthorizationResponse.builder()
@@ -68,7 +68,7 @@ public class AuthApi {
             @RequestParam String code
     ) {
         logger.info(request.getRequestURL().toString());
-        final User user = oauth2Service.afterAuthorization(OAuth2PlatformType.KAKAO, code, request.getRequestURL().toString());
+        final User user = oauth2Service.afterAuthorization(LoginPlatformType.KAKAO, code, request.getRequestURL().toString());
         final String token = jwtHandler.createToken(user.getId(), Role.USER);
 
         return ApiCallResponse.ofSuccess(

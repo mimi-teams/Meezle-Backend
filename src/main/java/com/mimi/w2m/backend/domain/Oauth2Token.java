@@ -1,7 +1,7 @@
 package com.mimi.w2m.backend.domain;
 
 import com.mimi.w2m.backend.converter.db.OAuth2PlatformTypeConverter;
-import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.domain.type.LoginPlatformType;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
@@ -34,7 +34,7 @@ public class Oauth2Token extends BaseTimeEntity {
     private String accessToken;
     @Convert(converter = OAuth2PlatformTypeConverter.class)
     @Column(name = "platform_type", length = 10, nullable = false, columnDefinition = "VARCHAR(10)")
-    private OAuth2PlatformType platformType;
+    private LoginPlatformType platformType;
     @Column(name = "access_token_expires", nullable = false)
     private LocalDateTime accessTokenExpires;
     @Column(name = "refresh_token", nullable = false)
@@ -43,7 +43,7 @@ public class Oauth2Token extends BaseTimeEntity {
     private LocalDateTime refreshTokenExpires;
 
     @Builder
-    public Oauth2Token(User user, OAuth2PlatformType platformType, String accessToken, LocalDateTime accessTokenExpires,
+    public Oauth2Token(User user, LoginPlatformType platformType, String accessToken, LocalDateTime accessTokenExpires,
                        String refreshToken, LocalDateTime refreshTokenExpires) {
         this.user = user;
         this.platformType = platformType;

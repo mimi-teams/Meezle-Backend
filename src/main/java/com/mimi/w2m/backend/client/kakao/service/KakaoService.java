@@ -1,9 +1,10 @@
 package com.mimi.w2m.backend.client.kakao.service;
 
 import com.mimi.w2m.backend.client.kakao.api.KaKaoApiClient;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalenderListResponse;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarColor;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarGetResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarPostResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarType;
 import com.mimi.w2m.backend.repository.EventParticipantRepository;
 import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.EventSelectableParticipleTimeRepository;
@@ -29,12 +30,12 @@ public class KakaoService extends EventService {
         this.kakaoApiClient = kakaoApiClient;
     }
 
-    public KakaoCalenderListResponse getKakaoCalendars(String accessToken, KakaoCalendarType filter) {
+    public KakaoCalendarGetResponse getKakaoCalendars(String accessToken, KakaoCalendarType filter) {
         return kakaoApiClient.getCalenders(HttpUtils.withBearerToken(accessToken), filter);
     }
 
-    public String createKakaoCalendar(String accessToken, String name, KakaoCalendarColor color, Integer reminder, Integer reminderAllDay) {
+    public KakaoCalendarPostResponse createKakaoCalendar(String accessToken, String name, KakaoCalendarColor color, Integer reminder, Integer reminderAllDay) {
         final var calendar = kakaoApiClient.createCalendar(HttpUtils.withBearerToken(accessToken), name, color, reminder, reminderAllDay);
-        return calendar.id();
+        return calendar;
     }
 }

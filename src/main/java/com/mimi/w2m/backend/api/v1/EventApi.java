@@ -1,14 +1,18 @@
 package com.mimi.w2m.backend.api.v1;
 
-import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalenderListResponse;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarColor;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarType;
 import com.mimi.w2m.backend.client.kakao.service.KakaoService;
+import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
+import com.mimi.w2m.backend.config.exception.InvalidValueException;
 import com.mimi.w2m.backend.config.interceptor.Auth;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.EventParticipant;
+import com.mimi.w2m.backend.domain.type.LoginPlatformType;
 import com.mimi.w2m.backend.domain.type.Role;
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
+import com.mimi.w2m.backend.dto.calendar.CalendarGetResponse;
+import com.mimi.w2m.backend.dto.calendar.CalendarPostResponse;
 import com.mimi.w2m.backend.dto.event.EventGetResponse;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
 import com.mimi.w2m.backend.dto.event.EventResponseDto;
@@ -193,22 +197,68 @@ public class EventApi {
         return ApiCallResponse.ofSuccess(null);
     }
 
-    @Operation(summary = "[인증] 카카오 캘린더 조회", description = "카카오 캘린더 정보를 조회한다.")
+    /**
+     * 외부 캘린더와 이벤트 연동. 유저(카카오)로 로그인을 해야 한다.
+     *
+     * @author teddy
+     * @since 2023/01/10
+     **/
+    @Operation(summary = "[인증] 외부 캘린더 조회", description = "외부 캘린더 정보를 조회한다.")
     @Auth(Role.USER)
-    @GetMapping("/kakao")
-    public @Valid ApiCallResponse<KakaoCalenderListResponse> getKakaoCalendars(
-            @RequestParam(value = "filter", required = false) KakaoCalendarType filter
+    @GetMapping("/calendar")
+    public @Valid ApiCallResponse<List<CalendarGetResponse>> getCalendars(
+            @Parameter(name = "platform", description = "외부 플랫폼. 이용자 정보에 등록되어야 한다.", in = ParameterIn.QUERY, required = true)
+            @Valid @NotNull @RequestParam(value = "platform") LoginPlatformType platform
     ) {
         final var currentUser = authService.getCurrentUserInfo();
         final var oAuth2TokenInfo = oauth2Service.getToken(currentUser.userId());
-        final var calendars = kakaoService.getKakaoCalendars(oAuth2TokenInfo.getAccessToken(), filter);
+        List<CalendarGetResponse> calendars = List.of();
+        switch (platform) {
+            case KAKAO -> {
+                final var kakaoCalendars = kakaoService.getKakaoCalendars(oAuth2TokenInfo.getAccessToken(), KakaoCalendarType.USER);
+                calendars = kakaoCalendars.calendars().stream()
+                        .map(kakaoCalendar -> CalendarGetResponse.of(kakaoCalendar, null)).toList();
+            }
+            default -> {
+                throw new InvalidValueException(String.format("Undefined platform : %s", platform.getKey()), "유효하지 않은 플랫폼입니다.");
+            }
+        }
         return ApiCallResponse.ofSuccess(calendars);
     }
 
-    @Operation(summary = "[인증] 카카오 캘린더 생성", description = "Meezle 에서 생성된 이벤트를 등록하기 위한 카카오 서브 캘린더를 생성한다. 캘린더가 이미 생성된 경우, 에러를 반환한다.")
+    @Operation(summary = "[인증] 한 외부 캘린더 조회", description = "ID 와 일치하는 캘린더 정보를 조회한다.")
     @Auth(Role.USER)
-    @PostMapping("/kakao")
-    public @Valid ApiCallResponse<String> createKakaoCalendar(
+    @GetMapping("/calendar/{calendarId}")
+    public @Valid ApiCallResponse<CalendarGetResponse> getCalendar(
+            @Parameter(name = "platform", description = "외부 플랫폼. 이용자 정보에 등록되어야 한다.", in = ParameterIn.QUERY, required = true)
+            @Valid @NotNull @RequestParam(value = "platform") LoginPlatformType platform,
+            @Parameter(name = "calendarId", description = "플랫폼의 캘린더 ID", in = ParameterIn.PATH, required = true)
+            @Valid @NotNull @PathVariable String calendarId
+    ) {
+        final var currentUser = authService.getCurrentUserInfo();
+        final var oAuth2TokenInfo = oauth2Service.getToken(currentUser.userId());
+        CalendarGetResponse calendar = null;
+        switch (platform) {
+            case KAKAO -> {
+                final var kakaoCalendars = kakaoService.getKakaoCalendars(oAuth2TokenInfo.getAccessToken(), KakaoCalendarType.USER);
+                final var kakaoCalendar = kakaoCalendars.calendars().stream()
+                        .filter(c -> c.id().equals(calendarId)).findFirst()
+                        .orElseThrow(() -> new EntityNotFoundException(String.format("Calendar Not Found[%s : %s]", platform.getKey(), calendarId), "캘린더가 없습니다."));
+                calendar = CalendarGetResponse.of(kakaoCalendar, null);
+            }
+            default -> {
+                throw new InvalidValueException(String.format("Undefined platform : %s", platform.getKey()), "유효하지 않은 플랫폼입니다.");
+            }
+        }
+        return ApiCallResponse.ofSuccess(calendar);
+    }
+
+    @Operation(summary = "[인증] 외부 캘린더 생성", description = "Meezle 에서 생성된 이벤트를 등록하기 위한 외부 캘린더를 생성한다. 이름이 동일한 캘린더가 있는 경우, 오류를 반환한다.")
+    @Auth(Role.USER)
+    @PostMapping("/calendar")
+    public @Valid ApiCallResponse<CalendarPostResponse> createCalendar(
+            @Parameter(name = "platform", description = "외부 플랫폼. 이용자 정보에 등록되어야 한다.", in = ParameterIn.QUERY, required = true)
+            @Valid @NotNull @RequestParam(value = "platform") LoginPlatformType platform,
             @Size(min = 1, max = 50) @NotNull @RequestParam(value = "name") String name,
             @RequestParam(value = "color", required = false) KakaoCalendarColor color,
             @RequestParam(value = "reminder", required = false) Integer reminder,
@@ -216,8 +266,17 @@ public class EventApi {
     ) {
         final var currentUser = authService.getCurrentUserInfo();
         final var oAuth2TokenInfo = oauth2Service.getToken(currentUser.userId());
-        final var calendarId = kakaoService.createKakaoCalendar(oAuth2TokenInfo.getAccessToken(), name, color, reminder, reminderAllDay);
-//        final var calendar = kakaoService.getCalendar(calendarId);
-        return ApiCallResponse.ofSuccess(calendarId);
+        CalendarPostResponse calendar = null;
+        switch(platform) {
+            case KAKAO -> {
+                final var kakaoCalendar = kakaoService.createKakaoCalendar(oAuth2TokenInfo.getAccessToken(), name, color, reminder, reminderAllDay);
+                calendar = CalendarPostResponse.of(kakaoCalendar);
+            }
+            default -> {
+                throw new InvalidValueException(String.format("Undefined platform : %s", platform.getKey()), "유효하지 않은 플랫폼입니다.");
+            }
+        }
+        return ApiCallResponse.ofSuccess(calendar);
     }
+
 }

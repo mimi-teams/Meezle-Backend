@@ -3,7 +3,7 @@ package com.mimi.w2m.backend.dto.auth;
 import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenResponse;
 import com.mimi.w2m.backend.domain.Oauth2Token;
 import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.OAuth2PlatformType;
+import com.mimi.w2m.backend.domain.type.LoginPlatformType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Getter
 public class OAuth2TokenInfo {
 
-    private final OAuth2PlatformType platformType;
+    private final LoginPlatformType platformType;
 
     /**
      * 사용자 액세스 토큰 값
@@ -44,7 +44,7 @@ public class OAuth2TokenInfo {
 
     public static OAuth2TokenInfo of(KakaoTokenResponse tokenResponse) {
         return OAuth2TokenInfo.builder()
-                .platformType(OAuth2PlatformType.KAKAO)
+                .platformType(LoginPlatformType.KAKAO)
                 .accessToken(tokenResponse.getAccessToken())
                 .accessTokenExpires(LocalDateTime.now()
                         .plusSeconds(tokenResponse.getAccessTokenExpiresIn()))
