@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.client.kakao.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import lombok.Builder;
 
 /**

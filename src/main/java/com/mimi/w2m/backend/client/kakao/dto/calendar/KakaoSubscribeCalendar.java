@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.client.kakao.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 
 /**
  * KakaoSubscribeCalendar : 구독 캘린더 정보(카카오톡 채널과 연결되어야 한다)

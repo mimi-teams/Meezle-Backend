@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.client.kakao.dto.calendar;
+package com.mimi.w2m.backend.client.kakao.dto.calendar.type;
 
 /**
  * KakaoCalendarColor
