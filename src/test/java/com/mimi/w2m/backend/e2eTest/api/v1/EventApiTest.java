@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -69,7 +69,7 @@ public class EventApiTest extends End2EndTest {
                                 )
                         )
                 )
-                .dDay(null)
+                .dDay(LocalDateTime.now().plusDays(7))
                 .color(ColorDto.of("#ffffff"))
                 .description("테스트입니다람쥐")
                 .build();
@@ -86,7 +86,7 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(requestDto.getTitle()))
                 .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
-                .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.event.dDay").exists())
                 .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
         ;
     }
@@ -110,7 +110,7 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(event.getTitle()))
                 .andExpect(jsonPath("$.data.event.color").value(event.getColor().toString()))
-                .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.event.dDay").exists())
                 .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
                 .andExpect(jsonPath("$.data.eventParticipants").exists())
         ;
@@ -154,7 +154,7 @@ public class EventApiTest extends End2EndTest {
                 .andExpect(jsonPath("$.data.event.id").exists())
                 .andExpect(jsonPath("$.data.event.title").value(requestDto.getTitle()))
                 .andExpect(jsonPath("$.data.event.color").value(requestDto.getColor().toString()))
-                .andExpect(jsonPath("$.data.event.dday").exists())
+                .andExpect(jsonPath("$.data.event.dDay").exists())
                 .andExpect(jsonPath("$.data.selectableParticipleTimes").exists())
         ;
     }
