@@ -1,8 +1,7 @@
 package com.mimi.w2m.backend.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.event.Location;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.event.RRule;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.event.type.KakaoCalendarEventLocation;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import lombok.Builder;
 
@@ -30,12 +29,12 @@ public record CalendarEventPostRequest(
         CalendarEventTime time,
         @Valid
         @JsonProperty(value = "rrule")
-        RRule rRule,
+        CalendarRRule rRule,
         @Size(max = 5000)
         @JsonProperty(value = "description")
         String description,
         @JsonProperty(value = "location")
-        Location location,
+        KakaoCalendarEventLocation location,
         @Size(max = 2)
         @JsonProperty(value = "reminders")
         List<Integer> reminders,

@@ -1,4 +1,4 @@
-package com.mimi.w2m.backend.client.kakao.dto.calendar.event;
+package com.mimi.w2m.backend.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -7,7 +7,7 @@ import com.mimi.w2m.backend.converter.json.RRuleJsonConverter;
 import lombok.Getter;
 
 import java.time.DayOfWeek;
-import java.util.List;
+import java.util.Set;
 
 /**
  * RRule
@@ -21,15 +21,19 @@ Object Mapper 로 직렬화하기 위해 JsonSerialize & Deserialize 를 지정�
  */
 @JsonSerialize(using = RRuleJsonConverter.Serializer.class)
 @JsonDeserialize(using = RRuleJsonConverter.Deserializer.class)
-public record RRule(
+public record CalendarRRule(
         @JsonProperty(value = "FREQ")
         FreqType freq,
         @JsonProperty(value = "BYDAY")
-        List<DayOfWeek> byDay
+        Set<DayOfWeek> byDay
 //        @DateTimeFormat(pattern = "yyyyMMdd`T`HHmmss`Z`")
 //        @JsonProperty(value = "UNTIL")
 //        LocalDateTime until
 ) {
+
+    public static CalendarRRule of(Set<DayOfWeek> days) {
+        return new CalendarRRule(FreqType.WEEKLY, days);
+    }
 
     public enum FreqType {
         WEEKLY("WEEKLY"),

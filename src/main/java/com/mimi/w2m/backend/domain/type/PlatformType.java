@@ -1,17 +1,14 @@
 package com.mimi.w2m.backend.domain.type;
 
-import lombok.Getter;
-
-public enum LoginPlatformType {
+public enum PlatformType {
 
     /**
      * 카카오 간변 로그인
      */
     KAKAO(Value.KAKAO_KEY);
-    @Getter
     private final String key;
 
-    LoginPlatformType(String key) {
+    PlatformType(String key) {
         this.key = key;
     }
 

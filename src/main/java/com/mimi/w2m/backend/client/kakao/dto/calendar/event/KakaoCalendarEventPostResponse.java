@@ -16,8 +16,8 @@ public record KakaoCalendarEventPostResponse(
 ) {
     public CalendarEventPostResponse to(String calendarId) {
         return CalendarEventPostResponse.builder()
-                .calendarId(calendarId)
                 .eventId(id)
+                .calendarId(calendarId)
                 .build();
     }
 }

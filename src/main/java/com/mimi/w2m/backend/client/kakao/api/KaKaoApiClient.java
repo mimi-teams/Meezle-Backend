@@ -3,6 +3,7 @@ package com.mimi.w2m.backend.client.kakao.api;
 import com.mimi.w2m.backend.client.kakao.config.KaKaoFeignConfig;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarGetResponse;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarPostResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.event.KakaoCalendarEventGetResponse;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.event.KakaoCalendarEventPostResponse;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
@@ -57,4 +58,11 @@ public interface KaKaoApiClient {
             @RequestHeader("Authorization") String withBearerToken,
             @RequestParam(name = "calendar_id") String calendarId,
             @RequestParam(name = "event") String kakaoEventPostRequest);
+
+    @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
+    @GetMapping("/v2/api/calendar/event")
+    KakaoCalendarEventGetResponse getCalendarEvent(
+            @RequestHeader("Authorization") String withBearerToken,
+            @RequestParam(name = "event_id") String eventId
+    );
 }

@@ -7,7 +7,7 @@ import com.mimi.w2m.backend.client.kakao.dto.token.KakaoTokenResponse;
 import com.mimi.w2m.backend.client.kakao.dto.user.KakaoUserInfoResponse;
 import com.mimi.w2m.backend.config.exception.EntityNotFoundException;
 import com.mimi.w2m.backend.domain.User;
-import com.mimi.w2m.backend.domain.type.LoginPlatformType;
+import com.mimi.w2m.backend.domain.type.PlatformType;
 import com.mimi.w2m.backend.dto.auth.OAuth2TokenInfo;
 import com.mimi.w2m.backend.dto.auth.OAuth2UserInfo;
 import com.mimi.w2m.backend.repository.Oauth2Repository;
@@ -55,7 +55,7 @@ public class Oauth2Service {
      * @author yeh35
      * @since 2022-12-04
      */
-    public String getOauthAuthorizationUrl(LoginPlatformType platformType) {
+    public String getOauthAuthorizationUrl(PlatformType platformType) {
         switch (platformType) {
             case KAKAO -> {
                 return new StringBuilder(200).append(kakaoOauth2BaseUrl)
@@ -88,7 +88,7 @@ public class Oauth2Service {
      */
     @Transactional
     public User afterAuthorization(
-            LoginPlatformType platformType,
+            PlatformType platformType,
             String authorizationCode,
             String requestUrl
     ) {
@@ -125,7 +125,7 @@ public class Oauth2Service {
      * @since 2022-12-04
      */
     protected OAuth2TokenInfo loadToken(
-            LoginPlatformType platformType,
+            PlatformType platformType,
             String authorizationCode,
             String requestUrl
     ) {
@@ -156,7 +156,7 @@ public class Oauth2Service {
      * @since 2022-12-04
      */
     protected OAuth2UserInfo loadOAuth2UserInfo(OAuth2TokenInfo tokenInfo) {
-        switch (tokenInfo.getPlatformType()) {
+        switch (tokenInfo.getPlatform()) {
             case KAKAO -> {
                 KakaoUserInfoResponse userInfo = kaoApiClient.getUserInfo(HttpUtils.withBearerToken(tokenInfo.getAccessToken()));
                 return OAuth2UserInfo.of(userInfo);

@@ -1,17 +1,17 @@
-package com.mimi.w2m.backend.client.kakao.dto.calendar.event;
+package com.mimi.w2m.backend.client.kakao.dto.calendar.event.type;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.Size;
 
 /**
- * Location
+ * KakaoCalendarEventLocation
  *
  * @author teddy
  * @version 1.0.0
  * @since 2023/01/10
  **/
-public record Location(
+public record KakaoCalendarEventLocation(
         @Size(min = 1, max = 100)
         @JsonProperty(value = "name")
         String name,

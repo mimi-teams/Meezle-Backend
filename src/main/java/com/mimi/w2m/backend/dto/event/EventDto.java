@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.dto.event;
 
 import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.type.TimeRange;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +12,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -50,6 +53,15 @@ public class EventDto implements Serializable {
     @Size(max = 1000)
     private String description;
 
+    @Schema(description = "이벤트의 활동 요일", nullable = true)
+    @Nullable
+    private Set<DayOfWeek> activityDays;
+
+    @Schema(description = "이벤트의 활동 시간", nullable = true)
+    @Nullable
+    private TimeRange activityTimeRange;
+
+
     @SuppressWarnings("unused")
     protected EventDto() {
     }
@@ -62,7 +74,9 @@ public class EventDto implements Serializable {
             String title,
             @Nullable LocalDateTime dDay,
             ColorDto color,
-            @Nullable String description
+            @Nullable String description,
+            @Nullable Set<DayOfWeek> activityDays,
+            @Nullable TimeRange activityTimeRange
     ) {
         this.id = id;
         this.hostId = hostId;
@@ -70,6 +84,8 @@ public class EventDto implements Serializable {
         this.dDay = Objects.requireNonNullElse(dDay, LocalDateTime.of(9999, 12, 31, 23, 59, 59));
         this.color = color;
         this.description = Objects.requireNonNullElse(description, "");
+        this.activityDays = activityDays;
+        this.activityTimeRange = activityTimeRange;
     }
 
     public static EventDto of(Event entity) {
@@ -80,6 +96,8 @@ public class EventDto implements Serializable {
                 .dDay(entity.getDDay())
                 .color(entity.getColor())
                 .description(entity.getDescription())
+                .activityDays(entity.getActivityDays())
+                .activityTimeRange(entity.getActivityTimeRange())
                 .build();
     }
 }

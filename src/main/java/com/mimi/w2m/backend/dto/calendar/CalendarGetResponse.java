@@ -2,7 +2,6 @@ package com.mimi.w2m.backend.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendar;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.event.KakaoCalendarEvent;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import lombok.Builder;
 
@@ -26,9 +25,9 @@ public record CalendarGetResponse(
         @JsonProperty(value = "reminder_all_day")
         Integer reminderAllDay,
         @JsonProperty(value = "events")
-        List<KakaoCalendarEvent> events
+        List<CalendarEvent> events
 ) {
-    public static CalendarGetResponse of(KakaoCalendar calendar, List<KakaoCalendarEvent> events) {
+    public static CalendarGetResponse of(KakaoCalendar calendar, List<CalendarEvent> events) {
         return CalendarGetResponse.builder()
                 .id(calendar.id())
                 .name(calendar.name())

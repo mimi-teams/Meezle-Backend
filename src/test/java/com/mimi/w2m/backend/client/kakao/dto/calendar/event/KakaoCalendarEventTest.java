@@ -3,13 +3,14 @@ package com.mimi.w2m.backend.client.kakao.dto.calendar.event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mimi.w2m.backend.dto.calendar.CalendarRRule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +39,7 @@ class KakaoCalendarEventTest {
                         .timeZone(TimeZone.getTimeZone("Asia/Seoul"))
                         .build()
                 )
-                .rRule(new RRule(RRule.FreqType.WEEKLY, List.of(DayOfWeek.MONDAY, DayOfWeek.THURSDAY)))
+                .rRule(new CalendarRRule(CalendarRRule.FreqType.WEEKLY, Set.of(DayOfWeek.MONDAY, DayOfWeek.THURSDAY)))
                 .build();
         //when
         final var jsonEvent = mapper.writeValueAsString(event);

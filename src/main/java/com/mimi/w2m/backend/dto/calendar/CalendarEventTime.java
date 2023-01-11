@@ -1,9 +1,12 @@
 package com.mimi.w2m.backend.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mimi.w2m.backend.domain.type.TimeRange;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 
@@ -25,6 +28,7 @@ public record CalendarEventTime(
         @JsonProperty(value = "end_at")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime endAt,
+        @Schema(title = "이벤트의 시간대", type = "String", allowableValues = {"Asia/Seoul",}, description = "Local Time Zone")
         @JsonProperty(value = "time_zone")
         TimeZone timeZone,
         @JsonProperty(value = "all_day")
@@ -33,4 +37,13 @@ public record CalendarEventTime(
         @JsonProperty(value = "lunar")
         Boolean lunar
 ) {
+    public static CalendarEventTime of(TimeRange timeRange) {
+        return CalendarEventTime.builder()
+                .startAt(timeRange.beginTime().atDate(LocalDate.now()))
+                .endAt(timeRange.endTime().atDate(LocalDate.now()))
+                .timeZone(TimeZone.getTimeZone("Asia/Seoul"))
+                .allDay(false)
+                .lunar(false)
+                .build();
+    }
 }

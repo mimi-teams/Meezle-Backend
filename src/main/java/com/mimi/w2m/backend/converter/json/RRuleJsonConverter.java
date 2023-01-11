@@ -3,14 +3,15 @@ package com.mimi.w2m.backend.converter.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
-import com.mimi.w2m.backend.client.kakao.dto.calendar.event.RRule;
 import com.mimi.w2m.backend.config.exception.InvalidValueException;
+import com.mimi.w2m.backend.dto.calendar.CalendarRRule;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * RRuleJsonConverter
@@ -21,10 +22,10 @@ import java.util.Arrays;
  **/
 @JsonComponent
 public class RRuleJsonConverter {
-    public static class Serializer extends JsonSerializer<RRule> {
+    public static class Serializer extends JsonSerializer<CalendarRRule> {
 
         @Override
-        public void serialize(RRule value, JsonGenerator gen, SerializerProvider serializers) throws InvalidValueException {
+        public void serialize(CalendarRRule value, JsonGenerator gen, SerializerProvider serializers) throws InvalidValueException {
             try {
                 final var builder = new StringBuilder();
                 builder.append(String.format("FREQ=%s;", value.freq().getValue()));
@@ -50,22 +51,22 @@ public class RRuleJsonConverter {
         }
     }
 
-    public static class Deserializer extends JsonDeserializer<RRule> {
+    public static class Deserializer extends JsonDeserializer<CalendarRRule> {
 
         @Override
-        public RRule deserialize(JsonParser p, DeserializationContext ctxt) throws InvalidValueException {
+        public CalendarRRule deserialize(JsonParser p, DeserializationContext ctxt) throws InvalidValueException {
             try {
                 final var raw = ((JsonNode)p.getCodec().readTree(p)).asText();
                 final var splited = raw.split(";");
-                RRule.FreqType freq = null;
-                ArrayList<DayOfWeek> byDay = new ArrayList<>();
+                CalendarRRule.FreqType freq = null;
+                Set<DayOfWeek> byDay = new HashSet<>();
                 for (var str:
                      splited) {
                     final var token = str.split("=");
                     switch(token[0]) {
                         case "FREQ" -> {
                             switch (token[1]) {
-                                case "WEEKLY" -> freq = RRule.FreqType.WEEKLY;
+                                case "WEEKLY" -> freq = CalendarRRule.FreqType.WEEKLY;
                             }
                         }
                         case "BYDAY" -> {
@@ -83,7 +84,7 @@ public class RRuleJsonConverter {
                         }
                     }
                 }
-                return new RRule(freq, byDay);
+                return new CalendarRRule(freq, byDay);
 
             } catch (IOException e) {
                 final var msg = "Deserializer Failed";

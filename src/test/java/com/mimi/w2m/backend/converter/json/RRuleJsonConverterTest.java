@@ -1,13 +1,13 @@
 package com.mimi.w2m.backend.converter.json;
 
-import com.mimi.w2m.backend.client.kakao.dto.calendar.event.RRule;
+import com.mimi.w2m.backend.dto.calendar.CalendarRRule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 /**
@@ -21,7 +21,7 @@ class RRuleJsonConverterTest {
     @DisplayName("Serializer Test")
     void testSerializer() {
         //given
-        final var rrule = new RRule(RRule.FreqType.WEEKLY, List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
+        final var rrule = new CalendarRRule(CalendarRRule.FreqType.WEEKLY, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
         final var expected = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;";
         //when
         final var ret = new StringBuilder();
@@ -50,19 +50,19 @@ class RRuleJsonConverterTest {
     void testDeserializer() {
         //given
         final var raw = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;";
-        final var expected = new RRule(RRule.FreqType.WEEKLY, List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
+        final var expected = new CalendarRRule(CalendarRRule.FreqType.WEEKLY, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
 
         //when
         final var splited = raw.split(";");
-        RRule.FreqType freq = null;
-        ArrayList<DayOfWeek> byDay = new ArrayList<>();
+        CalendarRRule.FreqType freq = null;
+        Set<DayOfWeek> byDay = new HashSet<>();
         for (var str:
                 splited) {
             final var token = str.split("=");
             switch(token[0]) {
                 case "FREQ" -> {
                     switch (token[1]) {
-                        case "WEEKLY" -> freq = RRule.FreqType.WEEKLY;
+                        case "WEEKLY" -> freq = CalendarRRule.FreqType.WEEKLY;
                     }
                 }
                 case "BYDAY" -> {
@@ -80,7 +80,7 @@ class RRuleJsonConverterTest {
                 }
             }
         }
-        final var ret = new RRule(freq, byDay);
+        final var ret = new CalendarRRule(freq, byDay);
         //then
         assertThat(ret.freq()).isEqualTo(expected.freq());
         assertThat(ret.byDay()).containsExactlyElementsOf(expected.byDay());

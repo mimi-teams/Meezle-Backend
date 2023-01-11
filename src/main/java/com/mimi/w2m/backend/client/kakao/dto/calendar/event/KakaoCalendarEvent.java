@@ -1,8 +1,12 @@
 package com.mimi.w2m.backend.client.kakao.dto.calendar.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.event.type.KakaoCalendarEventLocation;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
-import com.mimi.w2m.backend.dto.calendar.CalendarEventPostRequest;
+import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.dto.calendar.CalendarEvent;
+import com.mimi.w2m.backend.dto.calendar.CalendarEventTime;
+import com.mimi.w2m.backend.dto.calendar.CalendarRRule;
 import lombok.Builder;
 
 import javax.validation.Valid;
@@ -28,12 +32,12 @@ public record KakaoCalendarEvent(
         KakaoCalendarEventTime time,
         @Valid
         @JsonProperty(value = "rrule")
-        RRule rRule,
+        CalendarRRule rRule,
         @Size(max = 5000)
         @JsonProperty(value = "description")
         String description,
         @JsonProperty(value = "location")
-        Location location,
+        KakaoCalendarEventLocation location,
         @Size(max = 2)
         @JsonProperty(value = "reminders")
         List<Integer> reminders,
@@ -41,15 +45,22 @@ public record KakaoCalendarEvent(
         KakaoCalendarColor color
 
 ) {
-    public static KakaoCalendarEvent of(CalendarEventPostRequest event) {
+    public static KakaoCalendarEvent of(Event event) {
         return KakaoCalendarEvent.builder()
-                .title(event.title())
-                .time(KakaoCalendarEventTime.of(event.time()))
-                .rRule(event.rRule())
-                .description(event.description())
-                .location(event.location())
-                .reminders(event.reminders())
-                .color(event.color())
+                .title(event.getTitle())
+                .time(KakaoCalendarEventTime.of(CalendarEventTime.of(event.getActivityTimeRange())))
+                .rRule(CalendarRRule.of(event.getActivityDays()))
+                .description(event.getDescription())
+                .location(null)
+                .reminders(null)
+                .color(null)
                 .build();
+    }
+
+    public CalendarEvent to() {
+            return CalendarEvent.builder()
+                    .eventId(eventId)
+                    .title(title)
+                    .build();
     }
 }

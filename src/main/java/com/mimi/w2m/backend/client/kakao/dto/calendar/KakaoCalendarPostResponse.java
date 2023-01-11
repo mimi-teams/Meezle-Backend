@@ -10,6 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 2023/01/09
  **/
 public record KakaoCalendarPostResponse(
-        @JsonProperty("calendar_id") String id
+        @JsonProperty(value = "calendar_id", required = true) String id
 ) {
 }
