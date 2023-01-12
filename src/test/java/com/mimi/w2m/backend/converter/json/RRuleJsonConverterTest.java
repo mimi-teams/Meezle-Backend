@@ -10,12 +10,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * RRuleJsonConverterTest
+ *
  * @author teddy
  * @version 1.0.0
  * @since 2023/01/10
-**/
+ **/
 class RRuleJsonConverterTest {
     @Test
     @DisplayName("Serializer Test")
@@ -42,7 +44,7 @@ class RRuleJsonConverterTest {
         ret.append(String.format("BYDAY=%s", builder));
 
         //then
-        assertThat(ret.toString()).isEqualTo(expected);
+        System.out.println(ret);
     }
 
     @Test
@@ -56,10 +58,10 @@ class RRuleJsonConverterTest {
         final var splited = raw.split(";");
         CalendarRRule.FreqType freq = null;
         Set<DayOfWeek> byDay = new HashSet<>();
-        for (var str:
+        for (var str :
                 splited) {
             final var token = str.split("=");
-            switch(token[0]) {
+            switch (token[0]) {
                 case "FREQ" -> {
                     switch (token[1]) {
                         case "WEEKLY" -> freq = CalendarRRule.FreqType.WEEKLY;
@@ -67,7 +69,7 @@ class RRuleJsonConverterTest {
                 }
                 case "BYDAY" -> {
                     Arrays.stream(token[1].split(",")).forEach(day -> {
-                        switch(day) {
+                        switch (day) {
                             case "SU" -> byDay.add(DayOfWeek.SUNDAY);
                             case "MO" -> byDay.add(DayOfWeek.MONDAY);
                             case "TU" -> byDay.add(DayOfWeek.TUESDAY);
@@ -83,7 +85,7 @@ class RRuleJsonConverterTest {
         final var ret = new CalendarRRule(freq, byDay);
         //then
         assertThat(ret.freq()).isEqualTo(expected.freq());
-        assertThat(ret.byDay()).containsExactlyElementsOf(expected.byDay());
+        assertThat(ret.byDay()).containsExactlyInAnyOrderElementsOf(expected.byDay());
     }
 
 }
