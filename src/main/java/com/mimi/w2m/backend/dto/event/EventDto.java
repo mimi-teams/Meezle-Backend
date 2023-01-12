@@ -1,5 +1,6 @@
 package com.mimi.w2m.backend.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.type.TimeRange;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,6 +44,7 @@ public class EventDto implements Serializable {
 
     @Schema(title = "시간 투표 종료일", description = "이벤트 참여자들이 이벤트 시간을 확정하기 위한 투표를 할 수 있는 마지막 시간을 반환", example = "2022-12-01T00:00:00")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+    @JsonProperty("dday")
     @Nullable
     private LocalDateTime dDay;
 
@@ -81,7 +83,7 @@ public class EventDto implements Serializable {
         this.id = id;
         this.hostId = hostId;
         this.title = title;
-        this.dDay = Objects.requireNonNullElse(dDay, LocalDateTime.of(9999, 12, 31, 23, 59, 59));
+        this.dDay = dDay;
         this.color = color;
         this.description = Objects.requireNonNullElse(description, "");
         this.activityDays = activityDays;

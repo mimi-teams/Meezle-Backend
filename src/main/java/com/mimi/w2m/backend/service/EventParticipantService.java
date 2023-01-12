@@ -66,7 +66,7 @@ public class EventParticipantService {
                 final Guest guest = guestService.getGuest(requestDto.getOwnerId());
                 eventParticipant = EventParticipant.ofGuest(event, guest);
             }
-            default -> throw new InvalidValueException("정의되지 않은 유저타입입니다. type = " + requestDto.getOwnerType());
+            default -> throw new InvalidValueException("정의되지 않은 유저 타입입니다. type = " + requestDto.getOwnerType(), "정의되지 않은 유저 타입입니다.");
         }
         eventParticipantRepository.save(eventParticipant);
 

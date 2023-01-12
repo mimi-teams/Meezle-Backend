@@ -17,13 +17,13 @@ import java.io.Serializable;
 @Schema(title = "이벤트 게스트", description = "이용자의 ID 와 Name, 연관된 이벤트 ID를 보냄")
 public class GuestLoginRequest implements Serializable {
 
-    @Schema(description = "게스트 이름", maxLength = 20)
+    @Schema(description = "게스트 이름", maxLength = 30)
     @Size(min = 1, max = 20)
     @NotNull
     private String name;
 
-    @Schema(description = "게스트 비밀번호", maxLength = 20)
-    @Size(min = 1, max = 30)
+    @Schema(description = "게스트 비밀번호", maxLength = 30)
+    @Size(max = 30)
     @NotNull
     private String password;
 

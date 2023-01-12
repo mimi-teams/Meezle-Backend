@@ -1,5 +1,6 @@
 package com.mimi.w2m.backend.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mimi.w2m.backend.domain.Event;
 import com.mimi.w2m.backend.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,6 +37,7 @@ public class EventRequestDto implements Serializable {
 
     @Schema(title = "시간 투표 종료일", description = "이벤트 참여자들이 이벤트 시간을 확정하기 위한 투표를 할 수 있는 마지막 시간을 지정",
             example = "2022-12-01T00:00:00")
+    @JsonProperty("dday")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @Nullable
     private LocalDateTime dDay;
