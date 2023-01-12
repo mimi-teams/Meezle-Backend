@@ -30,4 +30,8 @@ public interface CalendarRepository extends JpaRepository<Calendar, UUID> {
     @Modifying
     @Query(value = "delete from Calendar calendar where calendar.event = :event")
     void deleteByEvent(@Param("event") Event event);
+
+    @Modifying
+    @Query(value = "delete from Calendar  calendar where calendar.user = :user")
+    void deleteByUser(@Param("user") User user);
 }

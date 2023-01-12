@@ -42,10 +42,11 @@ import java.util.UUID;
 public class KakaoService extends EventService {
     private final KaKaoApiClient kakaoApiClient;
 
-    public KakaoService(UserService userService, EventRepository eventRepository, EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository, GuestRepository guestRepository, EventParticipantRepository eventParticipantRepository, KaKaoApiClient kakaoApiClient, CalendarRepository calendarRepository) {
-        super(userService, eventRepository, eventSelectableParticipleTimeRepository, guestRepository, eventParticipantRepository, calendarRepository);
+    public KakaoService(UserService userService, EventRepository eventRepository, EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository, GuestRepository guestRepository, EventParticipantRepository eventParticipantRepository, EventParticipantAbleTimeRepository eventParticipantAbleTimeRepository, CalendarRepository calendarRepository, KaKaoApiClient kakaoApiClient) {
+        super(userService, eventRepository, eventSelectableParticipleTimeRepository, guestRepository, eventParticipantRepository, eventParticipantAbleTimeRepository, calendarRepository);
         this.kakaoApiClient = kakaoApiClient;
     }
+
 
     public KakaoCalendarGetResponse getKakaoCalendars(String accessToken, KakaoCalendarType filter) {
         return kakaoApiClient.getCalenders(HttpUtils.withBearerToken(accessToken), filter);

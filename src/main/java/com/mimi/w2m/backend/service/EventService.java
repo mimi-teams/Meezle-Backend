@@ -39,6 +39,7 @@ public class EventService {
     protected final EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository;
     protected final GuestRepository guestRepository;
     protected final EventParticipantRepository eventParticipantRepository;
+    protected final EventParticipantAbleTimeRepository eventParticipantAbleTimeRepository;
     protected final CalendarRepository calendarRepository;
 
     /**
@@ -117,6 +118,7 @@ public class EventService {
         final var event = getEvent(eventId);
 
         calendarRepository.deleteByEvent(event);
+        eventParticipantAbleTimeRepository.deleteByEventParticipantList(eventParticipantRepository.findAllInEvent(event));
         eventParticipantRepository.deleteByEvent(event);
         guestRepository.deleteByEvent(event);
         eventSelectableParticipleTimeRepository.deleteByEvent(event);
