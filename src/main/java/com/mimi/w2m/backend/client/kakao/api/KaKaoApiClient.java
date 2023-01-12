@@ -3,8 +3,10 @@ package com.mimi.w2m.backend.client.kakao.api;
 import com.mimi.w2m.backend.client.kakao.config.KaKaoFeignConfig;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarGetResponse;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.KakaoCalendarPostResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.event.KakaoCalendarEvent;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.event.KakaoCalendarEventGetResponse;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.event.KakaoCalendarEventPostResponse;
+import com.mimi.w2m.backend.client.kakao.dto.calendar.event.type.KakaoCalendarEventRecurrentUpdateType;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarColor;
 import com.mimi.w2m.backend.client.kakao.dto.calendar.type.KakaoCalendarType;
 import com.mimi.w2m.backend.client.kakao.dto.user.KakaoUserInfoResponse;
@@ -12,10 +14,7 @@ import com.mimi.w2m.backend.config.exception.BadGatewayException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "KakaoApiClient",
         url = "${external.client.kakao.kapi.profile.base-url}",
@@ -53,6 +52,22 @@ public interface KaKaoApiClient {
             @RequestParam(name = "reminder_all_day", required = false) Integer reminderAllDay);
 
     @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
+    @PostMapping("/v2/api/calendar/update/calendar")
+    KakaoCalendarPostResponse updateCalendar(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestParam(name = "calendar_id") String calendarId,
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "color", required = false) KakaoCalendarColor color,
+            @RequestParam(name = "reminder", required = false) Integer reminder,
+            @RequestParam(name = "reminder_all_day", required = false) Integer reminderAllDay);
+
+    @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
+    @DeleteMapping("/v2/api/calendar/delete/calendar")
+    KakaoCalendarPostResponse deleteCalendar(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestParam(name = "calendar_id") String calendarId);
+
+    @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
     @PostMapping("/v2/api/calendar/create/event")
     KakaoCalendarEventPostResponse createCalendarEvent(
             @RequestHeader("Authorization") String withBearerToken,
@@ -64,5 +79,22 @@ public interface KaKaoApiClient {
     KakaoCalendarEventGetResponse getCalendarEvent(
             @RequestHeader("Authorization") String withBearerToken,
             @RequestParam(name = "event_id") String eventId
+    );
+
+    @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
+    @PostMapping("/v2/api/calendar/update/event/host")
+    KakaoCalendarEventPostResponse updateCalendarEvent(
+            @RequestHeader("Authorization") String withBearerToken,
+            @RequestParam(name = "event_id") String eventId,
+            @RequestParam(name = "recur_update_type") KakaoCalendarEventRecurrentUpdateType updateType,
+            @RequestParam(name = "event") KakaoCalendarEvent event
+    );
+
+    @Retryable(backoff = @Backoff(delay = 50, multiplier = 2, maxDelay = 1000), value = BadGatewayException.class)
+    @DeleteMapping("/v2/api/calendar/delete/event")
+    void deleteCalendarEvent(
+            @RequestHeader("Authorization") String withBearerToken,
+            @RequestParam(name = "event_id") String eventId,
+            @RequestParam(name = "recur_update_type") KakaoCalendarEventRecurrentUpdateType updateType
     );
 }

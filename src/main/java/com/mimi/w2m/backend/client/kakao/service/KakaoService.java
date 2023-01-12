@@ -103,6 +103,7 @@ public class KakaoService extends EventService {
     }
 
     public KakaoCalendarEvent getCalendarEvent(String accessToken, String id) {
+        // TODO: 2023/01/12 이용자가 자신의 톡캘린더에서 이벤트를 직접 지우는 경우, API 는 Bad Request 를 반환한다. 이때, 적절한 처리를 할 필요가 있다.
         return kakaoApiClient.getCalendarEvent(HttpUtils.withBearerToken(accessToken), id).event();
     }
 }
