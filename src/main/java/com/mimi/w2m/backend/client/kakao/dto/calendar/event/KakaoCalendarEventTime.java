@@ -6,7 +6,6 @@ import com.mimi.w2m.backend.dto.calendar.CalendarEventTime;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.TimeZone;
 
 /**
@@ -23,10 +22,10 @@ public record KakaoCalendarEventTime(
         JsonFormat 과 DateTimeFormat 이 모두 있는 경우, JsonFormat 이 우선시 되며, ObjectMapper 로 변환 시, JsonFormat 을 이용해야 한다.
          */
         @JsonProperty(value = "start_at")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
         LocalDateTime startAt,
         @JsonProperty(value = "end_at")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
         LocalDateTime endAt,
         @JsonProperty(value = "time_zone")
         TimeZone timeZone,
@@ -39,8 +38,10 @@ public record KakaoCalendarEventTime(
 ) {
     public static KakaoCalendarEventTime of(CalendarEventTime eventTime) {
         return KakaoCalendarEventTime.builder()
-                .startAt(eventTime.startAt().minus(eventTime.timeZone().getRawOffset(), ChronoUnit.MILLIS))
-                .endAt(eventTime.endAt().minus(eventTime.timeZone().getRawOffset(), ChronoUnit.MILLIS))
+//                .startAt(eventTime.startAt().minus(eventTime.timeZone().getRawOffset(), ChronoUnit.MILLIS))
+//                .endAt(eventTime.endAt().minus(eventTime.timeZone().getRawOffset(), ChronoUnit.MILLIS))
+                .startAt(eventTime.startAt())
+                .endAt(eventTime.endAt())
                 .timeZone(eventTime.timeZone())
                 .allDay(eventTime.allDay())
                 .lunar(eventTime.lunar())

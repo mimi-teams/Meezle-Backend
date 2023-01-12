@@ -23,6 +23,9 @@ import com.mimi.w2m.backend.utils.HttpUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,12 +41,10 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class KakaoService extends EventService {
     private final KaKaoApiClient kakaoApiClient;
-    private final CalendarRepository calendarRepository;
 
     public KakaoService(UserService userService, EventRepository eventRepository, EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository, GuestRepository guestRepository, EventParticipantRepository eventParticipantRepository, KaKaoApiClient kakaoApiClient, CalendarRepository calendarRepository) {
-        super(userService, eventRepository, eventSelectableParticipleTimeRepository, guestRepository, eventParticipantRepository);
+        super(userService, eventRepository, eventSelectableParticipleTimeRepository, guestRepository, eventParticipantRepository, calendarRepository);
         this.kakaoApiClient = kakaoApiClient;
-        this.calendarRepository = calendarRepository;
     }
 
     public KakaoCalendarGetResponse getKakaoCalendars(String accessToken, KakaoCalendarType filter) {
@@ -61,7 +62,7 @@ public class KakaoService extends EventService {
                 || Objects.isNull(event.getActivityTimeRange())) {
             throw new InvalidValueException("[KakaoService] Event Activity Time doesn't exist", "이벤트에 설정된 활동 시간이 없습니다");
         }
-        if (calendarRepository.findByUserAndEvent(user, event).isPresent()) {
+        if (calendarRepository.findByUserAndEventInPlatform(user, event, PlatformType.KAKAO).isPresent()) {
             throw new EntityDuplicatedException(String.format("[KakaoService] (user=%s, event=%s) already exist", user.getId(), event.getId()), "동일한 이벤트가 존재합니다");
         } else {
             try {
@@ -69,14 +70,21 @@ public class KakaoService extends EventService {
                 final var kakaoEventPostRequest = KakaoCalendarEvent.of(event);
                 final var kakaoRequest = mapper.writeValueAsString(kakaoEventPostRequest);
                 final var response = kakaoApiClient.createCalendarEvent(HttpUtils.withBearerToken(accessToken), calendarId, kakaoRequest);
+
+                // 반복 일정으로 생성되는 경우, 반환된 ID + '_' + 이벤트 요일로 반복된 이벤트들의 ID 가 설정된다.
+                final var calendarEventEarliestDay = event.getActivityDays().stream()
+                        .map(dayOfWeek -> LocalDate.now().with(TemporalAdjusters.next(dayOfWeek)))
+                        .min(LocalDate::compareTo).get().atTime(event.getActivityTimeRange().beginTime());
+                final var calendarEventId = response.id() + "_" + calendarEventEarliestDay.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'"));
+
                 calendarRepository.save(Calendar.builder()
                         .user(user)
                         .event(event)
                         .platform(platform)
                         .platformCalendarId(calendarId)
-                        .platformEventId(response.id())
+                        .platformEventId(calendarEventId)
                         .build());
-                return response;
+                return new KakaoCalendarEventPostResponse(calendarEventId);
             } catch (JsonProcessingException e) {
                 throw new InvalidValueException(e.getMessage());
             }
@@ -95,6 +103,6 @@ public class KakaoService extends EventService {
     }
 
     public KakaoCalendarEvent getCalendarEvent(String accessToken, String id) {
-        return kakaoApiClient.getCalendarEvent(HttpUtils.withBearerToken(accessToken), id).to();
+        return kakaoApiClient.getCalendarEvent(HttpUtils.withBearerToken(accessToken), id).event();
     }
 }

@@ -121,7 +121,6 @@ public class EventApi {
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event, eventSelectableParticipleTimes));
     }
 
-    // TODO: 2023/01/11 이벤트 활동 시간 수정 API
     @Operation(summary = "[인증] 이벤트 활동 시간 수정", description = "ID에 해당하는 이벤트의 활동 시간을 설정한다. 이벤트 생성자만 설정 가능하다")
     @Auth
     @PatchMapping(path = "/{eventId}/activity")
@@ -149,8 +148,6 @@ public class EventApi {
         final var currentUserInfo = authService.getCurrentUserInfo();
         authService.isHost(currentUserInfo.userId(), eventId);
 
-        //TODO 한 트렌젝션에서 처리 되도록 수정하자
-        eventParticipantService.deleteAboutEvent(eventId);
         eventService.delete(eventId);
 
         return ApiCallResponse.ofSuccess(null);
@@ -304,7 +301,7 @@ public class EventApi {
 
     @Operation(summary = "[인증] 외부 캘린더에 이벤트 등록", description = "ID에 해당하는 이벤트를 외부 플랫폼 캘린더에 등록한다. 이벤트 시간이 설정 되어있어야 한다. 이벤트 참여자 중, 가입자만 이용할 수 있다")
     @Auth
-    @PostMapping(path = "/calendar/{calendarId}/event/{eventId}")
+    @PostMapping(path = "/{eventId}/calendar/{calendarId}")
     public @Valid ApiCallResponse<CalendarEventPostResponse> createCalendarEvent(
             @Parameter(name = "platform", description = "외부 플랫폼. 이용자 정보에 등록되어야 한다.", in = ParameterIn.QUERY, required = true)
             @Valid @NotNull @RequestParam(value = "platform") PlatformType platform,

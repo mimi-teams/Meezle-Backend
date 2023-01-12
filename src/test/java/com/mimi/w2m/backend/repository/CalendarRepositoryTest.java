@@ -68,7 +68,7 @@ class CalendarRepositoryTest {
                 .build());
 
         //then
-        assertThat(calendarRepository.findByUserAndEvent(user, event1)).contains(calendar1);
+        assertThat(calendarRepository.findByUserAndEventInPlatform(user, event1, PlatformType.KAKAO)).contains(calendar1);
         assertThat(calendarRepository.findAll()).contains(calendar1, calendar2);
     }
 }

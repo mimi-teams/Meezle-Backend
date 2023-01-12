@@ -9,10 +9,7 @@ import com.mimi.w2m.backend.domain.type.ParticipleTime;
 import com.mimi.w2m.backend.domain.type.TimeRange;
 import com.mimi.w2m.backend.dto.event.EventActivityTimeDto;
 import com.mimi.w2m.backend.dto.event.EventRequestDto;
-import com.mimi.w2m.backend.repository.EventParticipantRepository;
-import com.mimi.w2m.backend.repository.EventRepository;
-import com.mimi.w2m.backend.repository.EventSelectableParticipleTimeRepository;
-import com.mimi.w2m.backend.repository.GuestRepository;
+import com.mimi.w2m.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +39,7 @@ public class EventService {
     protected final EventSelectableParticipleTimeRepository eventSelectableParticipleTimeRepository;
     protected final GuestRepository guestRepository;
     protected final EventParticipantRepository eventParticipantRepository;
+    protected final CalendarRepository calendarRepository;
 
     /**
      * 이벤트 생성(Host 는 EventParticipant 에 추가된다)
@@ -118,6 +116,7 @@ public class EventService {
     public void delete(UUID eventId) throws EntityNotFoundException {
         final var event = getEvent(eventId);
 
+        calendarRepository.deleteByEvent(event);
         eventParticipantRepository.deleteByEvent(event);
         guestRepository.deleteByEvent(event);
         eventSelectableParticipleTimeRepository.deleteByEvent(event);
