@@ -2,7 +2,6 @@ package com.mimi.w2m.backend.config.interceptor;
 
 import com.mimi.w2m.backend.config.exception.UnauthorizedException;
 import com.mimi.w2m.backend.dto.security.LoginInfo;
-import com.mimi.w2m.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,8 @@ import java.util.regex.Pattern;
 public class LoginCheckHandler {
 
     private final JwtHandler jwtHandler;
-    private final UserService userService;
+    // TODO: 2023/01/19 여기에서 userService 를 생성하면, UserService 가 EnhancerBySpringCGLIB 의 Proxy 로 생성되지 않는다. 왜?
+//    private final UserService userService;
 
     public LoginInfo loadLoginInfo(HttpServletRequest request) {
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
