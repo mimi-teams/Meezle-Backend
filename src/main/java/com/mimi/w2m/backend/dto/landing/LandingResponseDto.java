@@ -3,6 +3,8 @@ package com.mimi.w2m.backend.dto.landing;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
+import java.io.Serializable;
+
 /**
  * LandingResponseDto
  *
@@ -16,5 +18,5 @@ public record LandingResponseDto(
         Long eventCount,
         @JsonProperty(value = "userCount")
         Long userCount
-) {
+) implements Serializable {
 }

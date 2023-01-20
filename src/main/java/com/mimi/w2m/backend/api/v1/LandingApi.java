@@ -2,9 +2,7 @@ package com.mimi.w2m.backend.api.v1;
 
 import com.mimi.w2m.backend.dto.base.ApiCallResponse;
 import com.mimi.w2m.backend.dto.landing.LandingResponseDto;
-import com.mimi.w2m.backend.service.EventService;
-import com.mimi.w2m.backend.service.GuestService;
-import com.mimi.w2m.backend.service.UserService;
+import com.mimi.w2m.backend.service.LandingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,20 +30,15 @@ import javax.validation.Valid;
 @RestController
 public class LandingApi {
     private final Logger logger = LoggerFactory.getLogger(LandingApi.class.getName());
-    private final EventService eventService;
-    private final GuestService guestService;
-    private final UserService userService;
+    private final LandingService landingService;
     private final CacheManager cacheManager;
+//    private final UserService userService;
 
     @Operation(summary = "개설된 이벤트와 참여자 수 반환", description = "[인증X] 현재 개설된 이벤트 및 이벤트에 참여한 인원의 총합을 반환한다")
     @GetMapping(path = "")
     public @Valid ApiCallResponse<LandingResponseDto> getInfo() {
-        final var numEvents = eventService.getTotal();
-        final var numGuests = guestService.getTotal();
-        final var numUsers = userService.getTotal();
-        return ApiCallResponse.ofSuccess(LandingResponseDto.builder()
-                .eventCount(numEvents)
-                .userCount(numUsers + numGuests)
-                .build());
+//        final var userCnt = userService.getTotal();
+        final var info = landingService.getLandingData();
+        return ApiCallResponse.ofSuccess(info);
     }
 }

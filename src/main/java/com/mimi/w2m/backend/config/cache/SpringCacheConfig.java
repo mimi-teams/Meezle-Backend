@@ -1,5 +1,6 @@
 package com.mimi.w2m.backend.config.cache;
 
+import com.mimi.w2m.backend.dto.landing.LandingResponseDto;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
@@ -41,8 +42,15 @@ public class SpringCacheConfig {
                 .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.of(1, ChronoUnit.MINUTES)));
         final var eh107Configuration = Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
         manager.createCache("userCount", eh107Configuration);
-        manager.createCache("guestCount", eh107Configuration);
-        manager.createCache("eventCount", eh107Configuration);
+//        manager.createCache("guestCount", eh107Configuration);
+//        manager.createCache("eventCount", eh107Configuration);
+
+        final var landingConfiguration = CacheConfigurationBuilder
+                .newCacheConfigurationBuilder(SimpleKey.class, LandingResponseDto.class,
+                        ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(1, MemoryUnit.MB))
+                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(1)));
+        final var eh107LandingConfiguration = Eh107Configuration.fromEhcacheCacheConfiguration(landingConfiguration);
+        manager.createCache("landingInfo", eh107LandingConfiguration);
         return manager;
     }
 }
