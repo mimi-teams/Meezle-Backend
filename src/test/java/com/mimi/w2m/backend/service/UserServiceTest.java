@@ -87,15 +87,4 @@ class UserServiceTest {
         assertThat(tester3).isPresent();
         assertThat(invalidTester).isEmpty();
     }
-
-    @Test
-    @DisplayName("Cache Method Test")
-    void testCache() {
-        given(userRepository.count()).willReturn(1L);
-
-        for (int i = 0; i < 100; i++) {
-            userService.getTotal();
-        }
-        then(userRepository).should(times(1)).count();
-    }
 }

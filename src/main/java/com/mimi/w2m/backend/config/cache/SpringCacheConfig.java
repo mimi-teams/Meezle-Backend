@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 /**
  * SpringCacheConfig
@@ -37,20 +36,12 @@ public class SpringCacheConfig {
         final var provider = Caching.getCachingProvider();
         final var manager = provider.getCacheManager();
         final var configuration = CacheConfigurationBuilder
-                .newCacheConfigurationBuilder(SimpleKey.class, Long.class,
-                        ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(1, MemoryUnit.MB))
-                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.of(1, ChronoUnit.MINUTES)));
-        final var eh107Configuration = Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
-        manager.createCache("userCount", eh107Configuration);
-//        manager.createCache("guestCount", eh107Configuration);
-//        manager.createCache("eventCount", eh107Configuration);
-
-        final var landingConfiguration = CacheConfigurationBuilder
                 .newCacheConfigurationBuilder(SimpleKey.class, LandingResponseDto.class,
                         ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(1, MemoryUnit.MB))
                 .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(1)));
-        final var eh107LandingConfiguration = Eh107Configuration.fromEhcacheCacheConfiguration(landingConfiguration);
-        manager.createCache("landingInfo", eh107LandingConfiguration);
+        final var eh107Configuration = Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
+        manager.createCache("landingInfo", eh107Configuration);
+
         return manager;
     }
 }

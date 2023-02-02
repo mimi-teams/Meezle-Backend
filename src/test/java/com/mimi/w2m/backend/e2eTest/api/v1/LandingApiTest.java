@@ -5,13 +5,14 @@ import com.mimi.w2m.backend.repository.EventRepository;
 import com.mimi.w2m.backend.repository.GuestRepository;
 import com.mimi.w2m.backend.repository.UserRepository;
 import com.mimi.w2m.backend.testFixtures.EventTestFixture;
-import com.mimi.w2m.backend.testFixtures.GuestTestFixture;
 import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,20 +31,21 @@ public class LandingApiTest extends End2EndTest {
     protected GuestRepository guestRepository;
     @Autowired
     protected EventRepository eventRepository;
+    @Autowired
+    protected CacheManager cacheManager;
 
     @Test
     @DisplayName("landing Page Api Test")
     void testCache() throws Exception {
         final var user = userRepository.save(UserTestFixture.createUser());
         final var event = eventRepository.save(EventTestFixture.createEvent(user));
-        final var guest = guestRepository.save(GuestTestFixture.createGuest(event));
 
         mockMvc.perform(
                         get("/v1/landing")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.eventCount").value(1))
-                .andExpect(jsonPath("$.data.userCount").value(2));
+                .andExpect(jsonPath("$.data.eventCount").value(1L));
+        assertThat(cacheManager.getCache("landingInfo")).isNotNull();
     }
 }

@@ -11,7 +11,6 @@ import com.mimi.w2m.backend.dto.participant.guest.GuestLoginRequest;
 import com.mimi.w2m.backend.dto.participant.guest.GuestLoginResponse;
 import com.mimi.w2m.backend.repository.GuestRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +55,7 @@ public class GuestService {
 
     /**
      * 사용중인 유저 이름인지
+     *
      * @return 사용중이라면 true, 아니라면 false
      */
     public boolean isUsedGuestName(UUID eventId, String guestName) {
@@ -109,10 +109,5 @@ public class GuestService {
         guestRepository.save(guest);
 
         return guest;
-    }
-
-    @Cacheable(cacheNames = "guestCount")
-    public Long getTotal() {
-        return guestRepository.count();
     }
 }

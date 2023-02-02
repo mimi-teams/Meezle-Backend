@@ -13,7 +13,6 @@ import com.mimi.w2m.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -209,10 +208,5 @@ public class EventService {
         } else {
             return event.setActivityTime(days, TimeRange.fixOrder(timeRange));
         }
-    }
-
-    @Cacheable(cacheNames = "eventCount")
-    public Long getTotal() {
-        return eventRepository.count();
     }
 }

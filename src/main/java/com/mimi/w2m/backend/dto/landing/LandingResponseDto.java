@@ -15,8 +15,6 @@ import java.io.Serializable;
 @Builder
 public record LandingResponseDto(
         @JsonProperty(value = "eventCount")
-        Long eventCount,
-        @JsonProperty(value = "userCount")
-        Long userCount
+        Long eventCount
 ) implements Serializable {
 }

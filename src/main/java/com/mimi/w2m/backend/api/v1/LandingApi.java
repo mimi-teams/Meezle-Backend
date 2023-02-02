@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.CacheManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,13 +30,10 @@ import javax.validation.Valid;
 public class LandingApi {
     private final Logger logger = LoggerFactory.getLogger(LandingApi.class.getName());
     private final LandingService landingService;
-    private final CacheManager cacheManager;
-//    private final UserService userService;
 
     @Operation(summary = "개설된 이벤트와 참여자 수 반환", description = "[인증X] 현재 개설된 이벤트 및 이벤트에 참여한 인원의 총합을 반환한다")
     @GetMapping(path = "")
     public @Valid ApiCallResponse<LandingResponseDto> getInfo() {
-//        final var userCnt = userService.getTotal();
         final var info = landingService.getLandingData();
         return ApiCallResponse.ofSuccess(info);
     }
