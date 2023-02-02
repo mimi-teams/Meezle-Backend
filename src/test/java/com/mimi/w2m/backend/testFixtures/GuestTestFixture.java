@@ -1,6 +1,7 @@
 package com.mimi.w2m.backend.testFixtures;
 
 import com.mimi.w2m.backend.domain.Event;
+import com.mimi.w2m.backend.domain.Guest;
 import com.mimi.w2m.backend.dto.participant.guest.GuestCreateDto;
 
 public class GuestTestFixture {
@@ -15,4 +16,10 @@ public class GuestTestFixture {
     }
 
 
+    public static Guest createGuest(Event event) {
+        return Guest.builder()
+                .name("testGuest")
+                .event(event)
+                .build();
+    }
 }

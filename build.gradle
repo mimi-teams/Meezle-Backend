@@ -56,17 +56,22 @@ dependencies {
 
     // UUID
     implementation("com.fasterxml.uuid:java-uuid-generator:4.0.1")
+
+    // Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache:2.7.7'
+    implementation 'org.ehcache:ehcache:3.10.0'
+    implementation 'javax.cache:cache-api:1.1.1'
 }
 
 tasks.named("test") {
     useJUnitPlatform()
 }
 
-// Activate Test profile
-tasks.test {
-    systemProperty 'spring.profiles.active', 'test'
-//	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LoggerFactory'
-}
+//// Activate Test profile
+//tasks.test {
+//    systemProperty 'spring.profiles.active', 'test'
+////	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LoggerFactory'
+//}
 
 
 jib {

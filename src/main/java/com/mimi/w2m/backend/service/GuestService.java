@@ -55,6 +55,7 @@ public class GuestService {
 
     /**
      * 사용중인 유저 이름인지
+     *
      * @return 사용중이라면 true, 아니라면 false
      */
     public boolean isUsedGuestName(UUID eventId, String guestName) {
