@@ -71,7 +71,7 @@ public class EventService {
         var event = getEvent(eventId);
         event.update(
                 requestDto.getTitle(),
-                requestDto.getDDay(),
+                requestDto.getDday(),
                 requestDto.getColor(),
                 requestDto.getDescription()
         );

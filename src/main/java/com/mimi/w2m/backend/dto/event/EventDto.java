@@ -26,7 +26,7 @@ import java.util.UUID;
  * @since 2022-12-17
  */
 @Getter
-@Schema(title = "Event 에 대한 반환 정보")
+@Schema(title = "Event 에 대한 정보")
 public class EventDto implements Serializable {
 
     @Schema(title = "Event 의 ID", type = "Integer")
@@ -46,7 +46,7 @@ public class EventDto implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonProperty("dday")
     @Nullable
-    private LocalDateTime dDay;
+    private LocalDateTime dday;
 
     @Valid
     private ColorDto color;
@@ -74,7 +74,7 @@ public class EventDto implements Serializable {
             UUID id,
             UUID hostId,
             String title,
-            @Nullable LocalDateTime dDay,
+            @Nullable LocalDateTime dday,
             ColorDto color,
             @Nullable String description,
             @Nullable Set<DayOfWeek> activityDays,
@@ -83,7 +83,7 @@ public class EventDto implements Serializable {
         this.id = id;
         this.hostId = hostId;
         this.title = title;
-        this.dDay = dDay;
+        this.dday = dday;
         this.color = color;
         this.description = Objects.requireNonNullElse(description, "");
         this.activityDays = activityDays;
@@ -95,7 +95,7 @@ public class EventDto implements Serializable {
                 .id(entity.getId())
                 .hostId(entity.getHost().getId())
                 .title(entity.getTitle())
-                .dDay(entity.getDDay())
+                .dday(entity.getDday())
                 .color(entity.getColor())
                 .description(entity.getDescription())
                 .activityDays(entity.getActivityDays())
