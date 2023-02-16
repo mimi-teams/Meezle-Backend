@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  * SpringCacheConfig
@@ -40,8 +41,13 @@ public class SpringCacheConfig {
                         ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(1, MemoryUnit.MB))
                 .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(1)));
         final var eh107Configuration = Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
-        manager.createCache("landingInfo", eh107Configuration);
-
+        final var cacheName = "landingInfo";
+        // Test에서 Context를 생성할 때, 여러 Cache 가 생성되는 경우가 발생한다. 이를 방지하기 위해 Singleton 형식으로 생성하기!
+//        synchronized (this) {
+            if (Objects.isNull(manager.getCache(cacheName))) {
+                manager.createCache(cacheName, eh107Configuration);
+            }
+//        }
         return manager;
     }
 }

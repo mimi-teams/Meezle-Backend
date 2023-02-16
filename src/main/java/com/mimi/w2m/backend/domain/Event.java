@@ -50,7 +50,7 @@ public class Event extends BaseTimeEntity {
     private LocalDateTime deletedAt;
     @Comment("만료 일자, 만료 일자가 없으면 null")
     @Column(name = "d_day")
-    private LocalDateTime dDay;
+    private LocalDateTime dday;
     @Comment("이벤트의 대표 색상. Backend에서 설정해 Front에 전달한다(브라우저마다 동일하게 보이게 만들려고!). Default : PINK")
     @Convert(converter = ColorConverter.class)
     @Column(name = "color", nullable = false, length = 100)
@@ -71,10 +71,10 @@ public class Event extends BaseTimeEntity {
     }
 
     @Builder
-    public Event(String title, LocalDateTime dDay, ColorDto color,
+    public Event(String title, LocalDateTime dday, ColorDto color,
                  String description, User host, TimeRange activityTimeRange, Set<DayOfWeek> activityDays) {
         this.title = title;
-        this.dDay = dDay;
+        this.dday = dday;
         this.color = color;
         this.description = Objects.nonNull(description) ? description : "";
         this.host = host;
@@ -82,10 +82,10 @@ public class Event extends BaseTimeEntity {
         this.activityDays = activityDays;
     }
 
-    public Event update(String title, LocalDateTime dDay, ColorDto color,
+    public Event update(String title, LocalDateTime dday, ColorDto color,
                         String description) {
         this.title = title;
-        this.dDay = dDay;
+        this.dday = dday;
         this.color = color;
         this.description = Objects.nonNull(description) ? description : "";
         return this;
@@ -118,7 +118,7 @@ public class Event extends BaseTimeEntity {
     public String toString() {
         return getClass().getSimpleName() + "(" + "id = " + getId() + ", " + "createdDate = " + getCreatedDate() +
                 ", " + "lastModifiedDate = " + getLastModifiedDate() + ", " + "title = " + getTitle() + ", " +
-                "deletedAt = " + getDeletedAt() + ", " + "dDay = " + dDay + ", " + "selectableDaysAndTimes = " +
+                "deletedAt = " + getDeletedAt() + ", " + "dday = " + dday + ", " + "selectableDaysAndTimes = " +
                 "color = " + getColor() + ", " + "description = " + getDescription() + ")";
     }
 

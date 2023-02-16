@@ -6,6 +6,19 @@ create table blocked_jwt (
                              primary key (token)
 ) engine=InnoDB;
 
+create table oauth2_token(
+    oauth2_token_id BINARY(16) not null,
+    created_date datetime(6) not null,
+    last_modified_at datetime(6) not null,
+    user_id BINARY(16) not null,
+    access_token TEXT not null,
+    access_token_expires datetime(6) not null,
+    refresh_token TEXT not null,
+    refresh_token_expires datetime(6) not null,
+    platform VARCHAR(10) not null,
+    primary key (oauth2_token_id)
+) engine=InnoDB;
+
 create table event (
                        event_id BINARY(16) not null,
                        created_date datetime(6) not null,
@@ -129,3 +142,8 @@ alter table guest
     add constraint FKplwm15gu4q6tj4g4ox6wkf1li
         foreign key (event_id)
             references event (event_id);
+
+alter table oauth2_token
+    add constraint
+        foreign key (user_id)
+            references user (user_id);

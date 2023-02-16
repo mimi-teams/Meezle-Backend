@@ -20,7 +20,6 @@ public class UserApiTest extends End2EndTest {
     @Autowired
     protected UserRepository userRepository;
 
-
     @Test
     void 이용자_정보_반환() throws Exception {
         // given
