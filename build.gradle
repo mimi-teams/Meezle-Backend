@@ -67,12 +67,6 @@ tasks.named("test") {
     useJUnitPlatform()
 }
 
-//// Activate Test profile
-//tasks.test {
-//    systemProperty 'spring.profiles.active', 'test'
-////	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LoggerFactory'
-//}
-
 
 jib {
     from {
