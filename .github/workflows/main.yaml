@@ -10,9 +10,9 @@ on:
       - opened
       - reopened
       - auto_merge_enabled
-env:
-  # Use Git Action Secret
-  ## GCP Secrets
+#env:
+#  # Use Git Action Secret
+#  ## GCP Secrets
 #  GCP_PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
 #  GCP_PROJECT_REGION: ${{secrets.GCP_PROJECT_REGION}}
 #  GCP_ARTIFACT_REPOSITORY: ${{secrets.GCP_ARTIFACT_REPOSITORY}}
