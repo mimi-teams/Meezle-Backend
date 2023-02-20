@@ -59,11 +59,12 @@ jobs:
       - name: Setup Database
         run: |-
           mysql -u$DB_USER -p$DB_PW -h$DB_HOST -P$DB_PORT \
-            -e 'CREATE DATABASE $DB_NAME default CHARACTER SET UTF8';
+            -e 'CREATE DATABASE $DB_NAME default CHARACTER SET UTF8; SHOW databases'
+
       - name: Run Tests
         run: |-
           chmod +x ./gradlew
-          ./gradlew -Dspring.profiles.active=test test 1> /dev/null 2>&1
+          ./gradlew -Dspring.profiles.active=test test
       - name: Test Result
         if: always() # Even if test is failed, the result should be downloaded
         uses: actions/upload-artifact@v3
