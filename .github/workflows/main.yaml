@@ -68,8 +68,8 @@ jobs:
         if: always() # Even if test is failed, the result should be downloaded
         uses: actions/upload-artifact@v3
         with:
-          name: result.html
-          path: /home/runner/work/Meezle-Backend/Meezle-Backend/build/reports/tests/test/index.html
+          name: test-result
+          path: /home/runner/work/Meezle-Backend/Meezle-Backend/build/reports/tests/test
 
 #  continuous-delivery:
 #    # CD Job
