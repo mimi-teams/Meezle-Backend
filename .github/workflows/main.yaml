@@ -45,16 +45,14 @@ jobs:
           cache: 'gradle'
 
       - id: setup-mysql
-        name: actions-setup-mysql
-        uses: shogo82148/actions-setup-mysql@v1.14.1
+        uses: shogo82148/actions-setup-mysql@v1
         with:
-          distribution: mysql
-          mysql-version: 8.0
-          root-password: ${{env.DB_PW}}
-          user: ${{env.DB_USER}}
-          password: ${{env.DB_PW}}
-      - run: mysql -uroot -p${{env.DB_PW}} --host=${{env.DB_HOST}} --port=${{env.DB_PORT}} \
-          -e SELECT version()
+          mysql-version: '8.0'
+      - run: |-
+          mysql -uroot -h127.0.0.1 \
+          --ssl --ssl-mode=--ssl-mode=REQUIRED \
+          --ssl-ca=${{ steps.setup-mysql.outputs.base-dir }}/var/ca.pem \
+          -e 'SELECT version()'
 #  continuous-delivery:
 #    # CD Job
 #    runs-on: # Java & GCP
