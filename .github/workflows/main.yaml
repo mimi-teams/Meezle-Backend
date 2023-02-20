@@ -57,11 +57,11 @@ jobs:
           --ssl --ssl-mode=REQUIRED \ 
           --ssl-ca=${{steps.setup-mysql.outputs.base-dir}}/var/ca.pem \
           -e "SELECT version()"
-  continuous-delivery:
-    # CD Job
-    runs-on: # Java & GCP
-    if: github.base_ref == 'main'
-    needs: continuous-integration
+#  continuous-delivery:
+#    # CD Job
+#    runs-on: # Java & GCP
+#    if: github.base_ref == 'main'
+#    needs: continuous-integration
 
 
 
