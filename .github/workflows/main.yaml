@@ -3,9 +3,13 @@ on:
   push:
     branches:
       - '**' # All Branch should be checked for Integration
-  pull-request:
+  pull_request:
     branches:
       - 'main'
+    types:
+      - opened
+      - reopened
+      - auto_merge_enabled
 env:
   # Use Git Action Secret
   ## GCP Secrets
