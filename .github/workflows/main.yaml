@@ -34,7 +34,7 @@ jobs:
       DB_PORT: 3306
       DB_NAME: test_db
       DB_USER: tester
-      DB_PW: 0308
+      DB_PW: '0308'
     steps:
       - uses: actions/checkout@v3
       - name: Setup Java@17
@@ -53,10 +53,10 @@ jobs:
           root-password: ${{env.DB_PW}}
           user: ${{env.DB_USER}}
           password: ${{env.DB_PW}}
-      - run: mysql -uroot --host=${{env.DB_HOST}} --port=${{env.DB_PORT}} \
+      - run: mysql -u ${{DB_USER}} --host=${{env.DB_HOST}} --port=${{env.DB_PORT}} \
           --ssl --ssl-mode=REQUIRED \ 
           --ssl-ca=${{steps.setup-mysql.outputs.base-dir}}/var/ca.pem \
-          -e "SELECT version()"
+          -e 'SHOW databases'
 #  continuous-delivery:
 #    # CD Job
 #    runs-on: # Java & GCP
