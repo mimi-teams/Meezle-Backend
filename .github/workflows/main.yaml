@@ -64,6 +64,11 @@ jobs:
         run: |-
           chmod +x ./gradlew
           ./gradlew -Dspring.profiles.active=test test
+      - name: Test Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: result.html
+          path: file:///home/runner/work/Meezle-Backend/Meezle-Backend/build/reports/tests/test/index.html
 
 #  continuous-delivery:
 #    # CD Job
