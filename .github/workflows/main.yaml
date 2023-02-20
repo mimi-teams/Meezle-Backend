@@ -56,7 +56,7 @@ jobs:
       - run: mysql -uroot --host=${{env.DB_HOST}} --port=${{env.DB_PORT}} \
           --ssl --ssl-mode=REQUIRED \ 
           --ssl-ca=${{steps.setup-mysql.outputs.base-dir}}/var/ca.pem \
-          -e "SELECT version()"
+          -e 'SELECT version()'
 #  continuous-delivery:
 #    # CD Job
 #    runs-on: # Java & GCP
