@@ -56,10 +56,15 @@ jobs:
           mysql-version: '8.0'
           user: ${{env.DB_USER}}
           password: ${{env.DB_PW}}
-      - name: Create Database
+      - name: Setup Database
         run: |-
           mysql -u$DB_USER -p$DB_PW -h$DB_HOST -P$DB_PORT \
             -e 'CREATE DATABASE $DB_NAME default CHARACTER SET UTF8';
+      - name: Run Tests
+        run: |-
+          chmod +x ./gradlew
+          ./gradlew -Dspring.profiles.active=test test
+
 #  continuous-delivery:
 #    # CD Job
 #    runs-on: # Java & GCP
