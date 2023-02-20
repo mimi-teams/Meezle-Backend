@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ## DB Secrets for Test
-      DB_JWT_SECRET: secret
+      DB_JWT_SECRET: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM= # MUST 32bytes!
       DB_HOST: 127.0.0.1
       DB_PORT: 3306
       DB_NAME: test_db
