@@ -1,0 +1,63 @@
+name: CI & CD with Google Cloud Run
+on:
+  push:
+    branches:
+      - '**' # All Branch should be checked for Integration
+  pull-request:
+    branches:
+      - 'main'
+env:
+  # Use Git Action Secret
+  ## GCP Secrets
+#  GCP_PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
+#  GCP_PROJECT_REGION: ${{secrets.GCP_PROJECT_REGION}}
+#  GCP_ARTIFACT_REPOSITORY: ${{secrets.GCP_ARTIFACT_REPOSITORY}}
+#  GCP_CLOUD_RUN_SERVICE: ${{secrets.GCP_CLOUD_RUN_SERVICE}}
+#  GCP_CLOUD_RUN_SERVICE_ACCOUNT: ${{secrets.GCP_CLOUD_RUN_SERVICE_ACCOUNT}}
+#  ## DB Secrets for GCP Cloud SQL
+#  GCP_SERVERLESS_CONNECTOR: ${{secrets.GCP_SERVERLESS_CONNECTOR}}
+#  GCP_CONNECTION_NAME: ${{secrets.GCP_CONNECTION_NAME}}
+#  GCP_DB_PORT: ${{secrets.GCP_DB_PORT}}
+#  GCP_DB_NAME: ${{secrets.GCP_DB_NAME}}
+#  GCP_DB_USER: ${{secrets.GCP_DB_USER}}
+#  GCP_DB_PW: ${{secrets.GCP_DB_PW}}
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    env:
+      ## DB Secrets for Test
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: test_db
+      DB_USER: tester
+      DB_PW: 0308
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java@17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: 'gradle'
+
+      - id: setup-mysql
+        name: actions-setup-mysql
+        uses: shogo82148/actions-setup-mysql@v1.14.1
+        with:
+          distribution: mysql
+          mysql-version: 8.0
+          root-password: ${{env.DB_PW}}
+          user: ${{env.DB_USER}}
+          password: ${{env.DB_PW}}
+      - run: mysql -uroot --host=${{env.DB_HOST}} --port=${{env.DB_PORT}} \
+          --ssl --ssl-mode=REQUIRED \ 
+          --ssl-ca=${{steps.setup-mysql.outputs.base-dir}}/var/ca.pem \
+          -e "SELECT version()"
+  continuous-delivery:
+    # CD Job
+    runs-on: # Java & GCP
+    if: github.base_ref == 'main'
+    needs: continuous-integration
+
+
+
