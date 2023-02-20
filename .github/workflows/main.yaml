@@ -65,6 +65,7 @@ jobs:
           chmod +x ./gradlew
           ./gradlew -Dspring.profiles.active=test test 1> /dev/null 2>&1
       - name: Test Result
+        if: always() # Even if test is failed, the result should be downloaded
         uses: actions/upload-artifact@v3
         with:
           name: result.html
