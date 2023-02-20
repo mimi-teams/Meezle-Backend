@@ -59,7 +59,7 @@ jobs:
       - name: Setup Database
         run: |-
           mysql -u$DB_USER -p$DB_PW -h$DB_HOST -P$DB_PORT \
-            -e 'CREATE DATABASE $DB_NAME default CHARACTER SET UTF8; SHOW databases'
+            -e 'CREATE DATABASE ${{env.DB_NAME}} default CHARACTER SET UTF8; SHOW databases'
 
       - name: Run Tests
         run: |-
