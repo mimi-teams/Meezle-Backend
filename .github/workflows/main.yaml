@@ -53,10 +53,10 @@ jobs:
           root-password: ${{env.DB_PW}}
           user: ${{env.DB_USER}}
           password: ${{env.DB_PW}}
-      - run: mysql -u ${{DB_USER}} --host=${{env.DB_HOST}} --port=${{env.DB_PORT}} \
+      - run: mysql -uroot --host=${{env.DB_HOST}} --port=${{env.DB_PORT}} \
           --ssl --ssl-mode=REQUIRED \ 
           --ssl-ca=${{steps.setup-mysql.outputs.base-dir}}/var/ca.pem \
-          -e 'SHOW databases'
+          -e "SELECT version()"
 #  continuous-delivery:
 #    # CD Job
 #    runs-on: # Java & GCP
