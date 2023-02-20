@@ -58,7 +58,7 @@ jobs:
           password: ${{env.DB_PW}}
       - name: Create Database
         run: |-
-          mysql -u$DB_USER -p$DB_PW -h$DB_HOST -p$DB_PORT \
+          mysql --uroot -h$DB_HOST -p$DB_PORT \
             -e CREATE DATABASE $DB_NAME default CHARACTER SET UTF8;
 #          mysql -u$DB_USER -p$DB_PW -h$DB_HOST -p$DB_PORT \
 #            -e SHOW databases;
