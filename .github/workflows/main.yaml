@@ -50,7 +50,7 @@ jobs:
           mysql-version: '8.0'
       - run: |-
           mysql -uroot -h127.0.0.1 \
-          --ssl --ssl-mode=--ssl-mode=REQUIRED \
+          --ssl-mode=REQUIRED \
           --ssl-ca=${{ steps.setup-mysql.outputs.base-dir }}/var/ca.pem \
           -e 'SELECT version()'
 #  continuous-delivery:
