@@ -79,7 +79,8 @@ jib {
                 "-XX:+UseG1GC",
                 "-Xms256M",
                 "-Xmx256M",
-                "-Duser.timezone=Asia/Seoul"
+                "-Duser.timezone=Asia/Seoul",
+                "-Dspring.profiles.active=prod"
         ]
         ports = ["8080"]
     }
