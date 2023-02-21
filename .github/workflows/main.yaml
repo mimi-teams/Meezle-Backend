@@ -84,6 +84,8 @@ jobs:
     runs-on: ubuntu-latest
 #    if: github.base_ref == 'main'
 #    needs: continuous-integration
+    env:
+      SHA: ${{github.sha}}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Java@17
@@ -109,7 +111,7 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: ${{env.GCP_CLOUD_RUN_SERVICE}}
-          image: ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev/${{env.GCP_PROJECT_ID}}/${{env.GCP_ARTIFACT_REPOSITORY}}/${{env.GCP_CLOUD_RUN_SERVICE}}-image:${{github.sha}}
+          image: ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev/${{env.GCP_PROJECT_ID}}/${{env.GCP_ARTIFACT_REPOSITORY}}/${{env.GCP_CLOUD_RUN_SERVICE}}-image:${{env.SHA}}
           env_vars: |
             INSTANCE_CONNECTION_NAME=${{env.GCP_CONNECTION_NAME}}
             DB_JWT_SECRET=${{env.GCP_DB_JWT_SECRET}}
