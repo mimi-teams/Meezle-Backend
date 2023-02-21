@@ -43,11 +43,11 @@ public class Calendar extends BaseTimeEntity {
     private PlatformType platform;
 
     @Comment("외부 캘린더 ID")
-    @Column(name = "platform_calendar_id")
+    @Column(name = "platform_calendar_id", columnDefinition = "TEXT")
     private String platformCalendarId;
 
     @Comment("외부 캘린더 이벤트 ID")
-    @Column(name = "platform_event_id")
+    @Column(name = "platform_event_id", columnDefinition = "TEXT")
     private String platformEventId;
 
     @Builder

@@ -36,6 +36,6 @@ external:
 # Oauth 정보
 oauth2:
   kakao:
-    client-id: ${kakao-client-id}
-    client-secret: ${kakao-client-secret}
-    redirect-url: ${http-host}/api/v1/auth/oauth2/authorization/redirect/kakao #http://localhost:8080/api/v1/auth/oauth2/authorization/redirect/kakao
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    redirect-url: ${KAKAO_HTTP_HOST}/api/v1/auth/oauth2/authorization/redirect/kakao #http://localhost:8080/api/v1/auth/oauth2/authorization/redirect/kakao

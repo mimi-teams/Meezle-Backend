@@ -30,14 +30,14 @@ public class Oauth2Token extends BaseTimeEntity {
     @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", updatable = false, nullable = false)
     private User user;
-    @Column(name = "access_token", unique = true, nullable = false)
+    @Column(name = "access_token", unique = true, nullable = false, columnDefinition = "TEXT")
     private String accessToken;
     @Convert(converter = PlatformTypeConverter.class)
     @Column(name = "platform", length = 10, nullable = false, columnDefinition = "VARCHAR(10)")
     private PlatformType platform;
     @Column(name = "access_token_expires", nullable = false)
     private LocalDateTime accessTokenExpires;
-    @Column(name = "refresh_token", nullable = false)
+    @Column(name = "refresh_token", nullable = false, columnDefinition = "TEXT")
     private String refreshToken;
     @Column(name = "refresh_token_expires", nullable = false)
     private LocalDateTime refreshTokenExpires;

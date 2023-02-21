@@ -20,9 +20,10 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3374/mimi?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: 1123
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=UTC&characterEncoding=UTF-8
+    # url: jdbc:mysql://localhost:3374/mimi?serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${DB_USER}
+    password: ${DB_PASS}
     hikari:
       pool-name: HikariPool-Primary
       maximum-pool-size: 5
@@ -30,6 +31,6 @@ spring:
       connection-test-query: SELECT 1
 
 auth:
-  token.secret: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM=
+  token.secret: ${DB_JWT_SECRET} # FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM=
 
 

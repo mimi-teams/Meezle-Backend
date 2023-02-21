@@ -1,0 +1,131 @@
+name: CI & CD with Google Cloud Run
+on:
+  push:
+    branches:
+      - '**' # All Branch should be checked for Integration
+  pull_request:
+    branches:
+      - 'main'
+    types:
+      - closed
+env:
+  # Use Git Action Secret
+  ## Config for OAuth2(Kakao)
+  KAKAO_CLIENT_ID: ${{secrets.KAKAO_CLIENT_ID}}
+  KAKAO_CLIENT_SECRET: ${{secrets.KAKAO_CLIENT_SECRET}}
+  KAKAO_HTTP_HOST: ${{secrets.KAKAO_HTTP_HOST}}
+  ## GCP Secrets
+  GCP_PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
+  GCP_PROJECT_REGION: ${{secrets.GCP_PROJECT_REGION}}
+  GCP_ARTIFACT_REPOSITORY: ${{secrets.GCP_ARTIFACT_REPOSITORY}}
+  GCP_CLOUD_RUN_SERVICE: ${{secrets.GCP_CLOUD_RUN_SERVICE}}
+  GCP_CLOUD_RUN_SERVICE_ACCOUNT: ${{secrets.GCP_CLOUD_RUN_SERVICE_ACCOUNT}}
+  GCP_WORKLOAD_IDENTITY_PROVIDER: ${{secrets.GCP_WORKLOAD_IDENTITY_PROVIDER}}
+  ## DB Secrets for GCP Cloud SQL
+  GCP_SERVERLESS_CONNECTOR: ${{secrets.GCP_SERVERLESS_CONNECTOR}}
+  GCP_CONNECTION_NAME: ${{secrets.GCP_CONNECTION_NAME}}
+  GCP_DB_JWT_SECRET: ${{secrets.GCP_DB_JWT_SECRET}}
+  GCP_DB_HOST: ${{secrets.GCP_DB_HOST}}
+  GCP_DB_PORT: ${{secrets.GCP_DB_PORT}}
+  GCP_DB_NAME: ${{secrets.GCP_DB_NAME}}
+  GCP_DB_USER: ${{secrets.GCP_DB_USER}}
+  GCP_DB_PASS: ${{secrets.GCP_DB_PASS}}
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    env:
+      ## DB Secrets for Test
+      DB_JWT_SECRET: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM= # MUST 32bytes!
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: test_db
+      DB_USER: tester
+      DB_PASS: '0308'
+      ## Config for Build
+      KAKAO_HTTP_HOST: 'localhost:8080'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java@17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: 'gradle'
+      - name: Setup Mysql@8.0
+        uses: shogo82148/actions-setup-mysql@v1
+        with:
+          mysql-version: '8.0'
+          user: ${{env.DB_USER}}
+          password: ${{env.DB_PASS}}
+      - name: Setup Database
+        # 따옴표로 문장을 묶는 경우, 변수를 사용하기 위해 #{{}} 문법을 사용해야 한다.
+        run: |-
+          mysql -u$DB_USER -p$DB_PASS -h$DB_HOST -P$DB_PORT \
+            -e 'CREATE DATABASE ${{env.DB_NAME}} default CHARACTER SET UTF8; SHOW databases' 
+
+      - name: Run Tests
+        run: |-
+          chmod +x ./gradlew
+          ./gradlew -Dspring.profiles.active=test test
+      - name: Test Result
+        if: always() # Even if test is failed, the result should be downloaded
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-result
+          path: /home/runner/work/Meezle-Backend/Meezle-Backend/build/reports/tests/test
+
+  continuous-delivery:
+    # CD Job
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    needs: continuous-integration
+    env:
+      SHA: ${{github.sha}}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java@17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: 'gradle'
+      - id: auth
+        name: Setup gcloud
+        uses: google-github-actions/auth@v1
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER}}
+          service_account: ${{ env.GCP_CLOUD_RUN_SERVICE_ACCOUNT }}
+      - name: Setup Docker
+        run: |-
+          gcloud auth configure-docker ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev
+          cat /home/runner/.docker/config.json
+      - name: Build
+        run: |-
+          chmod +x ./gradlew
+          ./gradlew jib
+      - name: Deploy
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: ${{env.GCP_CLOUD_RUN_SERVICE}}
+          image: ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev/${{env.GCP_PROJECT_ID}}/${{env.GCP_ARTIFACT_REPOSITORY}}/${{env.GCP_CLOUD_RUN_SERVICE}}-image:${{env.SHA}}
+          env_vars: |
+            INSTANCE_CONNECTION_NAME=${{env.GCP_CONNECTION_NAME}}
+            DB_JWT_SECRET=${{env.GCP_DB_JWT_SECRET}}
+            DB_HOST=${{env.GCP_DB_HOST}}
+            DB_PORT=${{env.GCP_DB_PORT}}
+            DB_NAME=${{env.GCP_DB_NAME}}
+            DB_USER=${{env.GCP_DB_USER}}
+            DB_PASS=${{env.GCP_DB_PASS}}
+            
+            KAKAO_CLIENT_ID=${{env.KAKAO_CLIENT_ID}}
+            KAKAO_CLIENT_SECRET=${{env.KAKAO_CLIENT_SECRET}}
+            KAKAO_HTTP_HOST=${{env.KAKAO_HTTP_HOST}}
+          flags: '--allow-unauthenticated --ingress=all
+          --service-account=${{env.GCP_CLOUD_RUN_SERVICE_ACCOUNT}}
+          --add-cloudsql-instances=${{env.GCP_CONNECTION_NAME}} --vpc-connector=${{env.GCP_SERVERLESS_CONNECTOR}}
+          --min-instances=1 --max-instances=10'
+          region: ${{env.GCP_PROJECT_REGION}}

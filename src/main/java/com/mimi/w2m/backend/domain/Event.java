@@ -34,7 +34,7 @@ public class Event extends BaseTimeEntity {
 
     @Comment("이벤트 요일. Calendar 에 적힌다")
     @Convert(converter = SetDayOfWeekConverter.class)
-    @Column(name = "activity_days")
+    @Column(name = "activity_days", columnDefinition = "VARCHAR(100)")
     Set<DayOfWeek> activityDays;
     @Id
     @GenericGenerator(name = "sequential_uuid", strategy = "com.mimi.w2m.backend.domain.generator.SequentialUUIDGenerator")
@@ -46,7 +46,7 @@ public class Event extends BaseTimeEntity {
     private String title;
     @Comment("삭제 일자, 삭제가 안되었으면 null")
     @Setter
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_date")
     private LocalDateTime deletedAt;
     @Comment("만료 일자, 만료 일자가 없으면 null")
     @Column(name = "d_day")
@@ -64,7 +64,7 @@ public class Event extends BaseTimeEntity {
     private User host;
     @Comment("이벤트 시간. Calendar 에 적힌다")
     @Convert(converter = TimeRangeConverter.class)
-    @Column(name = "activity_time")
+    @Column(name = "activity_time", columnDefinition = "VARCHAR(100)")
     private TimeRange activityTimeRange;
 
     protected Event() {
