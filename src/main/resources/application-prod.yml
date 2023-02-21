@@ -30,4 +30,4 @@ spring:
       connection-test-query: SELECT 1
 
 auth:
-  token.secret: ${DB_JWT_SECRET}
+  token.secret: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM= #${DB_JWT_SECRET}
