@@ -7,8 +7,8 @@ server.port: 8080
 spring:
   jpa:
     hibernate:
-#      ddl-auto: create-drop
-      ddl-auto: validate
+      ddl-auto: create-drop
+#      ddl-auto: validate
     properties:
       hibernate:
         show_sql: true
