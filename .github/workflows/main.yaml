@@ -58,11 +58,11 @@ jobs:
         with:
           mysql-version: '8.0'
           user: ${{env.DB_USER}}
-          password: ${{env.DB_PW}}
+          password: ${{env.DB_PASS}}
       - name: Setup Database
         # 따옴표로 문장을 묶는 경우, 변수를 사용하기 위해 #{{}} 문법을 사용해야 한다.
         run: |-
-          mysql -u$DB_USER -p$DB_PW -h$DB_HOST -P$DB_PORT \
+          mysql -u$DB_USER -p$DB_PASS -h$DB_HOST -P$DB_PORT \
             -e 'CREATE DATABASE ${{env.DB_NAME}} default CHARACTER SET UTF8; SHOW databases' 
 
       - name: Run Tests
