@@ -9,7 +9,6 @@ import com.mimi.w2m.backend.testFixtures.UserTestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,8 +30,6 @@ public class LandingApiTest extends End2EndTest {
     protected GuestRepository guestRepository;
     @Autowired
     protected EventRepository eventRepository;
-    @Autowired
-    protected CacheManager cacheManager;
 
     @Test
     @DisplayName("landing Page Api Test")

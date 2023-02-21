@@ -121,21 +121,6 @@ public class EventApi {
         return ApiCallResponse.ofSuccess(EventResponseDto.of(event, eventSelectableParticipleTimes));
     }
 
-    @Operation(summary = "[인증] 이벤트 활동 시간 수정", description = "ID에 해당하는 이벤트의 활동 시간을 설정한다. 이벤트 생성자만 설정 가능하다")
-    @Auth
-    @PatchMapping(path = "/{eventId}/activity")
-    public @Valid ApiCallResponse<EventResponseDto> patchActivity(
-            @NotNull @Valid @PathVariable("eventId") UUID eventId,
-            @NotNull @RequestBody EventActivityTimeDto requestDto
-    ) {
-        final var currentUserInfo = authService.getCurrentUserInfo();
-        authService.isHost(currentUserInfo.userId(), eventId);
-
-        final var event = eventService.modifyActivity(eventId, requestDto);
-        final var eventSelectableParticipleTimes = eventService.getEventSelectableParticipleTimes(eventId);
-        return ApiCallResponse.ofSuccess(EventResponseDto.of(event, eventSelectableParticipleTimes));
-    }
-
     @Operation(summary = "[인증]이벤트 삭제",
             description = "ID에 해당하는 이벤트를 삭제한다. 이벤트 생성자만 가능하며, 삭제 시 Event 와 연관된 정보가 모두 삭제된다. 삭제 후 처리는 클라이언트에서 해주세요")
     @Auth
@@ -325,4 +310,18 @@ public class EventApi {
         }
         return ApiCallResponse.ofSuccess(response);
     }
+
+    @Operation(summary = "[인증] 이벤트 일정 확정", description = "ID에 해당하는 이벤트의 일정을 확정한다. 생성자만 가능하고, dDay 여부와 상관 없으며, Client에서는 이 API를 호출해 일정을 확정하면 된다.")
+    @Auth
+    @PatchMapping(path = "/{eventId}/commit")
+    public @Valid ApiCallResponse<?> commitEvent(
+            @NotNull @Valid @PathVariable("eventId") UUID eventId,
+            @NotNull @RequestBody EventActivityTimeDto requestDto
+    ) {
+        final var currentUserInfo = authService.getCurrentUserInfo();
+        authService.isHost(currentUserInfo.userId(), eventId);
+        eventService.modifyActivity(eventId, requestDto);
+        return ApiCallResponse.ofSuccess(null);
+    }
+
 }

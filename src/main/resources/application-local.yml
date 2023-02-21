@@ -28,8 +28,10 @@ spring:
       maximum-pool-size: 5
       connection-timeout: 5000
       connection-test-query: SELECT 1
+  # https://itmining.tistory.com/148
+#  jackson:
+#    property-naming-strategy: LOWER_CASE
 
 auth:
   token.secret: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM=
-
 

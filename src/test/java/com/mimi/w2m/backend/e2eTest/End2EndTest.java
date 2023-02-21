@@ -14,6 +14,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest(classes = W2mApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+/**
+ * Context Loader 를 이용하는 테스트의 경우, 각 Context 가 공유되어 재사용된다. 따라서 격리를 위해, Context를 재생성할 필요가 있다.
+ */
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class End2EndTest {
 
     @Autowired
@@ -47,6 +53,8 @@ public abstract class End2EndTest {
 
     @Autowired
     protected GuestService guestService;
+    @Autowired
+    protected CacheManager cacheManager;
 
     @AfterEach
     protected void cleanup() {

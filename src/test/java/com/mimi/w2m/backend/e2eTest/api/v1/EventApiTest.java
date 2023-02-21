@@ -71,7 +71,7 @@ public class EventApiTest extends End2EndTest {
                                 )
                         )
                 )
-                .dDay(LocalDateTime.now().plusDays(7))
+                .dday(LocalDateTime.now().plusDays(7))
                 .color(ColorDto.of("#ffffff"))
                 .description("테스트입니다람쥐")
                 .build();
@@ -138,7 +138,7 @@ public class EventApiTest extends End2EndTest {
                                 )
                         )
                 )
-                .dDay(null)
+                .dday(null)
                 .color(ColorDto.of("#ffffff"))
                 .description("수정되었습니다람쥐")
                 .build();

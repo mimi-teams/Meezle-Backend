@@ -17,7 +17,7 @@ import java.util.Set;
  **/
 @Getter
 @Schema(title = "Event 에 대한 반환 정보", description = "이벤트와 관련된 정보를 반환",
-        requiredProperties = {"id", "hostId", "title", "dDay", "selectableParticipleTime", "selectedParticipleTime",
+        requiredProperties = {"id", "hostId", "title", "dday", "selectableParticipleTime", "selectedParticipleTime",
                 "color", "description"})
 public class EventResponseDto implements Serializable {
 

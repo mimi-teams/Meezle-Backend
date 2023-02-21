@@ -71,7 +71,7 @@ public class EventService {
         var event = getEvent(eventId);
         event.update(
                 requestDto.getTitle(),
-                requestDto.getDDay(),
+                requestDto.getDday(),
                 requestDto.getColor(),
                 requestDto.getDescription()
         );
@@ -189,10 +189,10 @@ public class EventService {
                 if (day.equals(selectable.getWeek())) {
                     for (final var time :
                             selectable.getTimeRanges()) {
-                        if (timeRange.beginTime().isAfter(time.beginTime()) &&
-                                timeRange.beginTime().isBefore(time.endTime()) &&
-                                timeRange.endTime().isAfter(time.beginTime()) &&
-                                timeRange.endTime().isBefore(time.endTime())) {
+                        if (timeRange.beginTime().compareTo(time.beginTime()) >= 0 &&
+                                timeRange.beginTime().compareTo(time.endTime()) <= 0 &&
+                                timeRange.endTime().compareTo(time.beginTime()) >= 0 &&
+                                timeRange.endTime().compareTo(time.endTime()) <= 0) {
                             isValid = true;
                             break;
                         }
