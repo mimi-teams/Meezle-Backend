@@ -111,7 +111,7 @@ jobs:
           service: ${{env.GCP_CLOUD_RUN_SERVICE}}
           image: ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev/${{env.GCP_PROJECT_ID}}/${{env.GCP_ARTIFACT_REPOSITORY}}/${{env.GCP_CLOUD_RUN_SERVICE}}-image:${{github.sha}}
           env_vars: |
-            INSTANCE_CONNECTION_NAME=${{GCP_CONNECTION_NAME}}
+            INSTANCE_CONNECTION_NAME=${{env.GCP_CONNECTION_NAME}}
             DB_JWT_SECRET=${{env.GCP_DB_JWT_SECRET}}
             DB_HOST=${{env.GCP_DB_HOST}}
             DB_PORT=${{env.GCP_DB_PORT}}
