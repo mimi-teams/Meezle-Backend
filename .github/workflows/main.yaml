@@ -102,7 +102,7 @@ jobs:
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER}}
           service_account: ${{ env.GCP_CLOUD_RUN_SERVICE_ACCOUNT }}
       - name: Setup Docker
-        run: gcloud --quiet auth configure-docker ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev
+        run: gcloud auth configure-docker ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev
       - name: Build
         run: |-
           chmod +x ./gradlew
