@@ -83,7 +83,7 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
 #    if: github.base_ref == 'main'
-#    needs: continuous-integration
+    needs: continuous-integration
     env:
       SHA: ${{github.sha}}
     steps:

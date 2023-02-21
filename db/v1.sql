@@ -1,9 +1,9 @@
 create table blocked_jwt (
-                             token varchar(255) not null,
+                             jwt_token varchar(255) not null,
                              created_date datetime(6) not null,
                              last_modified_date datetime(6) not null,
                              expired_date datetime(6) not null,
-                             primary key (token)
+                             primary key (jwt_token)
 ) engine=InnoDB;
 
 create table oauth2_token(
