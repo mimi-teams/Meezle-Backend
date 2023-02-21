@@ -2,7 +2,7 @@ create table blocked_jwt (
                              jwt_token varchar(255) not null,
                              created_date datetime(6) not null,
                              last_modified_date datetime(6) not null,
-                             expired_date datetime(6) not null,
+                             expired_at datetime(6) not null,
                              primary key (jwt_token)
 ) engine=InnoDB;
 
