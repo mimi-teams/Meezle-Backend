@@ -2,14 +2,14 @@ create table blocked_jwt (
                              jwt_token varchar(255) not null,
                              created_date datetime(6) not null,
                              last_modified_date datetime(6) not null,
-                             expired_at datetime(6) not null,
+                             expired_date datetime(6) not null,
                              primary key (jwt_token)
 ) engine=InnoDB;
 
 create table oauth2_token(
     oauth2_token_id BINARY(16) not null,
     created_date datetime(6) not null,
-    last_modified_at datetime(6) not null,
+    last_modified_date datetime(6) not null,
     user_id BINARY(16) not null,
     access_token TEXT not null,
     access_token_expires datetime(6) not null,
@@ -22,7 +22,7 @@ create table oauth2_token(
 create table platform_calendar(
     calendar_id BINARY(16) not null,
     created_date datetime(6) not null,
-    last_modified_at datetime(6) not null,
+    last_modified_date datetime(6) not null,
     event_id BINARY(16) not null,
     user_id BINARY(16) not null,
     platform VARCHAR(10) not null,
@@ -35,9 +35,11 @@ create table event (
                        event_id BINARY(16) not null,
                        created_date datetime(6) not null,
                        last_modified_date datetime(6) not null,
+                       activity_days TEXT null,
+                       activity_time TEXT null,
                        color varchar(100) not null comment '이벤트의 대표 색상. Backend에서 설정해 Front에 전달한다(브라우저마다 동일하게 보이게 만들려고!)',
                        d_day datetime(6) comment '만료 일자, 만료 일자가 없으면 null',
-                       deleted_at datetime(6) comment '삭제 일자, 삭제가 안되었으면 null',
+                       deleted_date datetime(6) comment '삭제 일자, 삭제가 안되었으면 null',
                        description VARCHAR(1000) not null comment '이벤트 세부 설명(Default : EMPTY STRING)',
                        title VARCHAR(200) not null comment '이벤트 제목. 최대 길이는 200',
                        host_id BINARY(16) not null comment '이벤트를 생성한 사용자',
@@ -91,7 +93,7 @@ create table user (
                       user_id BINARY(16) not null,
                       created_date datetime(6) not null,
                       last_modified_date datetime(6) not null,
-                      deleted_at datetime(6) comment '이용자 삭제일(없으면 null)',
+                      deleted_date datetime(6) comment '이용자 삭제일(없으면 null)',
                       email varchar(200) not null comment '가입한 사용자 이메일(oauth login 에 사용(중복X)',
                       name varchar(200) not null comment '가입한 사용자 이름(중복O)',
                       primary key (user_id)

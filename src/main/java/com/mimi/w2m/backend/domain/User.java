@@ -37,7 +37,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "email", length = 200, nullable = false, unique = true)
     private String email;
     @Comment("이용자 삭제일(없으면 null)")
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_date")
     private LocalDateTime deletedAt = null;
 
     @Builder

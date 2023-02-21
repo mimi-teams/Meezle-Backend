@@ -24,7 +24,7 @@ public class BlockedJwt extends BaseTimeEntity {
     @Column(name = "jwt_token", unique = true, nullable = false, updatable = false)
     String token;
 
-    @Column(name = "expired_at", nullable = false)
+    @Column(name = "expired_date", nullable = false)
     LocalDateTime expiredDate = LocalDateTime.of(1000, 1, 1, 0, 0, 0);
 
     @Builder

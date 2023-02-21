@@ -46,7 +46,7 @@ public class Event extends BaseTimeEntity {
     private String title;
     @Comment("삭제 일자, 삭제가 안되었으면 null")
     @Setter
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_date")
     private LocalDateTime deletedAt;
     @Comment("만료 일자, 만료 일자가 없으면 null")
     @Column(name = "d_day")
