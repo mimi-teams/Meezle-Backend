@@ -23,7 +23,7 @@ spring:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     # url: jdbc:mysql://localhost:3374/mimi?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${DB_USER}
-    password: ${DB_PW}
+    password: ${DB_PASS}
     hikari:
       pool-name: HikariPool-Primary
       maximum-pool-size: 5

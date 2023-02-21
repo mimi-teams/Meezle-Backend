@@ -19,9 +19,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${mysql_url}
-    username: ${mysql_user}
-    password: ${mysql_password}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     hikari:
       pool-name: HikariPool-Primary
       maximum-pool-size: 5
@@ -29,4 +29,4 @@ spring:
       connection-test-query: SELECT 1
 
 auth:
-  token.secret: ${token-secret}
+  token.secret: ${DB_JWT_SECRET}
