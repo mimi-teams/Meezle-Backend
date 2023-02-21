@@ -7,8 +7,7 @@ server.port: 8080
 spring:
   jpa:
     hibernate:
-      ddl-auto: create-drop
-#      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
         show_sql: true
@@ -30,4 +29,4 @@ spring:
       connection-test-query: SELECT 1
 
 auth:
-  token.secret: FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM= #${DB_JWT_SECRET}
+  token.secret: ${DB_JWT_SECRET}
