@@ -19,6 +19,18 @@ create table oauth2_token(
     primary key (oauth2_token_id)
 ) engine=InnoDB;
 
+create table platform_calendar(
+    calendar_id BINARY(16) not null,
+    created_date datetime(6) not null,
+    last_modified_at datetime(6) not null,
+    event_id BINARY(16) not null,
+    user_id BINARY(16) not null,
+    platform VARCHAR(10) not null,
+    platform_calendar_id TEXT null,
+    platform_event_id TEXT null,
+    primary key (calendar_id)
+) engine=InnoDB;
+
 create table event (
                        event_id BINARY(16) not null,
                        created_date datetime(6) not null,
@@ -147,3 +159,13 @@ alter table oauth2_token
     add constraint
         foreign key (user_id)
             references user (user_id);
+
+alter table platform_calendar
+    add constraint
+        foreign key (user_id)
+            references user (user_id);
+
+alter table platform_calendar
+    add constraint
+        foreign key (event_id)
+            references event (event_id);
