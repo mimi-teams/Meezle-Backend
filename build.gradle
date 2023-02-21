@@ -63,24 +63,15 @@ dependencies {
     implementation 'javax.cache:cache-api:1.1.1'
 }
 
-tasks.named("test") {
-    useJUnitPlatform()
-}
-
-//// Activate Test profile
-//tasks.test {
-//    systemProperty 'spring.profiles.active', 'test'
-////	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LoggerFactory'
-//}
-
-
 jib {
     from {
         image = "eclipse-temurin:17-jre"
     }
     to {
-        image = System.getProperty("image", "")
-        tags = [(System.getProperty("tag", "latest"))]
+        image = System.getenv("GCP_PROJECT_REGION") + "-docker.pkg.dev/" + System.getenv(GCP_PROJECT_ID)
+        + "/" + System.getenv("GCP_PROJECT_ID") + "/" + System.getenv("GCP_ARTIFACT_REPOSITORY")
+        + "/" + System.getenv("GCP_CLOUD_RUN_SERVICE") + "-image"
+        tags = [System.getenv("SHA")]
     }
     container {
         jvmFlags = [
