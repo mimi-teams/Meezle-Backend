@@ -126,8 +126,8 @@ jobs:
             KAKAO_CLIENT_ID=${{env.KAKAO_CLIENT_ID}}
             KAKAO_CLIENT_SECRET=${{env.KAKAO_CLIENT_SECRET}}
             KAKAO_HTTP_HOST=${{env.KAKAO_HTTP_HOST}}
-          flags: '--allow-unauthenticated --ingress=all \
-          --service-account=${{env.GCP_CLOUD_RUN_SERVICE_ACCOUNT}} \
-          --add-cloudsql-instances=${{env.GCP_CONNECTION_NAME}} --vpc-connector=${{env.GCP_SERVERLESS_CONNECTOR}} \
-          --min-instances=1 --max-instances=10 \
+          flags: '--allow-unauthenticated --ingress=all
+          --service-account=${{env.GCP_CLOUD_RUN_SERVICE_ACCOUNT}}
+          --add-cloudsql-instances=${{env.GCP_CONNECTION_NAME}} --vpc-connector=${{env.GCP_SERVERLESS_CONNECTOR}}
+          --min-instances=1 --max-instances=10
           --region=${{env.GCP_PROJECT_REGION}}'
