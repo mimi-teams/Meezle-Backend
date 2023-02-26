@@ -38,7 +38,7 @@ public class AuthApi {
     private final JwtHandler jwtHandler;
     private final Logger logger = LoggerFactory.getLogger("AuthApi");
     @Value("${oauth2.kakao.redirect-url}")
-    private final String redirectUrl;
+    protected String redirectUrl;
 
     /**
      * Kakao Oauth2 과정에서 인가 과정에서 사용된 Redirect URL 과 Access Token 을 발급할 때 사용된 것은 동일해야 한다.
