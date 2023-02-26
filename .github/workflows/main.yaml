@@ -1,8 +1,8 @@
 name: CI & CD with Google Cloud Run
 on:
   push:
-    branches-ignore:
-      - 'main'
+    branches:
+      - '**'
   pull_request:
     branches:
       - 'main'
