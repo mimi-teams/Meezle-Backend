@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -74,7 +75,7 @@ public class AuthApi {
     public @Valid ApiCallResponse<LoginSuccessResponse> oauth2Authorization(
             HttpServletRequest request,
             @Valid @NotNull @RequestParam String code,
-            @RequestParam String redirectUrl
+            @Nullable @RequestParam String redirectUrl
     ) {
         if(Objects.isNull(redirectUrl)) {
             redirectUrl = request.getRequestURL().toString();
