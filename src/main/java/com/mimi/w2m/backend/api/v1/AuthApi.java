@@ -44,7 +44,9 @@ public class AuthApi {
      * Kakao Oauth2 과정에서 인가 과정에서 사용된 Redirect URL 과 Access Token 을 발급할 때 사용된 것은 동일해야 한다.
      * 또한, 이 Redirect URL 은 KaKao App 의 Redirect Url 에 등록되어 있어야 한다.
      * + 캘린더 및 메시지 권한을 획득할 수 있도록 추가
-     * + Redirect URL = HTTPS인 경우, KAKAO에서 HTTP로 요청이 오기 때문에 Redirect URL이 불일치한다. 따라서 request.getURL이 아니라 직접 URL을 찾아 넘긴다.
+     * + Redirect URL = 카카오 api에서 redirect url을 호출할 때 http 통신으로 넘긴다. 따라서
+     *  1. redirect url을 명시적으로 넘기거나
+     *  2. http 연결을 받도록 KAKAO_HOST를 수정한다.(적용 : http://... 을 호스트로 설정한다)
      *
      * @author teddy
      * @since 2023/01/07
@@ -72,9 +74,9 @@ public class AuthApi {
             HttpServletRequest request,
             @RequestParam String code
     ) {
-//        logger.info(this.redirectUrl);
+        logger.debug(request.getRequestURI());
 
-        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, this.redirectUrl);
+        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, request.getRequestURI());
         final String token = jwtHandler.createToken(user.getId(), Role.USER);
 
         return ApiCallResponse.ofSuccess(
