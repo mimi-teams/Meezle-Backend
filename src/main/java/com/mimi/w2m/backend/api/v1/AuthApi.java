@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,16 +36,15 @@ public class AuthApi {
     private final Oauth2Service oauth2Service;
     private final JwtHandler jwtHandler;
     private final Logger logger = LoggerFactory.getLogger("AuthApi");
-    @Value("${oauth2.kakao.redirect-url}")
-    protected String redirectUrl;
 
     /**
      * Kakao Oauth2 과정에서 인가 과정에서 사용된 Redirect URL 과 Access Token 을 발급할 때 사용된 것은 동일해야 한다.
      * 또한, 이 Redirect URL 은 KaKao App 의 Redirect Url 에 등록되어 있어야 한다.
      * + 캘린더 및 메시지 권한을 획득할 수 있도록 추가
      * + Redirect URL = 카카오 api에서 redirect url을 호출할 때 http 통신으로 넘긴다. 따라서
-     *  1. redirect url을 명시적으로 넘기거나
-     *  2. http 연결을 받도록 KAKAO_HOST를 수정한다.(적용 : http://... 을 호스트로 설정한다)
+     * 1. redirect url을 명시적으로 넘기거나
+     * 2. http 연결을 받도록 KAKAO_HOST를 수정한다.(적용 : http://... 을 호스트로 설정한다)
+     * 3. http 요청을 https로 바꾼다.
      *
      * @author teddy
      * @since 2023/01/07
@@ -74,9 +72,12 @@ public class AuthApi {
             HttpServletRequest request,
             @RequestParam String code
     ) {
-        logger.debug(request.getRequestURI());
-
-        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, request.getRequestURI());
+        var redirectUri = request.getRequestURI();
+        if (!redirectUri.contains("localhost")) {
+            redirectUri = redirectUri.replace("http", "https");
+        }
+        logger.info(request.getRequestURI());
+        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, redirectUri);
         final String token = jwtHandler.createToken(user.getId(), Role.USER);
 
         return ApiCallResponse.ofSuccess(
