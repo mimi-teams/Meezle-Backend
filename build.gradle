@@ -61,6 +61,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache:2.7.7'
     implementation 'org.ehcache:ehcache:3.10.0'
     implementation 'javax.cache:cache-api:1.1.1'
+
+    // GCP Logging
+    implementation 'com.google.cloud:google-cloud-logging-logback:0.130.4-alpha'
 }
 
 jib {
