@@ -72,12 +72,12 @@ public class AuthApi {
             HttpServletRequest request,
             @RequestParam String code
     ) {
-        var redirectUri = request.getRequestURI();
-        if (!redirectUri.contains("localhost")) {
-            redirectUri = redirectUri.replace("http", "https");
+        var redirectUrl = request.getRequestURL().toString();
+        if (!redirectUrl.contains("localhost")) {
+            redirectUrl = redirectUrl.replace("http", "https");
         }
-        logger.info(request.getRequestURI());
-        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, redirectUri);
+        logger.info(redirectUrl);
+        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, redirectUrl);
         final String token = jwtHandler.createToken(user.getId(), Role.USER);
 
         return ApiCallResponse.ofSuccess(
