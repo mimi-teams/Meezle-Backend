@@ -75,16 +75,16 @@ public class AuthApi {
     public @Valid ApiCallResponse<LoginSuccessResponse> oauth2Authorization(
             HttpServletRequest request,
             @Valid @NotNull @RequestParam String code,
-            @Nullable @RequestParam String redirectUrl
+            @Nullable @RequestParam String requestUrl
     ) {
-        if(Objects.isNull(redirectUrl)) {
-            redirectUrl = request.getRequestURL().toString();
-            if (!redirectUrl.contains("localhost")) {
-                redirectUrl = redirectUrl.replace("http", "https");
+        if(Objects.isNull(requestUrl)) {
+            requestUrl = request.getRequestURL().toString();
+            if (!requestUrl.contains("localhost")) {
+                requestUrl = requestUrl.replace("http", "https");
             }
         }
-        logger.info(redirectUrl);
-        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, redirectUrl);
+        logger.info(requestUrl);
+        final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, requestUrl);
         final String token = jwtHandler.createToken(user.getId(), Role.USER);
 
         return ApiCallResponse.ofSuccess(

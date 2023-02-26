@@ -17,11 +17,9 @@ spring:
         connection.provider_disables_autocommit: false
   #    open-in-view: true # JPA의 영속성을 Transaction이 끝나도 유지한다(lazy loading을 service가 끝난 후(transaction 종료) controller에서 사용 가능) default: true
 
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=UTC&characterEncoding=UTF-8
-    # url: jdbc:mysql://localhost:3374/mimi?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${DB_USER}
     password: ${DB_PASS}
     hikari:
@@ -31,6 +29,4 @@ spring:
       connection-test-query: SELECT 1
 
 auth:
-  token.secret: ${DB_JWT_SECRET} # FkdyWJ/KOfcNnWZ7KOkEbxeayfXzyEsSMeag84VwAeM=
-
-
+  token.secret: qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
