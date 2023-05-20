@@ -97,25 +97,15 @@ jobs:
         env:
           DOCKER_IMAGE: meezzle
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          DB_JWT_SECRET: ${{env.GCP_DB_JWT_SECRET}}
+          DB_HOST: ${{env.DB_HOST}}
+          DB_PORT: 3306
+          DB_NAME: ${{env.DB_NAME}}
+          DB_USER: ${{env.DB_USER}}
+          DB_PASS: ${{env.DB_PASS}}
+          KAKAO_CLIENT_ID: ${{env.KAKAO_CLIENT_ID}}
+          KAKAO_CLIENT_SECRET: ${{env.KAKAO_CLIENT_SECRET}}
+          KAKAO_HTTP_HOST: ${{env.KAKAO_HTTP_HOST}}
         run: |-
           chmod +x ./gradlew
           ./gradlew jib
-
-#      - name: Deploy
-#        uses: google-github-actions/deploy-cloudrun@v1
-#        with:
-#          service: ${{env.GCP_CLOUD_RUN_SERVICE}}
-#          image: ${{env.GCP_PROJECT_REGION}}-docker.pkg.dev/${{env.GCP_PROJECT_ID}}/${{env.GCP_ARTIFACT_REPOSITORY}}/${{env.GCP_CLOUD_RUN_SERVICE}}-image:${{env.SHA}}
-#          env_vars: |
-#            INSTANCE_CONNECTION_NAME=${{env.GCP_CONNECTION_NAME}}
-#            DB_JWT_SECRET=${{env.GCP_DB_JWT_SECRET}}
-#            DB_HOST=${{env.GCP_DB_HOST}}
-#            DB_PORT=${{env.GCP_DB_PORT}}
-#            DB_NAME=${{env.GCP_DB_NAME}}
-#            DB_USER=${{env.GCP_DB_USER}}
-#            DB_PASS=${{env.GCP_DB_PASS}}
-#
-#            KAKAO_CLIENT_ID=${{env.KAKAO_CLIENT_ID}}
-#            KAKAO_CLIENT_SECRET=${{env.KAKAO_CLIENT_SECRET}}
-#            KAKAO_HTTP_HOST=${{env.KAKAO_HTTP_HOST}}
-#          region: ${{env.GCP_PROJECT_REGION}}
