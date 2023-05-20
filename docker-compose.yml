@@ -3,7 +3,7 @@ version: "3.8"
 services:
   mysql:
     container_name: mimi-mysql8
-    image: mysql:8.0.30
+    image: mysql:8.0.31
     environment:
       MYSQL_DATABASE: mimi
       # 0374 비밀번호는 왜 안먹히지????
@@ -13,7 +13,7 @@ services:
       - "3374:3306"
   mysql-test:
     container_name: mimi-mysql8-test
-    image: mysql:8.0.30
+    image: mysql:8.0.31
     environment:
       MYSQL_DATABASE: mimi
       MYSQL_ROOT_PASSWORD: 1123

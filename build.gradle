@@ -28,6 +28,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     // Object mapper 로 LocalDateTime 을 직렬화하기 위해 추가
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
 
     // DB Connector
     runtimeOnly "mysql:mysql-connector-java"
@@ -63,7 +64,7 @@ dependencies {
     implementation 'javax.cache:cache-api:1.1.1'
 
     // GCP Logging
-    implementation 'com.google.cloud:google-cloud-logging-logback:0.130.4-alpha'
+//    implementation 'com.google.cloud:google-cloud-logging-logback:0.130.4-alpha'
 }
 
 jib {
