@@ -71,10 +71,8 @@ jib {
         image = "eclipse-temurin:17-jre"
     }
     to {
-        image = System.getenv("GCP_PROJECT_REGION") + "-docker.pkg.dev" \
-        + "/" + System.getenv("GCP_PROJECT_ID") + "/" + System.getenv("GCP_ARTIFACT_REPOSITORY") \
-        + "/" + System.getenv("GCP_CLOUD_RUN_SERVICE") + "-image"
-        tags = [System.getenv("SHA")]
+        image = System.getenv("REGISTRY") + "/" + System.getenv("DOCKER_IMAGE")
+//        tags = [System.getenv("SHA")]
     }
     container {
         jvmFlags = [
