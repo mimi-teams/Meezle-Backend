@@ -74,14 +74,18 @@ public class AuthApi {
     @GetMapping(path = "/oauth2/authorization/redirect/kakao")
     public @Valid ApiCallResponse<LoginSuccessResponse> oauth2Authorization(
             HttpServletRequest request,
-            @Valid @NotNull @RequestParam String code,
-            @Nullable @RequestParam String requestUrl
+            @Valid @NotNull @RequestParam String code
+//            @Nullable @RequestParam String requestUrl
     ) {
-        if(Objects.isNull(requestUrl)) {
-            requestUrl = request.getRequestURL().toString();
-            if (!requestUrl.contains("localhost")) {
-                requestUrl = requestUrl.replace("http", "https");
-            }
+//        if(Objects.isNull(requestUrl)) {
+//            requestUrl = request.getRequestURL().toString();
+//            if (!requestUrl.contains("localhost")) {
+//                requestUrl = requestUrl.replace("http", "https");
+//            }
+//        }
+        var requestUrl = request.getRequestURL().toString();
+        if (!requestUrl.contains("localhost")) {
+            requestUrl = requestUrl.replace("http", "https");
         }
         logger.info(requestUrl);
         final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, requestUrl);
