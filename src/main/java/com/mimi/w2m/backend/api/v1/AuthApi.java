@@ -75,7 +75,7 @@ public class AuthApi {
     public @Valid ApiCallResponse<LoginSuccessResponse> oauth2Authorization(
             HttpServletRequest request,
             @Valid @NotNull @RequestParam String code,
-            @Nullable @RequestParam String requestUrl
+            @RequestParam(required = false) String requestUrl
     ) {
         if(Objects.isNull(requestUrl)) {
             requestUrl = request.getRequestURL().toString();

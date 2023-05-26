@@ -68,8 +68,8 @@ public class Oauth2Service {
                         .append(kakaoOauth2RedirectUri)
                         .append("&")
                         .append("response_type=code")
-                        .append("&")
-                        .append("scope=talk_message,talk_calendar")
+//                        .append("&")
+//                        .append("scope=talk_message,talk_calendar")
                         .toString();
             }
             default -> {
