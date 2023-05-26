@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.jetbrains.annotations.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -74,18 +74,14 @@ public class AuthApi {
     @GetMapping(path = "/oauth2/authorization/redirect/kakao")
     public @Valid ApiCallResponse<LoginSuccessResponse> oauth2Authorization(
             HttpServletRequest request,
-            @Valid @NotNull @RequestParam String code
-//            @Nullable @RequestParam String requestUrl
+            @Valid @NotNull @RequestParam String code,
+            @Nullable @RequestParam String requestUrl
     ) {
-//        if(Objects.isNull(requestUrl)) {
-//            requestUrl = request.getRequestURL().toString();
-//            if (!requestUrl.contains("localhost")) {
-//                requestUrl = requestUrl.replace("http", "https");
-//            }
-//        }
-        var requestUrl = request.getRequestURL().toString();
-        if (!requestUrl.contains("localhost")) {
-            requestUrl = requestUrl.replace("http", "https");
+        if(Objects.isNull(requestUrl)) {
+            requestUrl = request.getRequestURL().toString();
+            if (!requestUrl.contains("localhost")) {
+                requestUrl = requestUrl.replace("http", "https");
+            }
         }
         logger.info(requestUrl);
         final User user = oauth2Service.afterAuthorization(PlatformType.KAKAO, code, requestUrl);
